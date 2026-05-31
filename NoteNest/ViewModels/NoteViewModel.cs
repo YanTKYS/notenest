@@ -1,4 +1,5 @@
 using NoteNest.Models;
+using NoteNest.Services;
 
 namespace NoteNest.ViewModels;
 
@@ -19,8 +20,15 @@ public class NoteViewModel : BaseViewModel
     public string Content
     {
         get => _model.Content;
-        set { _model.Content = value; OnPropertyChanged(); }
+        set
+        {
+            _model.Content = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(HasMarkers));
+        }
     }
+
+    public bool HasMarkers => MarkerExtractorService.HasMarkers(_model.Content);
 
     public Note Model => _model;
 }

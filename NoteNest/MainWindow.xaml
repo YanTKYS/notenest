@@ -133,18 +133,27 @@
 
                         <!-- ── Note template ── -->
                         <DataTemplate DataType="{x:Type vm:NoteViewModel}">
-                            <TextBlock Text="{Binding Title}"
-                                       FontSize="12" Padding="8,1"
-                                       TextTrimming="CharacterEllipsis"
-                                       ToolTip="{Binding Title}">
-                                <TextBlock.ContextMenu>
+                            <DockPanel>
+                                <DockPanel.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="名前変更..." Click="RenameNote_Click"/>
                                         <Separator/>
                                         <MenuItem Header="削除"        Click="DeleteNote_Click"/>
                                     </ContextMenu>
-                                </TextBlock.ContextMenu>
-                            </TextBlock>
+                                </DockPanel.ContextMenu>
+                                <TextBlock DockPanel.Dock="Right"
+                                           Text="●"
+                                           Foreground="#E67E22"
+                                           FontSize="9"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,4,0"
+                                           ToolTip="このノートにはマーカーがあります"
+                                           Visibility="{Binding HasMarkers, Converter={StaticResource BoolToVis}}"/>
+                                <TextBlock Text="{Binding Title}"
+                                           FontSize="12" Padding="8,1"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip="{Binding Title}"/>
+                            </DockPanel>
                         </DataTemplate>
 
                     </TreeView.Resources>
@@ -333,6 +342,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <!-- Markers header -->
@@ -344,6 +354,24 @@
                                        Text="{Binding MarkerCount, StringFormat={}{0}個}"
                                        Foreground="#888" FontSize="12"
                                        VerticalAlignment="Center"/>
+                            <TextBlock DockPanel.Dock="Right"
+                                       Text="？"
+                                       Foreground="#BBBBBB"
+                                       FontSize="12"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"
+                                       Cursor="Help">
+                                <TextBlock.ToolTip>
+                                    <ToolTip>
+                                        <StackPanel Margin="4,2">
+                                            <TextBlock Text="利用可能なマーカー:" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                            <TextBlock Text="[TODO]   やること"   Margin="0,0,0,3"/>
+                                            <TextBlock Text="[FIXME]  修正が必要" Margin="0,0,0,3"/>
+                                            <TextBlock Text="[NOTE]   メモ・補足"/>
+                                        </StackPanel>
+                                    </ToolTip>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
                             <TextBlock Text="マーカー" FontWeight="Bold" FontSize="13"
                                        VerticalAlignment="Center"/>
                         </DockPanel>
@@ -392,6 +420,16 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
+
+                    <!-- Project-wide marker summary -->
+                    <Border Grid.Row="2"
+                            BorderBrush="{StaticResource PaneBorder}" BorderThickness="0,1,0,0"
+                            Background="#F5F5F5"
+                            Padding="12,6">
+                        <TextBlock Text="{Binding ProjectMarkerSummary}"
+                                   FontSize="11" Foreground="#888"
+                                   TextWrapping="Wrap"/>
+                    </Border>
                 </Grid>
 
             </Grid>
