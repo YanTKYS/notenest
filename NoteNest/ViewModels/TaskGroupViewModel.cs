@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace NoteNest.ViewModels;
 
@@ -49,16 +50,24 @@ public class TaskGroupViewModel : BaseViewModel
 
     public void AddTask(TaskViewModel task)
     {
-        task.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == nameof(TaskViewModel.IsCompleted))
-            {
-                RefreshCount();
-                OnPropertyChanged(nameof(VisibleTasks));
-            }
-        };
+        task.PropertyChanged += Task_PropertyChanged;
         Tasks.Add(task);
     }
 
+    public bool RemoveTask(TaskViewModel task)
+    {
+        task.PropertyChanged -= Task_PropertyChanged;
+        return Tasks.Remove(task);
+    }
+
     public void RefreshCount() => OnPropertyChanged(nameof(CountText));
+
+    private void Task_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(TaskViewModel.IsCompleted))
+        {
+            RefreshCount();
+            OnPropertyChanged(nameof(VisibleTasks));
+        }
+    }
 }

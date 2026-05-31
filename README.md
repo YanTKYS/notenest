@@ -139,7 +139,7 @@ dotnet run --project NoteNest/NoteNest.csproj
 | `Ctrl+F` | 検索／置換ダイアログを開く |
 | `Ctrl+H` | 検索／置換ダイアログを開く |
 
-## 既知の制限（v0.1.2）
+## 既知の制限（v0.1.3）
 
 - Markdown のプレビューおよびシンタックスハイライトは未実装
 - 行番号表示は未実装
