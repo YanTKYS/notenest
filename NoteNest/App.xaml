@@ -1,0 +1,50 @@
+<Application x:Class="NoteNest.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+
+            <!-- Brushes -->
+            <SolidColorBrush x:Key="SidebarBg"      Color="#F5F5F5"/>
+            <SolidColorBrush x:Key="PaneBorder"     Color="#E0E0E0"/>
+            <SolidColorBrush x:Key="GroupHeaderBg"  Color="#EFEFEF"/>
+            <SolidColorBrush x:Key="SelectedNoteBg" Color="#DCE8FF"/>
+            <SolidColorBrush x:Key="AccentBlue"     Color="#2B5CE6"/>
+            <SolidColorBrush x:Key="TodoBrush"      Color="#E67E22"/>
+            <SolidColorBrush x:Key="FixmeBrush"     Color="#E74C3C"/>
+            <SolidColorBrush x:Key="NoteBrush"      Color="#27AE60"/>
+
+            <!-- Icon button style (flat, no border) -->
+            <Style x:Key="IconButton" TargetType="Button">
+                <Setter Property="Background"   Value="Transparent"/>
+                <Setter Property="BorderBrush"  Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor"       Value="Hand"/>
+                <Setter Property="Padding"      Value="4,2"/>
+                <Setter Property="FontSize"     Value="14"/>
+                <Setter Property="Foreground"   Value="#555"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="#2B5CE6"/>
+                        <Setter Property="Background" Value="#E8EEFF"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- TreeView default style (no background, no border) -->
+            <Style TargetType="TreeView">
+                <Setter Property="Background"     Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Style>
+
+            <!-- TreeViewItem style -->
+            <Style TargetType="TreeViewItem">
+                <Setter Property="Padding"       Value="2,3"/>
+                <Setter Property="Cursor"        Value="Hand"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            </Style>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
