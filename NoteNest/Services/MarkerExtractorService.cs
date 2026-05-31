@@ -15,6 +15,9 @@ public class MarkerExtractorService
     private static readonly Regex Pattern =
         new(@"\[(TODO|FIXME|NOTE)\]\s*(.*)", RegexOptions.Compiled);
 
+    public static bool HasMarkers(string content) =>
+        !string.IsNullOrEmpty(content) && Pattern.IsMatch(content);
+
     public List<MarkerInfo> Extract(string content, string noteTitle)
     {
         var result = new List<MarkerInfo>();

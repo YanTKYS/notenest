@@ -22,6 +22,9 @@ public class MainViewModel : BaseViewModel
     private string? _currentFilePath = null;
     private string _currentProjectId = Guid.NewGuid().ToString();
     private bool _isLoadingNote = false;
+    private int _projectTodoCount;
+    private int _projectFixmeCount;
+    private int _projectNoteCount;
 
     // Callbacks registered by MainWindow
     public Func<string, string, string?>? ShowInputDialog { get; set; }
@@ -123,6 +126,9 @@ public class MainViewModel : BaseViewModel
     public int MarkerCount => Markers.Count;
     public string? CurrentNoteTitle => SelectedNote?.Title;
 
+    public string ProjectMarkerSummary =>
+        $"全体  TODO: {_projectTodoCount}  FIXME: {_projectFixmeCount}  NOTE: {_projectNoteCount}";
+
     public ObservableCollection<NotebookViewModel> Notebooks { get; } = new();
     public ObservableCollection<TaskGroupViewModel> TaskGroups { get; }
     public ObservableCollection<MarkerViewModel> Markers { get; } = new();
@@ -177,6 +183,7 @@ public class MainViewModel : BaseViewModel
         }
         Notebooks.Remove(nb);
         IsModified = true;
+        RefreshProjectMarkers();
     }
 
     public void AddNoteToNotebook(NotebookViewModel notebook, string title)
@@ -207,6 +214,7 @@ public class MainViewModel : BaseViewModel
                 nb.Model.Notes.Remove(note.Model);
                 if (SelectedNote == note) ClearEditor();
                 IsModified = true;
+                RefreshProjectMarkers();
                 return;
             }
         }
@@ -422,6 +430,7 @@ public class MainViewModel : BaseViewModel
 
         IsModified = false;
         OnPropertyChanged(nameof(WindowTitle));
+        RefreshProjectMarkers();
     }
 
     private Project BuildProject()
@@ -463,11 +472,29 @@ public class MainViewModel : BaseViewModel
     private void RefreshMarkers()
     {
         Markers.Clear();
-        if (_selectedNote == null) return;
-
-        foreach (var m in _markerService.Extract(_editorContent, _selectedNote.Title))
-            Markers.Add(new MarkerViewModel(m));
-
+        if (_selectedNote != null)
+        {
+            foreach (var m in _markerService.Extract(_editorContent, _selectedNote.Title))
+                Markers.Add(new MarkerViewModel(m));
+        }
         OnPropertyChanged(nameof(MarkerCount));
+        RefreshProjectMarkers();
+    }
+
+    private void RefreshProjectMarkers()
+    {
+        int todo = 0, fixme = 0, note = 0;
+        foreach (var nb in Notebooks)
+            foreach (var n in nb.Notes)
+                foreach (var m in _markerService.Extract(n.Content, n.Title))
+                {
+                    if (m.Type == "TODO")       todo++;
+                    else if (m.Type == "FIXME") fixme++;
+                    else if (m.Type == "NOTE")  note++;
+                }
+        _projectTodoCount  = todo;
+        _projectFixmeCount = fixme;
+        _projectNoteCount  = note;
+        OnPropertyChanged(nameof(ProjectMarkerSummary));
     }
 }
