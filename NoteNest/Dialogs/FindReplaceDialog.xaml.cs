@@ -73,7 +73,8 @@ public partial class FindReplaceDialog : Window
             ? RegexOptions.None
             : RegexOptions.IgnoreCase;
 
-        var newText = Regex.Replace(_editor.Text, Regex.Escape(keyword), ReplaceBox.Text, flags);
+        var replacement = ReplaceBox.Text;
+        var newText = Regex.Replace(_editor.Text, Regex.Escape(keyword), _ => replacement, flags);
         _editor.Text = newText;
         _lastFoundIndex = -1;
         MessageBox.Show("すべて置換しました。", "置換", MessageBoxButton.OK, MessageBoxImage.Information);

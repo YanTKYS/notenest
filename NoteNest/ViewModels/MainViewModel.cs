@@ -44,7 +44,6 @@ public class MainViewModel : BaseViewModel
         SaveAsProjectCommand = new RelayCommand(SaveProjectAs);
         ExitCommand         = new RelayCommand(Exit);
         AddNotebookCommand  = new RelayCommand(AddNotebook);
-        AddNoteCommand      = new RelayCommand(AddNote);
         AddTaskCommand      = new RelayCommand(param => AddTask(param as string ?? "today"));
         DeleteTaskCommand   = new RelayCommand(param => { if (param is TaskViewModel t) DeleteTask(t); });
         ToggleGroupCommand  = new RelayCommand(param => { if (param is TaskGroupViewModel g) g.IsExpanded = !g.IsExpanded; });
@@ -136,7 +135,6 @@ public class MainViewModel : BaseViewModel
     public ICommand SaveAsProjectCommand { get; }
     public ICommand ExitCommand         { get; }
     public ICommand AddNotebookCommand  { get; }
-    public ICommand AddNoteCommand      { get; }
     public ICommand AddTaskCommand      { get; }
     public ICommand DeleteTaskCommand   { get; }
     public ICommand ToggleGroupCommand  { get; }
@@ -223,7 +221,8 @@ public class MainViewModel : BaseViewModel
     public void ApplyFontSettings(string fontFamily, double fontSize)
     {
         EditorFontFamily = fontFamily;
-        EditorFontSize = fontSize;
+        EditorFontSize   = fontSize;
+        IsModified       = true;
     }
 
     public bool ConfirmCloseIfModified()
@@ -295,22 +294,27 @@ public class MainViewModel : BaseViewModel
         };
 
         if (dialog.ShowDialog() != true) return;
-        DoSave(dialog.FileName);
-        _currentFilePath = dialog.FileName;
-        OnPropertyChanged(nameof(WindowTitle));
+        if (DoSave(dialog.FileName))
+        {
+            _currentFilePath = dialog.FileName;
+            OnPropertyChanged(nameof(WindowTitle));
+        }
     }
 
-    private void DoSave(string path)
+    // Returns true only on success; _currentFilePath must NOT be updated on failure.
+    private bool DoSave(string path)
     {
         try
         {
             _fileService.Save(path, BuildProject());
             IsModified = false;
             StatusMessage = $"保存しました: {System.IO.Path.GetFileName(path)}";
+            return true;
         }
         catch (Exception ex)
         {
             MessageBox.Show($"保存に失敗しました。\n{ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
         }
     }
 
@@ -326,18 +330,6 @@ public class MainViewModel : BaseViewModel
             AddNotebookWithTitle(title.Trim());
     }
 
-    private void AddNote()
-    {
-        if (Notebooks.Count == 0)
-        {
-            MessageBox.Show("先にノートブックを追加してください。", "情報", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
-        var title = ShowInputDialog?.Invoke("ノート追加", "ノート名を入力してください:");
-        if (!string.IsNullOrWhiteSpace(title))
-            AddNoteToNotebook(Notebooks[0], title.Trim());
-    }
-
     private void AddTask(string groupKey)
     {
         var title = ShowInputDialog?.Invoke("タスク追加", "タスク名を入力してください:");
@@ -346,9 +338,21 @@ public class MainViewModel : BaseViewModel
         var group = TaskGroups.FirstOrDefault(g => g.Key == groupKey);
         if (group == null) return;
 
-        group.AddTask(new TaskViewModel(new NoteTask { Title = title.Trim() }));
+        var task = new TaskViewModel(new NoteTask { Title = title.Trim() });
+        TrackTaskCompletion(task);
+        group.AddTask(task);
         IsModified = true;
         StatusMessage = $"タスク「{title.Trim()}」を追加しました。";
+    }
+
+    // Subscribe to IsCompleted so toggling a checkbox marks the project as modified.
+    private void TrackTaskCompletion(TaskViewModel task)
+    {
+        task.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(TaskViewModel.IsCompleted))
+                IsModified = true;
+        };
     }
 
     private void DeleteTask(TaskViewModel task)
@@ -388,7 +392,11 @@ public class MainViewModel : BaseViewModel
         {
             if (taskMap.TryGetValue(group.Key, out var tasks))
                 foreach (var t in tasks)
-                    group.AddTask(new TaskViewModel(t));
+                {
+                    var taskVm = new TaskViewModel(t);
+                    TrackTaskCompletion(taskVm);
+                    group.AddTask(taskVm);
+                }
         }
 
         EditorFontFamily = project.Settings.FontFamily;
