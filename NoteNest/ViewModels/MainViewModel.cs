@@ -170,7 +170,7 @@ public class MainViewModel : BaseViewModel
 
     public void DeleteNotebook(NotebookViewModel nb)
     {
-        if (nb.Notes.Contains(SelectedNote))
+        if (SelectedNote != null && nb.Notes.Contains(SelectedNote))
         {
             SelectedNote = null;
             ClearEditor();
