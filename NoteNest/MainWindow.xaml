@@ -79,9 +79,22 @@
             <TextBlock Text=" "/>
             <TextBlock Text="{Binding EditorFontSize, StringFormat={}{0}pt}" Foreground="#777"/>
             <Separator Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}"/>
-            <TextBlock Text="● 未保存"
+            <TextBlock Text="{Binding UnsavedIndicatorText}"
                        Foreground="#E65100" FontWeight="SemiBold"
-                       Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}"/>
+                       Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="#E65100"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsUnsavedWarning}" Value="True">
+                                <Setter Property="Foreground" Value="#CC0000"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
         </StatusBar>
 
         <!-- ═══ Main 3-pane layout ═══ -->

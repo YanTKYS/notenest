@@ -82,6 +82,21 @@ public partial class FindReplaceDialog : Window
 
     internal bool ForceClose { get; set; }
 
+    // Expose current state for saving across sessions
+    internal string SearchText  => FindBox.Text;
+    internal string ReplaceText => ReplaceBox.Text;
+
+    internal void RestoreState(string searchText, string replaceText, double? left, double? top)
+    {
+        FindBox.Text    = searchText;
+        ReplaceBox.Text = replaceText;
+        if (left.HasValue && top.HasValue)
+        {
+            Left = left.Value;
+            Top  = top.Value;
+        }
+    }
+
     private void Close_Click(object sender, RoutedEventArgs e) => Hide();
 
     private void FindBox_KeyDown(object sender, KeyEventArgs e)

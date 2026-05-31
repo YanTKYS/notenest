@@ -1,5 +1,43 @@
 # リリースノート
 
+## v0.4.0 — マーカーツリー同期・保存忘れ警告・検索状態の永続化
+
+**リリース日：** 2026-05-31
+
+### 追加・改善した機能
+
+#### マーカークリック時のツリービュー選択同期
+- マーカー一覧でマーカーをクリックしたとき、左ツリービューの選択がそのノートに自動的に同期
+- ノートブックが折りたたまれている場合は自動展開してから選択
+- クリックによる選択変更は `SelectNote` の二重呼び出しを抑制するガードを追加
+
+#### 保存忘れ確認の強化（未保存経過時間の表示）
+- 最後に変更してから 5 分以上保存していない場合、ステータスバーの表示が「● 未保存」→「⚠ 未保存（N分）」に変化
+- 5 分以上のときは文字色が赤（`#CC0000`）・太字に変わりより目立つ表示に
+- 30 秒ごとに経過時間を再計算（`DispatcherTimer`）
+- 保存すると即座に通常表示に戻る
+
+#### 検索ダイアログの状態永続化
+- 検索テキスト・置換テキスト・ダイアログ位置をアプリ終了時に保存
+- 次回起動・次回ダイアログ表示時に前回の入力内容と位置が復元される
+- 保存先：`%AppData%\NoteNest\ui-settings.json`
+
+### コード変更
+
+- `MainViewModel`: `UnsavedIndicatorText`・`IsUnsavedWarning` プロパティを追加
+- `MainViewModel`: `IsModified` セッターに `DispatcherTimer` 制御を追加（5 分超で警告）
+- `MainWindow.xaml.cs`: `SyncTreeSelection()` メソッドを追加（TreeView 外部選択 + BringIntoView）
+- `MainWindow.xaml.cs`: `NotebookTree_SelectedItemChanged` に二重呼び出し抑制ガードを追加
+- `MainWindow.xaml.cs`: `OpenFindReplace()` に `UiSettingsService` からの状態復元を追加
+- `MainWindow.xaml.cs`: `Window_Closing` に検索ダイアログ状態の保存処理を追加
+- `FindReplaceDialog.xaml.cs`: `SearchText`・`ReplaceText` プロパティ、`RestoreState()` メソッドを追加
+- `Services/UiSettingsService.cs`: 新規作成（ui-settings.json の読み書き）
+- `MainWindow.xaml`: ステータスバーの未保存テキストを `UnsavedIndicatorText` バインドに変更、`IsUnsavedWarning` DataTrigger を追加
+- `NoteNest.csproj`: `FileVersion` / `InformationalVersion` を `0.4.0` に更新
+- `BuildProject()` の保存バージョンを `"0.4.0"` に更新
+
+---
+
 ## v0.3.0 — 全ノートマーカーナビゲーション・最近使ったファイル・視認性改善
 
 **リリース日：** 2026-05-31
