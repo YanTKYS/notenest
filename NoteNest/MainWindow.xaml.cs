@@ -118,13 +118,37 @@ public partial class MainWindow : Window
             ViewModel.RenameNotebook(nb, d.ResultText.Trim());
     }
 
+    private void MoveNotebookUp_Click(object sender, RoutedEventArgs e)
+    {
+        var nb = GetDataContext<NotebookViewModel>(sender);
+        if (nb != null) ViewModel.MoveNotebookUp(nb);
+    }
+
+    private void MoveNotebookDown_Click(object sender, RoutedEventArgs e)
+    {
+        var nb = GetDataContext<NotebookViewModel>(sender);
+        if (nb != null) ViewModel.MoveNotebookDown(nb);
+    }
+
     private void DeleteNotebook_Click(object sender, RoutedEventArgs e)
     {
         var nb = GetDataContext<NotebookViewModel>(sender);
         if (nb == null) return;
-        if (MessageBox.Show($"ノートブック「{nb.Title}」を削除しますか？\n（含まれるノートもすべて削除されます）",
-                            "確認", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+        if (MessageBox.Show($"ノートブック「{nb.Title}」を削除しますか？\n含まれるノートもすべて削除されます。この操作は取り消せません。",
+                            "削除の確認", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             ViewModel.DeleteNotebook(nb);
+    }
+
+    private void MoveNoteUp_Click(object sender, RoutedEventArgs e)
+    {
+        var note = GetDataContext<NoteViewModel>(sender);
+        if (note != null) ViewModel.MoveNoteUp(note);
+    }
+
+    private void MoveNoteDown_Click(object sender, RoutedEventArgs e)
+    {
+        var note = GetDataContext<NoteViewModel>(sender);
+        if (note != null) ViewModel.MoveNoteDown(note);
     }
 
     private void RenameNote_Click(object sender, RoutedEventArgs e)
@@ -140,8 +164,10 @@ public partial class MainWindow : Window
     {
         var note = GetDataContext<NoteViewModel>(sender);
         if (note == null) return;
-        if (MessageBox.Show($"ノート「{note.Title}」を削除しますか？", "確認",
-                            MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+        var nbTitle = FindNotebookTitleOf(note);
+        var location = nbTitle != null ? $"（{nbTitle}）" : "";
+        if (MessageBox.Show($"ノート「{note.Title}」{location}を削除しますか？\nこの操作は取り消せません。",
+                            "削除の確認", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             ViewModel.DeleteNote(note);
     }
 
@@ -158,8 +184,10 @@ public partial class MainWindow : Window
     {
         var note = ViewModel.SelectedNote;
         if (note == null) return;
-        if (MessageBox.Show($"ノート「{note.Title}」を削除しますか？", "確認",
-                            MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+        var nbTitle = FindNotebookTitleOf(note);
+        var location = nbTitle != null ? $"（{nbTitle}）" : "";
+        if (MessageBox.Show($"ノート「{note.Title}」{location}を削除しますか？\nこの操作は取り消せません。",
+                            "削除の確認", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             ViewModel.DeleteNote(note);
     }
 
@@ -299,6 +327,13 @@ public partial class MainWindow : Window
                 if (n.Notes.Contains(note)) return n;
         }
         return ViewModel.Notebooks.Count > 0 ? ViewModel.Notebooks[0] : null;
+    }
+
+    private string? FindNotebookTitleOf(NoteViewModel note)
+    {
+        foreach (var nb in ViewModel.Notebooks)
+            if (nb.Notes.Contains(note)) return nb.Title;
+        return null;
     }
 
     // Gets DataContext from a MenuItem in a ContextMenu

@@ -1,5 +1,50 @@
 # リリースノート
 
+## v0.2.0 — UX 改善・並べ替え・マーカーフィルタ
+
+**リリース日：** 2026-05-31
+
+### 追加・改善した機能
+
+#### 未保存状態の視認性向上
+- 未保存変更がある場合、ステータスバーに「● 未保存」をオレンジ色で表示
+- 保存ボタン（💾）の背景をアンバー色でハイライト
+
+#### ノート・ノートブックの並べ替え
+- ノートのコンテキストメニューに「上に移動」「下に移動」を追加
+- ノートブックのコンテキストメニューに「上に移動」「下に移動」を追加
+- 変更は `.notenest` ファイルに保存される
+
+#### マーカー一覧のフィルタ
+- マーカーセクションに TODO / FIXME / NOTE の種別フィルタを追加
+- チェックボックスで表示種別を絞り込み可能
+- ヘッダーのカウント表示が「フィルタ後件数/全件数」に更新
+
+#### 削除確認メッセージの改善
+- ノート削除時にノートブック名を合わせて表示（例：「ノート「○○」（△△）を削除しますか？」）
+- 削除確認ダイアログに「この操作は取り消せません。」を追記
+
+### コード変更
+
+- `MainViewModel`: `FilterTodo` / `FilterFixme` / `FilterNote` プロパティ、`FilteredMarkers`・`FilteredMarkerCountText` 追加
+- `MainViewModel`: `MoveNoteUp()` / `MoveNoteDown()` / `MoveNotebookUp()` / `MoveNotebookDown()` 追加
+- `MainWindow.xaml`: ステータスバー未保存インジケーター、保存ボタン強調スタイル追加
+- `MainWindow.xaml`: ノート・ノートブックコンテキストメニューに上下移動項目追加
+- `MainWindow.xaml`: マーカーセクションにフィルタ行追加、`FilteredMarkers` バインド
+- `MainWindow.xaml.cs`: `MoveNoteUp_Click` / `MoveNoteDown_Click` / `MoveNotebookUp_Click` / `MoveNotebookDown_Click` 追加
+- `MainWindow.xaml.cs`: `FindNotebookTitleOf()` ヘルパー追加、削除確認メッセージ改善
+- `NoteNest.csproj`: `FileVersion` / `InformationalVersion` を `0.2.0` に更新
+- `BuildProject()` の保存バージョンを `"0.2.0"` に更新
+
+### 実装しなかった機能
+
+| 機能 | 理由 |
+|------|------|
+| 保存忘れ確認の強化（タイムアウト） | 実装コストに対して利便性が限定的。v0.3.0 以降で検討 |
+| タスクのドラッグ並べ替え | WPF の標準コントロールでは追加ライブラリが必要 |
+
+---
+
 ## v0.1.4 — v0.2.0 に向けた棚卸し・ドキュメント整理
 
 **リリース日：** 2026-05-31
