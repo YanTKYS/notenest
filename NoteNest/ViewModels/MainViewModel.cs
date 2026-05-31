@@ -34,6 +34,7 @@ public class MainViewModel : BaseViewModel
     private EditorMode _editorMode = EditorMode.NoteEdit;
     private TaskViewModel? _editingTask = null;
     private bool _isSampleProject = false;
+    private bool _showLineNumbers = false;
 
     // Callbacks registered by MainWindow
     public Func<string, string, string?>? ShowInputDialog { get; set; }
@@ -51,7 +52,8 @@ public class MainViewModel : BaseViewModel
             new("バックログ", "backlog"),
         };
 
-        OpenRecentCommand   = new RelayCommand(param => { if (param is string path) OpenRecentFile(path); });
+        OpenRecentCommand          = new RelayCommand(param => { if (param is string path) OpenRecentFile(path); });
+        ToggleLineNumbersCommand   = new RelayCommand(_ => ShowLineNumbers = !ShowLineNumbers);
 
         foreach (var p in _recentFilesService.Load())
             RecentFiles.Add(new RecentFileViewModel(p));
@@ -239,6 +241,12 @@ public class MainViewModel : BaseViewModel
         private set => SetProperty(ref _isSampleProject, value);
     }
 
+    public bool ShowLineNumbers
+    {
+        get => _showLineNumbers;
+        set => SetProperty(ref _showLineNumbers, value);
+    }
+
     public bool IsTaskCommentMode => _editorMode == EditorMode.TaskComment;
 
     public string EditorTitle =>
@@ -265,6 +273,7 @@ public class MainViewModel : BaseViewModel
     public ICommand ToggleGroupCommand  { get; }
     public ICommand MarkerClickCommand  { get; }
     public ICommand OpenRecentCommand   { get; }
+    public ICommand ToggleLineNumbersCommand { get; }
 
     // ── Public methods called from code-behind ───────────────────────────────
 
@@ -389,6 +398,16 @@ public class MainViewModel : BaseViewModel
     {
         var idx = Notebooks.IndexOf(nb);
         if (idx >= 0 && idx < Notebooks.Count - 1) { Notebooks.Move(idx, idx + 1); IsModified = true; }
+    }
+
+    public void ReorderTask(TaskViewModel source, TaskViewModel target)
+    {
+        var group = TaskGroups.FirstOrDefault(g => g.Tasks.Contains(source));
+        if (group == null || source == target || !group.Tasks.Contains(target)) return;
+        var srcIdx = group.Tasks.IndexOf(source);
+        var tgtIdx = group.Tasks.IndexOf(target);
+        group.Tasks.Move(srcIdx, tgtIdx);
+        IsModified = true;
     }
 
     public void MoveTask(TaskViewModel task, string targetGroupKey)
@@ -672,7 +691,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "0.4.0",
+            Version = "0.5.0",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook

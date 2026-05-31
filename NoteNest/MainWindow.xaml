@@ -58,6 +58,10 @@
                 <MenuItem Header="検索(_F)..." Click="ShowFindReplace_Click" InputGestureText="Ctrl+F"/>
                 <MenuItem Header="置換(_R)..." Click="ShowFindReplace_Click" InputGestureText="Ctrl+H"/>
                 <Separator/>
+                <MenuItem Header="行番号を表示(_L)" IsCheckable="True"
+                          IsChecked="{Binding ShowLineNumbers}"
+                          Command="{Binding ToggleLineNumbersCommand}"/>
+                <Separator/>
                 <MenuItem Header="フォント設定(_O)..." Click="ShowFontSettings_Click"/>
             </MenuItem>
 
@@ -227,10 +231,24 @@
                         Background="#FFF8DC"
                         BorderBrush="#D4B800"
                         BorderThickness="0,0,0,1"
-                        Padding="14,8"
+                        Padding="14,10"
                         Visibility="{Binding IsSampleProject, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="サンプルプロジェクトです。「名前を付けて保存」から .notenest ファイルとして保存すると、プロジェクトを開始できます。"
-                               FontSize="11.5" Foreground="#7A6000" TextWrapping="Wrap"/>
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
+                                    VerticalAlignment="Center" Margin="12,0,0,0">
+                            <Button Content="新規プロジェクト"
+                                    Command="{Binding NewProjectCommand}"
+                                    Padding="10,4" Margin="0,0,8,0" FontSize="11.5"
+                                    Background="#E6C800" BorderBrush="#B09600" Foreground="#3A2B00"/>
+                            <Button Content="名前を付けて保存..."
+                                    Command="{Binding SaveAsProjectCommand}"
+                                    Padding="10,4" FontSize="11.5"
+                                    Background="#4A90D9" BorderBrush="#2E6DA4" Foreground="White"/>
+                        </StackPanel>
+                        <TextBlock Text="サンプルプロジェクトが表示されています。新しいプロジェクトを作成するか、.notenest ファイルとして保存してください。"
+                                   FontSize="11.5" Foreground="#7A6000" TextWrapping="Wrap"
+                                   VerticalAlignment="Center"/>
+                    </DockPanel>
                 </Border>
 
                 <!-- Note / task-comment title bar -->
@@ -279,31 +297,60 @@
                     </DockPanel>
                 </Border>
 
-                <!-- Editor TextBox -->
-                <TextBox Grid.Row="2"
-                         x:Name="EditorBox"
-                         Text="{Binding EditorContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         FontFamily="{Binding EditorFontFamily}"
-                         FontSize="{Binding EditorFontSize}"
-                         AcceptsReturn="True"
-                         AcceptsTab="True"
-                         TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto"
-                         HorizontalScrollBarVisibility="Disabled"
-                         BorderThickness="0"
-                         Padding="16,12"
-                         VerticalContentAlignment="Top"
-                         SpellCheck.IsEnabled="False">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsTaskCommentMode}" Value="True">
-                                    <Setter Property="Background" Value="#FFFDE7"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
+                <!-- Editor area: line number gutter + editor TextBox -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Line number gutter -->
+                    <TextBox Grid.Column="0"
+                             x:Name="LineNumberBox"
+                             IsReadOnly="True" IsTabStop="False"
+                             FontFamily="{Binding EditorFontFamily}"
+                             FontSize="{Binding EditorFontSize}"
+                             TextWrapping="NoWrap"
+                             VerticalScrollBarVisibility="Hidden"
+                             HorizontalScrollBarVisibility="Hidden"
+                             BorderThickness="0,0,1,0"
+                             BorderBrush="#E0E0E0"
+                             Padding="8,12,6,12"
+                             Background="#F8F8F8"
+                             Foreground="#AAAAAA"
+                             TextAlignment="Right"
+                             Text="1"
+                             MinWidth="36"
+                             Visibility="{Binding ShowLineNumbers, Converter={StaticResource BoolToVis}}"/>
+
+                    <!-- Editor TextBox -->
+                    <TextBox Grid.Column="1"
+                             x:Name="EditorBox"
+                             Text="{Binding EditorContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             FontFamily="{Binding EditorFontFamily}"
+                             FontSize="{Binding EditorFontSize}"
+                             AcceptsReturn="True"
+                             AcceptsTab="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Disabled"
+                             BorderThickness="0"
+                             Padding="16,12"
+                             VerticalContentAlignment="Top"
+                             SpellCheck.IsEnabled="False"
+                             Loaded="EditorBox_Loaded"
+                             TextChanged="EditorBox_TextChanged">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsTaskCommentMode}" Value="True">
+                                        <Setter Property="Background" Value="#FFFDE7"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </Grid>
 
                 <!-- Marker insertion buttons -->
                 <Border Grid.Row="3"
@@ -410,7 +457,12 @@
                                                 <DataTemplate>
                                                     <Border Padding="10,6"
                                                             BorderBrush="#EEEEEE"
-                                                            BorderThickness="0,0,0,1">
+                                                            BorderThickness="0,0,0,1"
+                                                            AllowDrop="True"
+                                                            PreviewMouseLeftButtonDown="TaskItem_PreviewMouseLeftButtonDown"
+                                                            PreviewMouseMove="TaskItem_PreviewMouseMove"
+                                                            DragOver="TaskItem_DragOver"
+                                                            Drop="TaskItem_Drop">
                                                         <Border.ContextMenu>
                                                             <ContextMenu>
                                                                 <MenuItem Header="名前変更..." Click="RenameTask_Click"/>

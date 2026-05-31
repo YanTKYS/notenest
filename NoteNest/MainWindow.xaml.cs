@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using NoteNest.Dialogs;
 using NoteNest.Services;
 using NoteNest.ViewModels;
@@ -14,11 +15,22 @@ public partial class MainWindow : Window
     private readonly UiSettingsService _uiSettingsService = new();
     private bool _suppressTreeSelectionChanged;
 
+    // Task drag-and-drop state
+    private Point _taskDragStartPoint;
+    private TaskViewModel? _draggedTask;
+
+    // Line number gutter scroll sync
+    private ScrollViewer? _editorScrollViewer;
+    private ScrollViewer? _lineNumberScrollViewer;
+
     public MainWindow()
     {
         InitializeComponent();
         var vm = new MainViewModel();
         DataContext = vm;
+
+        var uiSettings = _uiSettingsService.Load();
+        vm.ShowLineNumbers = uiSettings.ShowLineNumbers;
 
         // Wire up dialog callbacks
         vm.ShowInputDialog = (title, prompt) =>
@@ -323,15 +335,16 @@ public partial class MainWindow : Window
             e.Cancel = true;
             return;
         }
+        _uiSettingsService.Save(new UiSettings
+        {
+            LastSearchText  = _findReplaceDialog?.SearchText  ?? "",
+            LastReplaceText = _findReplaceDialog?.ReplaceText ?? "",
+            FindReplaceLeft = _findReplaceDialog?.IsLoaded == true ? _findReplaceDialog.Left : (double?)null,
+            FindReplaceTop  = _findReplaceDialog?.IsLoaded == true ? _findReplaceDialog.Top  : (double?)null,
+            ShowLineNumbers = ViewModel.ShowLineNumbers,
+        });
         if (_findReplaceDialog != null)
         {
-            _uiSettingsService.Save(new UiSettings
-            {
-                LastSearchText  = _findReplaceDialog.SearchText,
-                LastReplaceText = _findReplaceDialog.ReplaceText,
-                FindReplaceLeft = _findReplaceDialog.IsLoaded ? _findReplaceDialog.Left  : (double?)null,
-                FindReplaceTop  = _findReplaceDialog.IsLoaded ? _findReplaceDialog.Top   : (double?)null,
-            });
             _findReplaceDialog.ForceClose = true;
             _findReplaceDialog.Close();
         }
@@ -396,6 +409,75 @@ public partial class MainWindow : Window
             cm.PlacementTarget is FrameworkElement fe &&
             fe.DataContext is T value)
             return value;
+        return null;
+    }
+
+    // ── Task drag-and-drop ─────────────────────────────────────────────────────
+
+    private void TaskItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        _taskDragStartPoint = e.GetPosition(null);
+        _draggedTask = (sender as FrameworkElement)?.DataContext as TaskViewModel;
+    }
+
+    private void TaskItem_PreviewMouseMove(object sender, MouseEventArgs e)
+    {
+        if (e.LeftButton != MouseButtonState.Pressed || _draggedTask == null) return;
+        var pos = e.GetPosition(null);
+        if (Math.Abs(pos.X - _taskDragStartPoint.X) < SystemParameters.MinimumHorizontalDragDistance &&
+            Math.Abs(pos.Y - _taskDragStartPoint.Y) < SystemParameters.MinimumVerticalDragDistance) return;
+        if (sender is DependencyObject dep)
+            DragDrop.DoDragDrop(dep, _draggedTask, DragDropEffects.Move);
+        _draggedTask = null;
+    }
+
+    private void TaskItem_DragOver(object sender, DragEventArgs e)
+    {
+        e.Effects = DragDropEffects.Move;
+        e.Handled = true;
+    }
+
+    private void TaskItem_Drop(object sender, DragEventArgs e)
+    {
+        var target = (sender as FrameworkElement)?.DataContext as TaskViewModel;
+        if (target != null && _draggedTask != null && _draggedTask != target)
+            ViewModel.ReorderTask(_draggedTask, target);
+        _draggedTask = null;
+    }
+
+    // ── Line number gutter ─────────────────────────────────────────────────────
+
+    private void EditorBox_Loaded(object sender, RoutedEventArgs e)
+    {
+        _editorScrollViewer    = GetDescendant<ScrollViewer>(EditorBox);
+        _lineNumberScrollViewer = GetDescendant<ScrollViewer>(LineNumberBox);
+        if (_editorScrollViewer != null)
+            _editorScrollViewer.ScrollChanged += EditorScrollViewer_ScrollChanged;
+        UpdateLineNumbers();
+    }
+
+    private void EditorBox_TextChanged(object sender, TextChangedEventArgs e) => UpdateLineNumbers();
+
+    private void EditorScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+        _lineNumberScrollViewer?.ScrollToVerticalOffset(e.VerticalOffset);
+    }
+
+    private void UpdateLineNumbers()
+    {
+        if (LineNumberBox.Visibility != Visibility.Visible) return;
+        var count = EditorBox.Text.Count(c => c == '\n') + 1;
+        LineNumberBox.Text = string.Join("\n", Enumerable.Range(1, count));
+    }
+
+    private static T? GetDescendant<T>(DependencyObject obj) where T : DependencyObject
+    {
+        if (obj is T t) return t;
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+        {
+            var result = GetDescendant<T>(VisualTreeHelper.GetChild(obj, i));
+            if (result != null) return result;
+        }
         return null;
     }
 }
