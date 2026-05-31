@@ -268,6 +268,18 @@ public class MainViewModel : BaseViewModel
         }
     }
 
+    public void MoveTask(TaskViewModel task, string targetGroupKey)
+    {
+        var sourceGroup = TaskGroups.FirstOrDefault(g => g.Tasks.Contains(task));
+        var targetGroup = TaskGroups.FirstOrDefault(g => g.Key == targetGroupKey);
+        if (sourceGroup == null || targetGroup == null || sourceGroup == targetGroup) return;
+
+        sourceGroup.Tasks.Remove(task);
+        targetGroup.AddTask(task);
+        IsModified = true;
+        StatusMessage = $"タスクを「{targetGroup.Title}」に移動しました。";
+    }
+
     public void RenameTask(TaskViewModel task, string newTitle)
     {
         task.Title = newTitle;
@@ -511,7 +523,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "0.1.2",
+            Version = "0.1.3",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook

@@ -330,6 +330,13 @@
                                                                   RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding Key}"
                                                         ToolTip="このグループにタスクを追加"/>
+                                                <CheckBox DockPanel.Dock="Right"
+                                                          IsChecked="{Binding HideCompleted}"
+                                                          VerticalAlignment="Center"
+                                                          Margin="0,0,4,0"
+                                                          FontSize="10.5"
+                                                          Content="完了非表示"
+                                                          ToolTip="完了済みタスクを非表示にする"/>
                                                 <TextBlock Text="{Binding Title}"
                                                            FontWeight="SemiBold" FontSize="12"
                                                            VerticalAlignment="Center"/>
@@ -337,7 +344,7 @@
                                         </Border>
 
                                         <!-- Tasks in group -->
-                                        <ItemsControl ItemsSource="{Binding Tasks}"
+                                        <ItemsControl ItemsSource="{Binding VisibleTasks}"
                                                       Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
@@ -347,6 +354,11 @@
                                                         <Border.ContextMenu>
                                                             <ContextMenu>
                                                                 <MenuItem Header="名前変更..." Click="RenameTask_Click"/>
+                                                                <MenuItem Header="グループを変更">
+                                                                    <MenuItem Header="今日のタスク" Click="MoveTaskToToday_Click"/>
+                                                                    <MenuItem Header="今週のタスク" Click="MoveTaskToWeek_Click"/>
+                                                                    <MenuItem Header="バックログ"   Click="MoveTaskToBacklog_Click"/>
+                                                                </MenuItem>
                                                                 <Separator/>
                                                                 <MenuItem Header="削除" Click="DeleteTask_Click"/>
                                                             </ContextMenu>
@@ -370,10 +382,14 @@
                                                                        MouseLeftButtonDown="TaskTitle_MouseLeftButtonDown">
                                                                 <TextBlock.Style>
                                                                     <Style TargetType="TextBlock">
+                                                                        <Setter Property="ToolTip" Value="ダブルクリックでコメントを追加"/>
                                                                         <Style.Triggers>
                                                                             <DataTrigger Binding="{Binding IsCompleted}" Value="True">
                                                                                 <Setter Property="TextDecorations" Value="Strikethrough"/>
                                                                                 <Setter Property="Foreground" Value="#AAAAAA"/>
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding HasComment}" Value="True">
+                                                                                <Setter Property="ToolTip" Value="ダブルクリックでコメントを編集"/>
                                                                             </DataTrigger>
                                                                         </Style.Triggers>
                                                                     </Style>
