@@ -9,6 +9,7 @@ public class UiSettings
     public string LastReplaceText { get; set; } = "";
     public double? FindReplaceLeft { get; set; }
     public double? FindReplaceTop { get; set; }
+    public bool ShowLineNumbers { get; set; } = false;
 }
 
 public class UiSettingsService

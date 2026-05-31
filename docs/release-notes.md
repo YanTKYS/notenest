@@ -1,5 +1,51 @@
 # リリースノート
 
+## v0.5.0 — サンプル導線改善・タスクドラッグ並べ替え・行番号表示
+
+**リリース日：** 2026-05-31
+
+### 追加・改善した機能
+
+#### サンプル導線の改善
+- 起動時に表示されるサンプルプロジェクトのバナーに「新規プロジェクト」「名前を付けて保存...」ボタンを追加
+- バナー文言を「サンプルプロジェクトが表示されています。新しいプロジェクトを作成するか、.notenest ファイルとして保存してください。」に改善
+- ボタン押下で即座に対応する操作へ移行できるため、最初のステップがより明確に
+
+#### タスクのドラッグ並べ替え
+- タスク項目をドラッグ＆ドロップでグループ内の順序を変更可能
+- 同一グループ内のみ対応（グループをまたいだ移動はコンテキストメニュー「グループを変更」を使用）
+- ドラッグ開始のしきい値は WPF 標準（`SystemParameters.MinimumHorizontalDragDistance` / `MinimumVerticalDragDistance`）に準拠
+- 並べ替え結果は `.notenest` ファイルに保存される
+
+#### 行番号表示
+- エディタ左側にドキュメント行番号ガターを追加
+- 編集メニュー → 「行番号を表示」でトグル切り替え可能
+- ON/OFF 状態はアプリ終了時に保存され、次回起動時に復元される（`ui-settings.json`）
+- 既知の制限：TextWrapping=Wrap 有効時、折り返しが発生した行では行番号とテキスト行の縦位置がずれる場合がある
+
+### コード変更
+
+- `MainViewModel`: `ShowLineNumbers` プロパティ・`ToggleLineNumbersCommand`・`ReorderTask()` を追加
+- `MainWindow.xaml`: サンプルバナーにアクションボタンを追加
+- `MainWindow.xaml`: 編集メニューに「行番号を表示」トグル項目を追加
+- `MainWindow.xaml`: エディタ Row を Grid(行番号ガター + TextBox)に変更
+- `MainWindow.xaml`: タスク DataTemplate に DragDrop イベントハンドラを追加
+- `MainWindow.xaml.cs`: タスクドラッグ系ハンドラ（PreviewMouseLeftButtonDown / PreviewMouseMove / DragOver / Drop）を追加
+- `MainWindow.xaml.cs`: 行番号系ハンドラ（EditorBox_Loaded / TextChanged / ScrollViewer同期）を追加
+- `MainWindow.xaml.cs`: 起動時に `ShowLineNumbers` を UiSettings から復元、終了時に保存
+- `UiSettingsService.cs`: `UiSettings` に `ShowLineNumbers` プロパティを追加
+- `NoteNest.csproj`: `FileVersion` / `InformationalVersion` を `0.5.0` に更新
+- `BuildProject()` の保存バージョンを `"0.5.0"` に更新
+
+### 実装しなかった機能
+
+| 機能 | 理由 |
+|------|------|
+| グループをまたいだドラッグ移動 | 既存のコンテキストメニューで代替可能。ドロップ先グループの判定が複雑なため見送り |
+| 折り返し行に対応した行番号位置揃え | WPF 標準 TextBox では各視覚行の y 座標を安全に取得できないため。エディタ部品変更が前提になる |
+
+---
+
 ## v0.4.0 — マーカーツリー同期・保存忘れ警告・検索状態の永続化
 
 **リリース日：** 2026-05-31
