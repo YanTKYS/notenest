@@ -400,14 +400,36 @@ public class MainViewModel : BaseViewModel
         if (idx >= 0 && idx < Notebooks.Count - 1) { Notebooks.Move(idx, idx + 1); IsModified = true; }
     }
 
-    public void ReorderTask(TaskViewModel source, TaskViewModel target)
+    public void MoveTaskToGroupAt(TaskViewModel source, TaskViewModel target)
     {
-        var group = TaskGroups.FirstOrDefault(g => g.Tasks.Contains(source));
-        if (group == null || source == target || !group.Tasks.Contains(target)) return;
-        var srcIdx = group.Tasks.IndexOf(source);
-        var tgtIdx = group.Tasks.IndexOf(target);
-        group.Tasks.Move(srcIdx, tgtIdx);
+        var sourceGroup = TaskGroups.FirstOrDefault(g => g.Tasks.Contains(source));
+        var targetGroup = TaskGroups.FirstOrDefault(g => g.Tasks.Contains(target));
+        if (sourceGroup == null || targetGroup == null || source == target) return;
+
+        if (sourceGroup == targetGroup)
+        {
+            var srcIdx = sourceGroup.Tasks.IndexOf(source);
+            var tgtIdx = targetGroup.Tasks.IndexOf(target);
+            sourceGroup.Tasks.Move(srcIdx, tgtIdx);
+        }
+        else
+        {
+            sourceGroup.RemoveTask(source);
+            var tgtIdx = targetGroup.Tasks.IndexOf(target);
+            targetGroup.InsertTask(tgtIdx, source);
+            StatusMessage = $"タスクを「{targetGroup.Title}」に移動しました。";
+        }
         IsModified = true;
+    }
+
+    public void MoveNoteToNotebook(NoteViewModel note, NotebookViewModel targetNotebook)
+    {
+        var sourceNotebook = Notebooks.FirstOrDefault(nb => nb.Notes.Contains(note));
+        if (sourceNotebook == null || sourceNotebook == targetNotebook) return;
+        sourceNotebook.Notes.Remove(note);
+        targetNotebook.Notes.Add(note);
+        IsModified = true;
+        StatusMessage = $"ノート「{note.Title}」を「{targetNotebook.Title}」に移動しました。";
     }
 
     public void MoveTask(TaskViewModel task, string targetGroupKey)
@@ -691,7 +713,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "0.5.0",
+            Version = "0.6.0",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook
