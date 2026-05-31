@@ -274,7 +274,7 @@ public class MainViewModel : BaseViewModel
         var targetGroup = TaskGroups.FirstOrDefault(g => g.Key == targetGroupKey);
         if (sourceGroup == null || targetGroup == null || sourceGroup == targetGroup) return;
 
-        sourceGroup.Tasks.Remove(task);
+        sourceGroup.RemoveTask(task);
         targetGroup.AddTask(task);
         IsModified = true;
         StatusMessage = $"タスクを「{targetGroup.Title}」に移動しました。";
@@ -447,9 +447,8 @@ public class MainViewModel : BaseViewModel
 
         foreach (var group in TaskGroups)
         {
-            if (group.Tasks.Remove(task))
+            if (group.RemoveTask(task))
             {
-                group.RefreshCount();
                 IsModified = true;
                 return;
             }
