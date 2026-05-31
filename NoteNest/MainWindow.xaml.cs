@@ -465,7 +465,6 @@ public partial class MainWindow : Window
 
     private void UpdateLineNumbers()
     {
-        if (LineNumberBox.Visibility != Visibility.Visible) return;
         var count = EditorBox.Text.Count(c => c == '\n') + 1;
         LineNumberBox.Text = string.Join("\n", Enumerable.Range(1, count));
     }
