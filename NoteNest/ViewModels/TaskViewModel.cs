@@ -22,5 +22,18 @@ public class TaskViewModel : BaseViewModel
         set { _model.IsCompleted = value; OnPropertyChanged(); }
     }
 
+    public string Comment
+    {
+        get => _model.Comment;
+        set
+        {
+            _model.Comment = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(HasComment));
+        }
+    }
+
+    public bool HasComment => !string.IsNullOrEmpty(_model.Comment);
+
     public NoteTask Model => _model;
 }

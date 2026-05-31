@@ -204,6 +204,33 @@ public partial class MainWindow : Window
             ViewModel.MarkerClickCommand.Execute(m);
     }
 
+    // ── Task comment editing ───────────────────────────────────────────────
+
+    private void TaskTitle_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.DataContext is TaskViewModel task)
+        {
+            ViewModel.SelectTask(task);
+            e.Handled = true;
+        }
+    }
+
+    // ── Editor marker insertion ────────────────────────────────────────────
+
+    private void InsertMarker(string markerText)
+    {
+        var insertion = $"{markerText} ";
+        var caret = EditorBox.CaretIndex;
+        EditorBox.Select(caret, 0);
+        EditorBox.SelectedText = insertion;
+        EditorBox.CaretIndex = caret + insertion.Length;
+        EditorBox.Focus();
+    }
+
+    private void InsertTodo_Click(object sender, RoutedEventArgs e)  => InsertMarker("[TODO]");
+    private void InsertFixme_Click(object sender, RoutedEventArgs e) => InsertMarker("[FIXME]");
+    private void InsertNote_Click(object sender, RoutedEventArgs e)  => InsertMarker("[NOTE]");
+
     // ── Edit menu actions ──────────────────────────────────────────────────
 
     private void ShowFindReplace_Click(object sender, RoutedEventArgs e) => OpenFindReplace();

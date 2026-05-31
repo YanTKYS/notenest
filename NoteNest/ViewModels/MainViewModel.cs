@@ -26,6 +26,11 @@ public class MainViewModel : BaseViewModel
     private int _projectFixmeCount;
     private int _projectNoteCount;
 
+    private enum EditorMode { NoteEdit, TaskComment }
+    private EditorMode _editorMode = EditorMode.NoteEdit;
+    private TaskViewModel? _editingTask = null;
+    private bool _isSampleProject = false;
+
     // Callbacks registered by MainWindow
     public Func<string, string, string?>? ShowInputDialog { get; set; }
     public Func<string, string, bool>? ShowConfirmDialog { get; set; }
@@ -78,7 +83,14 @@ public class MainViewModel : BaseViewModel
             _editorContent = value;
             OnPropertyChanged();
 
-            if (!_isLoadingNote && _selectedNote != null)
+            if (_isLoadingNote) return;
+
+            if (_editorMode == EditorMode.TaskComment && _editingTask != null)
+            {
+                _editingTask.Comment = value;
+                IsModified = true;
+            }
+            else if (_editorMode == EditorMode.NoteEdit && _selectedNote != null)
             {
                 _selectedNote.Content = value;
                 IsModified = true;
@@ -129,6 +141,19 @@ public class MainViewModel : BaseViewModel
     public string ProjectMarkerSummary =>
         $"全体  TODO: {_projectTodoCount}  FIXME: {_projectFixmeCount}  NOTE: {_projectNoteCount}";
 
+    public bool IsSampleProject
+    {
+        get => _isSampleProject;
+        private set => SetProperty(ref _isSampleProject, value);
+    }
+
+    public bool IsTaskCommentMode => _editorMode == EditorMode.TaskComment;
+
+    public string EditorTitle =>
+        _editorMode == EditorMode.TaskComment && _editingTask != null
+            ? $"タスクコメント：{_editingTask.Title}"
+            : SelectedNote?.Title ?? "";
+
     public ObservableCollection<NotebookViewModel> Notebooks { get; } = new();
     public ObservableCollection<TaskGroupViewModel> TaskGroups { get; }
     public ObservableCollection<MarkerViewModel> Markers { get; } = new();
@@ -150,13 +175,29 @@ public class MainViewModel : BaseViewModel
 
     public void SelectNote(NoteViewModel note)
     {
+        _editorMode = EditorMode.NoteEdit;
+        _editingTask = null;
         _isLoadingNote = true;
         SelectedNote = note;
         _editorContent = note.Content;
         OnPropertyChanged(nameof(EditorContent));
         OnPropertyChanged(nameof(CurrentNoteTitle));
+        OnPropertyChanged(nameof(EditorTitle));
+        OnPropertyChanged(nameof(IsTaskCommentMode));
         _isLoadingNote = false;
         RefreshMarkers();
+    }
+
+    public void SelectTask(TaskViewModel task)
+    {
+        _editorMode = EditorMode.TaskComment;
+        _editingTask = task;
+        _isLoadingNote = true;
+        _editorContent = task.Comment;
+        OnPropertyChanged(nameof(EditorContent));
+        OnPropertyChanged(nameof(EditorTitle));
+        OnPropertyChanged(nameof(IsTaskCommentMode));
+        _isLoadingNote = false;
     }
 
     public void AddNotebookWithTitle(string title)
@@ -203,6 +244,7 @@ public class MainViewModel : BaseViewModel
         if (SelectedNote == note)
         {
             OnPropertyChanged(nameof(CurrentNoteTitle));
+            OnPropertyChanged(nameof(EditorTitle));
             RefreshMarkers();
         }
         IsModified = true;
@@ -226,6 +268,8 @@ public class MainViewModel : BaseViewModel
     public void RenameTask(TaskViewModel task, string newTitle)
     {
         task.Title = newTitle;
+        if (_editingTask == task)
+            OnPropertyChanged(nameof(EditorTitle));
         IsModified = true;
     }
 
@@ -246,11 +290,15 @@ public class MainViewModel : BaseViewModel
 
     private void ClearEditor()
     {
+        _editorMode = EditorMode.NoteEdit;
+        _editingTask = null;
         SelectedNote = null;
         _isLoadingNote = true;
         _editorContent = "";
         OnPropertyChanged(nameof(EditorContent));
         OnPropertyChanged(nameof(CurrentNoteTitle));
+        OnPropertyChanged(nameof(EditorTitle));
+        OnPropertyChanged(nameof(IsTaskCommentMode));
         _isLoadingNote = false;
         Markers.Clear();
         OnPropertyChanged(nameof(MarkerCount));
@@ -319,6 +367,7 @@ public class MainViewModel : BaseViewModel
         {
             _fileService.Save(path, BuildProject());
             IsModified = false;
+            IsSampleProject = false;
             StatusMessage = $"保存しました: {System.IO.Path.GetFileName(path)}";
             return true;
         }
@@ -368,6 +417,19 @@ public class MainViewModel : BaseViewModel
 
     private void DeleteTask(TaskViewModel task)
     {
+        if (_editingTask == task)
+        {
+            _editorMode = EditorMode.NoteEdit;
+            _editingTask = null;
+            _isLoadingNote = true;
+            _editorContent = _selectedNote?.Content ?? "";
+            OnPropertyChanged(nameof(EditorContent));
+            OnPropertyChanged(nameof(EditorTitle));
+            OnPropertyChanged(nameof(IsTaskCommentMode));
+            _isLoadingNote = false;
+            if (_selectedNote != null) RefreshMarkers();
+        }
+
         foreach (var group in TaskGroups)
         {
             if (group.Tasks.Remove(task))
@@ -381,9 +443,12 @@ public class MainViewModel : BaseViewModel
 
     private void LoadProject(Project project, string? filePath)
     {
+        _editorMode = EditorMode.NoteEdit;
+        _editingTask = null;
         _currentProjectId = project.ProjectId;
         ProjectName = project.ProjectName;
         _currentFilePath = filePath;
+        IsSampleProject = filePath == null;
 
         Notebooks.Clear();
         foreach (var nb in project.Notebooks)
@@ -438,12 +503,12 @@ public class MainViewModel : BaseViewModel
 
     private Project BuildProject()
     {
-        if (_selectedNote != null)
+        if (_editorMode == EditorMode.NoteEdit && _selectedNote != null)
             _selectedNote.Content = _editorContent;
 
         return new Project
         {
-            Version = "0.1.0",
+            Version = "0.1.2",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook
