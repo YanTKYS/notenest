@@ -206,9 +206,9 @@ public partial class MainWindow : Window
 
     // ── Task comment editing ───────────────────────────────────────────────
 
-    private void TaskTitle_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    private void TaskTitle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if ((sender as FrameworkElement)?.DataContext is TaskViewModel task)
+        if (e.ClickCount == 2 && (sender as FrameworkElement)?.DataContext is TaskViewModel task)
         {
             ViewModel.SelectTask(task);
             e.Handled = true;
