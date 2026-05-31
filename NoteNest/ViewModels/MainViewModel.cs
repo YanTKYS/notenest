@@ -141,6 +141,52 @@ public class MainViewModel : BaseViewModel
     public string ProjectMarkerSummary =>
         $"全体  TODO: {_projectTodoCount}  FIXME: {_projectFixmeCount}  NOTE: {_projectNoteCount}";
 
+    // ── Marker filters ────────────────────────────────────────────────────────
+
+    private bool _filterTodo  = true;
+    private bool _filterFixme = true;
+    private bool _filterNote  = true;
+
+    public bool FilterTodo
+    {
+        get => _filterTodo;
+        set { SetProperty(ref _filterTodo, value); RaiseFilteredMarkersChanged(); }
+    }
+
+    public bool FilterFixme
+    {
+        get => _filterFixme;
+        set { SetProperty(ref _filterFixme, value); RaiseFilteredMarkersChanged(); }
+    }
+
+    public bool FilterNote
+    {
+        get => _filterNote;
+        set { SetProperty(ref _filterNote, value); RaiseFilteredMarkersChanged(); }
+    }
+
+    public IEnumerable<MarkerViewModel> FilteredMarkers =>
+        Markers.Where(m =>
+            (m.Type == "TODO"  && _filterTodo)  ||
+            (m.Type == "FIXME" && _filterFixme) ||
+            (m.Type == "NOTE"  && _filterNote));
+
+    public string FilteredMarkerCountText
+    {
+        get
+        {
+            var total    = Markers.Count;
+            var filtered = FilteredMarkers.Count();
+            return filtered == total ? $"{total}個" : $"{filtered}/{total}個";
+        }
+    }
+
+    private void RaiseFilteredMarkersChanged()
+    {
+        OnPropertyChanged(nameof(FilteredMarkers));
+        OnPropertyChanged(nameof(FilteredMarkerCountText));
+    }
+
     public bool IsSampleProject
     {
         get => _isSampleProject;
@@ -201,6 +247,7 @@ public class MainViewModel : BaseViewModel
 
         Markers.Clear();
         OnPropertyChanged(nameof(MarkerCount));
+        RaiseFilteredMarkersChanged();
     }
 
     public void AddNotebookWithTitle(string title)
@@ -268,6 +315,36 @@ public class MainViewModel : BaseViewModel
         }
     }
 
+    public void MoveNoteUp(NoteViewModel note)
+    {
+        foreach (var nb in Notebooks)
+        {
+            var idx = nb.Notes.IndexOf(note);
+            if (idx > 0) { nb.Notes.Move(idx, idx - 1); IsModified = true; return; }
+        }
+    }
+
+    public void MoveNoteDown(NoteViewModel note)
+    {
+        foreach (var nb in Notebooks)
+        {
+            var idx = nb.Notes.IndexOf(note);
+            if (idx >= 0 && idx < nb.Notes.Count - 1) { nb.Notes.Move(idx, idx + 1); IsModified = true; return; }
+        }
+    }
+
+    public void MoveNotebookUp(NotebookViewModel nb)
+    {
+        var idx = Notebooks.IndexOf(nb);
+        if (idx > 0) { Notebooks.Move(idx, idx - 1); IsModified = true; }
+    }
+
+    public void MoveNotebookDown(NotebookViewModel nb)
+    {
+        var idx = Notebooks.IndexOf(nb);
+        if (idx >= 0 && idx < Notebooks.Count - 1) { Notebooks.Move(idx, idx + 1); IsModified = true; }
+    }
+
     public void MoveTask(TaskViewModel task, string targetGroupKey)
     {
         var sourceGroup = TaskGroups.FirstOrDefault(g => g.Tasks.Contains(task));
@@ -317,6 +394,7 @@ public class MainViewModel : BaseViewModel
         _isLoadingNote = false;
         Markers.Clear();
         OnPropertyChanged(nameof(MarkerCount));
+        RaiseFilteredMarkersChanged();
     }
 
     private void NewProject()
@@ -522,7 +600,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "0.1.4",
+            Version = "0.2.0",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook
@@ -560,6 +638,7 @@ public class MainViewModel : BaseViewModel
                 Markers.Add(new MarkerViewModel(m));
         }
         OnPropertyChanged(nameof(MarkerCount));
+        RaiseFilteredMarkersChanged();
         RefreshProjectMarkers();
     }
 

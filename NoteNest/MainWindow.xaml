@@ -63,6 +63,10 @@
             <TextBlock Text="{Binding EditorFontFamily}" Foreground="#777"/>
             <TextBlock Text=" "/>
             <TextBlock Text="{Binding EditorFontSize, StringFormat={}{0}pt}" Foreground="#777"/>
+            <Separator Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}"/>
+            <TextBlock Text="● 未保存"
+                       Foreground="#E65100" FontWeight="SemiBold"
+                       Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}"/>
         </StatusBar>
 
         <!-- ═══ Main 3-pane layout ═══ -->
@@ -124,6 +128,9 @@
                                     <ContextMenu>
                                         <MenuItem Header="ノートを追加..." Click="AddNoteToNotebook_Click"/>
                                         <Separator/>
+                                        <MenuItem Header="上に移動" Click="MoveNotebookUp_Click"/>
+                                        <MenuItem Header="下に移動" Click="MoveNotebookDown_Click"/>
+                                        <Separator/>
                                         <MenuItem Header="名前変更..."    Click="RenameNotebook_Click"/>
                                         <MenuItem Header="削除"           Click="DeleteNotebook_Click"/>
                                     </ContextMenu>
@@ -136,6 +143,9 @@
                             <DockPanel>
                                 <DockPanel.ContextMenu>
                                     <ContextMenu>
+                                        <MenuItem Header="上に移動" Click="MoveNoteUp_Click"/>
+                                        <MenuItem Header="下に移動" Click="MoveNoteDown_Click"/>
+                                        <Separator/>
                                         <MenuItem Header="名前変更..." Click="RenameNote_Click"/>
                                         <Separator/>
                                         <MenuItem Header="削除"        Click="DeleteNote_Click"/>
@@ -210,10 +220,23 @@
                         </Style>
                     </Border.Style>
                     <DockPanel>
-                        <Button DockPanel.Dock="Right" Content="💾" Width="28" Height="28"
-                                Style="{StaticResource IconButton}"
-                                Command="{Binding SaveProjectCommand}" ToolTip="保存 (Ctrl+S)"
-                                FontSize="15"/>
+                        <Border DockPanel.Dock="Right" CornerRadius="4" Margin="2,0,0,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsModified}" Value="True">
+                                            <Setter Property="Background" Value="#FFE0B2"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Button Content="💾" Width="28" Height="28"
+                                    Style="{StaticResource IconButton}"
+                                    Command="{Binding SaveProjectCommand}"
+                                    ToolTip="保存 (Ctrl+S)"
+                                    FontSize="15"/>
+                        </Border>
                         <Border DockPanel.Dock="Right"
                                 Background="#FFE082" CornerRadius="3"
                                 Padding="6,2" Margin="8,0,0,0"
@@ -416,6 +439,7 @@
                 <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
@@ -426,7 +450,7 @@
                             Padding="12,9">
                         <DockPanel>
                             <TextBlock DockPanel.Dock="Right"
-                                       Text="{Binding MarkerCount, StringFormat={}{0}個}"
+                                       Text="{Binding FilteredMarkerCountText}"
                                        Foreground="#888" FontSize="12"
                                        VerticalAlignment="Center"/>
                             <TextBlock DockPanel.Dock="Right"
@@ -452,9 +476,23 @@
                         </DockPanel>
                     </Border>
 
+                    <!-- Marker filter row -->
+                    <Border Grid.Row="1"
+                            BorderBrush="{StaticResource PaneBorder}" BorderThickness="0,0,0,1"
+                            Background="#FAFAFA" Padding="10,5">
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="TODO"  IsChecked="{Binding FilterTodo}"
+                                      Foreground="#E67E22" FontSize="11" Margin="0,0,10,0"/>
+                            <CheckBox Content="FIXME" IsChecked="{Binding FilterFixme}"
+                                      Foreground="#E53935" FontSize="11" Margin="0,0,10,0"/>
+                            <CheckBox Content="NOTE"  IsChecked="{Binding FilterNote}"
+                                      Foreground="#43A047" FontSize="11"/>
+                        </StackPanel>
+                    </Border>
+
                     <!-- Marker list -->
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding Markers}">
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding FilteredMarkers}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Padding="10,8"
@@ -497,7 +535,7 @@
                     </ScrollViewer>
 
                     <!-- Project-wide marker summary -->
-                    <Border Grid.Row="2"
+                    <Border Grid.Row="3"
                             BorderBrush="{StaticResource PaneBorder}" BorderThickness="0,1,0,0"
                             Background="#F5F5F5"
                             Padding="12,6">
