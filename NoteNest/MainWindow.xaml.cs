@@ -45,12 +45,14 @@ public partial class MainWindow : Window
 
         vm.NavigateToMarker = m =>
         {
-            bool switched = m.SourceNote != null && m.SourceNote != ViewModel.SelectedNote;
-            if (switched)
+            // Also switch when in task comment mode (even if SourceNote == SelectedNote)
+            bool shouldSwitch = m.SourceNote != null &&
+                                (m.SourceNote != ViewModel.SelectedNote || ViewModel.IsTaskCommentMode);
+            if (shouldSwitch)
                 ViewModel.SelectNote(m.SourceNote!);
 
             var line = m.LineNumber;
-            if (switched)
+            if (shouldSwitch)
                 // Defer navigation until after the TextBox has laid out new content
                 Dispatcher.BeginInvoke(() => ViewModel.NavigateToLine?.Invoke(line),
                     System.Windows.Threading.DispatcherPriority.Loaded);
