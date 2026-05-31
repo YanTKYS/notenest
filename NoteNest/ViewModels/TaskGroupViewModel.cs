@@ -54,6 +54,12 @@ public class TaskGroupViewModel : BaseViewModel
         Tasks.Add(task);
     }
 
+    public void InsertTask(int index, TaskViewModel task)
+    {
+        task.PropertyChanged += Task_PropertyChanged;
+        Tasks.Insert(index, task);
+    }
+
     public bool RemoveTask(TaskViewModel task)
     {
         task.PropertyChanged -= Task_PropertyChanged;

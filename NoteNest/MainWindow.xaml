@@ -153,7 +153,10 @@
                                                   ItemsSource="{Binding Notes}">
                             <TextBlock Text="{Binding Title}"
                                        FontWeight="SemiBold" FontSize="12.5"
-                                       Padding="2,1" ToolTip="{Binding Title}">
+                                       Padding="2,1" ToolTip="{Binding Title}"
+                                       AllowDrop="True"
+                                       DragOver="NotebookHeader_DragOver"
+                                       Drop="NotebookHeader_Drop">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="ノートを追加..." Click="AddNoteToNotebook_Click"/>
@@ -170,7 +173,8 @@
 
                         <!-- ── Note template ── -->
                         <DataTemplate DataType="{x:Type vm:NoteViewModel}">
-                            <DockPanel>
+                            <DockPanel PreviewMouseLeftButtonDown="NoteItem_PreviewMouseLeftButtonDown"
+                                       PreviewMouseMove="NoteItem_PreviewMouseMove">
                                 <DockPanel.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="上に移動" Click="MoveNoteUp_Click"/>
@@ -416,7 +420,10 @@
                                                 Background="{StaticResource GroupHeaderBg}"
                                                 BorderBrush="{StaticResource PaneBorder}"
                                                 BorderThickness="0,0,0,1"
-                                                Cursor="Hand">
+                                                Cursor="Hand"
+                                                AllowDrop="True"
+                                                DragOver="TaskGroupHeader_DragOver"
+                                                Drop="TaskGroupHeader_Drop">
                                             <Border.InputBindings>
                                                 <MouseBinding MouseAction="LeftClick"
                                                               Command="{Binding DataContext.ToggleGroupCommand,

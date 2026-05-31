@@ -1,5 +1,40 @@
 # リリースノート
 
+## v0.6.0 — クロスグループタスク移動・ノートブック間ノート移動
+
+**リリース日：** 2026-05-31
+
+### 追加・改善した機能
+
+#### グループをまたいだタスクのドラッグ移動
+- タスクを別グループのタスク項目にドロップすると、そのタスクの直前に挿入されて移動
+- タスクをグループヘッダーにドロップすると、そのグループの末尾に追加
+- v0.5.0 で実装した同一グループ内並べ替えと統一したハンドラで処理
+- `MoveTaskToGroupAt()` メソッドが同一グループ・クロスグループ両方を担当
+
+#### ノートブック間のノート移動（ドラッグ）
+- ノートをドラッグしてノートブック名にドロップすると別のノートブックへ移動
+- 移動後は左ツリービューの選択が移動先に自動同期
+- 移動元ノートブックからは削除され、移動先ノートブックの末尾に追加
+- 移動後も選択状態のノートとエディタ内容は維持される
+
+### コード変更
+
+- `TaskGroupViewModel`: `InsertTask(int index, TaskViewModel task)` メソッドを追加（PropertyChanged の配線付き）
+- `MainViewModel`: `MoveTaskToGroupAt()` を追加（同一グループ内並べ替えとクロスグループ移動を統合）
+- `MainViewModel`: `MoveNoteToNotebook()` を追加
+- `MainWindow.xaml`: ノートブックヘッダーに `AllowDrop` / `DragOver` / `Drop` を追加
+- `MainWindow.xaml`: ノートアイテム DockPanel に `PreviewMouseLeftButtonDown` / `PreviewMouseMove` を追加
+- `MainWindow.xaml`: タスクグループヘッダー Border に `AllowDrop` / `DragOver` / `Drop` を追加
+- `MainWindow.xaml.cs`: `NoteItem_PreviewMouseLeftButtonDown` / `PreviewMouseMove` ハンドラを追加
+- `MainWindow.xaml.cs`: `NotebookHeader_DragOver` / `NotebookHeader_Drop` ハンドラを追加
+- `MainWindow.xaml.cs`: `TaskGroupHeader_DragOver` / `TaskGroupHeader_Drop` ハンドラを追加
+- `MainWindow.xaml.cs`: `TaskItem_Drop` を `MoveTaskToGroupAt()` 呼び出しに変更
+- `NoteNest.csproj`: `FileVersion` / `InformationalVersion` を `0.6.0` に更新
+- `BuildProject()` の保存バージョンを `"0.6.0"` に更新
+
+---
+
 ## v0.5.0 — サンプル導線改善・タスクドラッグ並べ替え・行番号表示
 
 **リリース日：** 2026-05-31
