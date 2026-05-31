@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using NoteNest.Dialogs;
+using NoteNest.Services;
 using NoteNest.ViewModels;
 
 namespace NoteNest;
@@ -10,6 +11,8 @@ public partial class MainWindow : Window
 {
     private MainViewModel ViewModel => (MainViewModel)DataContext;
     private FindReplaceDialog? _findReplaceDialog;
+    private readonly UiSettingsService _uiSettingsService = new();
+    private bool _suppressTreeSelectionChanged;
 
     public MainWindow()
     {
@@ -49,7 +52,10 @@ public partial class MainWindow : Window
             bool shouldSwitch = m.SourceNote != null &&
                                 (m.SourceNote != ViewModel.SelectedNote || ViewModel.IsTaskCommentMode);
             if (shouldSwitch)
+            {
                 ViewModel.SelectNote(m.SourceNote!);
+                SyncTreeSelection(m.SourceNote!);
+            }
 
             var line = m.LineNumber;
             if (shouldSwitch)
@@ -76,6 +82,7 @@ public partial class MainWindow : Window
     private void NotebookTree_SelectedItemChanged(object sender,
         RoutedPropertyChangedEventArgs<object> e)
     {
+        if (_suppressTreeSelectionChanged) return;
         if (e.NewValue is NoteViewModel note)
             ViewModel.SelectNote(note);
     }
@@ -318,6 +325,13 @@ public partial class MainWindow : Window
         }
         if (_findReplaceDialog != null)
         {
+            _uiSettingsService.Save(new UiSettings
+            {
+                LastSearchText  = _findReplaceDialog.SearchText,
+                LastReplaceText = _findReplaceDialog.ReplaceText,
+                FindReplaceLeft = _findReplaceDialog.IsLoaded ? _findReplaceDialog.Left  : (double?)null,
+                FindReplaceTop  = _findReplaceDialog.IsLoaded ? _findReplaceDialog.Top   : (double?)null,
+            });
             _findReplaceDialog.ForceClose = true;
             _findReplaceDialog.Close();
         }
@@ -325,11 +339,32 @@ public partial class MainWindow : Window
 
     // ── Helpers ────────────────────────────────────────────────────────────
 
+    private void SyncTreeSelection(NoteViewModel note)
+    {
+        foreach (var nb in ViewModel.Notebooks)
+        {
+            if (!nb.Notes.Contains(note)) continue;
+            var nbItem = NotebookTree.ItemContainerGenerator.ContainerFromItem(nb) as TreeViewItem;
+            if (nbItem == null) continue;
+            if (!nbItem.IsExpanded) { nbItem.IsExpanded = true; nbItem.UpdateLayout(); }
+            var noteItem = nbItem.ItemContainerGenerator.ContainerFromItem(note) as TreeViewItem;
+            if (noteItem == null) continue;
+            _suppressTreeSelectionChanged = true;
+            noteItem.IsSelected = true;
+            noteItem.BringIntoView();
+            _suppressTreeSelectionChanged = false;
+            return;
+        }
+    }
+
     private void OpenFindReplace()
     {
         if (_findReplaceDialog == null || !_findReplaceDialog.IsLoaded)
         {
             _findReplaceDialog = new FindReplaceDialog(EditorBox) { Owner = this };
+            var s = _uiSettingsService.Load();
+            _findReplaceDialog.RestoreState(s.LastSearchText, s.LastReplaceText,
+                                            s.FindReplaceLeft, s.FindReplaceTop);
         }
         _findReplaceDialog.Show();
         _findReplaceDialog.Activate();

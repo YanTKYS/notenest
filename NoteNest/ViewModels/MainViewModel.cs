@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using NoteNest.Models;
 using NoteNest.Services;
 
@@ -26,6 +27,8 @@ public class MainViewModel : BaseViewModel
     private int _projectTodoCount;
     private int _projectFixmeCount;
     private int _projectNoteCount;
+    private DateTime _unsavedSince;
+    private DispatcherTimer? _unsavedTimer;
 
     private enum EditorMode { NoteEdit, TaskComment }
     private EditorMode _editorMode = EditorMode.NoteEdit;
@@ -64,6 +67,13 @@ public class MainViewModel : BaseViewModel
         DeleteTaskCommand   = new RelayCommand(param => { if (param is TaskViewModel t) DeleteTask(t); });
         ToggleGroupCommand  = new RelayCommand(param => { if (param is TaskGroupViewModel g) g.IsExpanded = !g.IsExpanded; });
         MarkerClickCommand  = new RelayCommand(param => { if (param is MarkerViewModel m) NavigateToMarker?.Invoke(m); });
+
+        _unsavedTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
+        _unsavedTimer.Tick += (_, _) =>
+        {
+            OnPropertyChanged(nameof(UnsavedIndicatorText));
+            OnPropertyChanged(nameof(IsUnsavedWarning));
+        };
 
         LoadProject(_sampleService.Create(), null);
     }
@@ -128,8 +138,36 @@ public class MainViewModel : BaseViewModel
     public bool IsModified
     {
         get => _isModified;
-        set { SetProperty(ref _isModified, value); OnPropertyChanged(nameof(WindowTitle)); }
+        set
+        {
+            if (!SetProperty(ref _isModified, value)) return;
+            OnPropertyChanged(nameof(WindowTitle));
+            if (value)
+            {
+                _unsavedSince = DateTime.Now;
+                _unsavedTimer?.Start();
+            }
+            else
+            {
+                _unsavedTimer?.Stop();
+            }
+            OnPropertyChanged(nameof(UnsavedIndicatorText));
+            OnPropertyChanged(nameof(IsUnsavedWarning));
+        }
     }
+
+    public string UnsavedIndicatorText
+    {
+        get
+        {
+            if (!_isModified) return "● 未保存";
+            var minutes = (int)(DateTime.Now - _unsavedSince).TotalMinutes;
+            return minutes >= 5 ? $"⚠ 未保存（{minutes}分）" : "● 未保存";
+        }
+    }
+
+    public bool IsUnsavedWarning =>
+        _isModified && (int)(DateTime.Now - _unsavedSince).TotalMinutes >= 5;
 
     public string WindowTitle
     {
@@ -634,7 +672,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "0.3.0",
+            Version = "0.4.0",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook
