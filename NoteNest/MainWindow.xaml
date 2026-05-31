@@ -180,19 +180,49 @@
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Note title bar -->
+                <!-- Sample project banner -->
                 <Border Grid.Row="0"
+                        Background="#FFF8DC"
+                        BorderBrush="#D4B800"
+                        BorderThickness="0,0,0,1"
+                        Padding="14,8"
+                        Visibility="{Binding IsSampleProject, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="サンプルプロジェクトです。「名前を付けて保存」から .notenest ファイルとして保存すると、プロジェクトを開始できます。"
+                               FontSize="11.5" Foreground="#7A6000" TextWrapping="Wrap"/>
+                </Border>
+
+                <!-- Note / task-comment title bar -->
+                <Border Grid.Row="1"
                         BorderBrush="{StaticResource PaneBorder}" BorderThickness="0,0,0,1"
                         Padding="14,9">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsTaskCommentMode}" Value="True">
+                                    <Setter Property="Background" Value="#FFF8E1"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
                     <DockPanel>
                         <Button DockPanel.Dock="Right" Content="💾" Width="28" Height="28"
                                 Style="{StaticResource IconButton}"
                                 Command="{Binding SaveProjectCommand}" ToolTip="保存 (Ctrl+S)"
                                 FontSize="15"/>
-                        <TextBlock Text="{Binding CurrentNoteTitle}"
+                        <Border DockPanel.Dock="Right"
+                                Background="#FFE082" CornerRadius="3"
+                                Padding="6,2" Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                Visibility="{Binding IsTaskCommentMode, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="コメント編集中"
+                                       FontSize="10.5" Foreground="#8C6100"/>
+                        </Border>
+                        <TextBlock Text="{Binding EditorTitle}"
                                    FontSize="14" FontWeight="SemiBold"
                                    VerticalAlignment="Center"
                                    TextTrimming="CharacterEllipsis"/>
@@ -200,7 +230,7 @@
                 </Border>
 
                 <!-- Editor TextBox -->
-                <TextBox Grid.Row="1"
+                <TextBox Grid.Row="2"
                          x:Name="EditorBox"
                          Text="{Binding EditorContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          FontFamily="{Binding EditorFontFamily}"
@@ -214,6 +244,26 @@
                          Padding="16,12"
                          VerticalContentAlignment="Top"
                          SpellCheck.IsEnabled="False"/>
+
+                <!-- Marker insertion buttons -->
+                <Border Grid.Row="3"
+                        BorderBrush="{StaticResource PaneBorder}" BorderThickness="0,1,0,0"
+                        Background="{StaticResource SidebarBg}"
+                        Padding="12,5">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="挿入：" FontSize="11" Foreground="#888"
+                                   VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <Button Content="[TODO]"  Click="InsertTodo_Click"
+                                Style="{StaticResource IconButton}" FontSize="11.5"
+                                Margin="0,0,4,0" ToolTip="[TODO]  をカーソル位置に挿入"/>
+                        <Button Content="[FIXME]" Click="InsertFixme_Click"
+                                Style="{StaticResource IconButton}" FontSize="11.5"
+                                Margin="0,0,4,0" ToolTip="[FIXME]  をカーソル位置に挿入"/>
+                        <Button Content="[NOTE]"  Click="InsertNote_Click"
+                                Style="{StaticResource IconButton}" FontSize="11.5"
+                                ToolTip="[NOTE]  をカーソル位置に挿入"/>
+                    </StackPanel>
+                </Border>
             </Grid>
 
             <!-- GridSplitter R -->
@@ -305,10 +355,19 @@
                                                             <CheckBox IsChecked="{Binding IsCompleted}"
                                                                       VerticalAlignment="Center"
                                                                       Margin="0,0,8,0"/>
+                                                            <TextBlock DockPanel.Dock="Right"
+                                                                       Text="●"
+                                                                       Foreground="#5B9BD5"
+                                                                       FontSize="9"
+                                                                       VerticalAlignment="Center"
+                                                                       Margin="4,0,0,0"
+                                                                       ToolTip="このタスクにはコメントがあります"
+                                                                       Visibility="{Binding HasComment, Converter={StaticResource BoolToVis}}"/>
                                                             <TextBlock Text="{Binding Title}"
                                                                        VerticalAlignment="Center"
                                                                        TextWrapping="Wrap"
-                                                                       FontSize="12.5">
+                                                                       FontSize="12.5"
+                                                                       MouseDoubleClick="TaskTitle_MouseDoubleClick">
                                                                 <TextBlock.Style>
                                                                     <Style TargetType="TextBlock">
                                                                         <Style.Triggers>
