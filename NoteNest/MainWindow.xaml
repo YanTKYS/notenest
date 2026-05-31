@@ -59,8 +59,7 @@
                 <MenuItem Header="置換(_R)..." Click="ShowFindReplace_Click" InputGestureText="Ctrl+H"/>
                 <Separator/>
                 <MenuItem Header="行番号を表示(_L)" IsCheckable="True"
-                          IsChecked="{Binding ShowLineNumbers}"
-                          Command="{Binding ToggleLineNumbersCommand}"/>
+                          IsChecked="{Binding ShowLineNumbers, Mode=TwoWay}"/>
                 <Separator/>
                 <MenuItem Header="フォント設定(_O)..." Click="ShowFontSettings_Click"/>
             </MenuItem>
