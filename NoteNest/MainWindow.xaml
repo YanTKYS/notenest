@@ -367,7 +367,7 @@
                                                                        VerticalAlignment="Center"
                                                                        TextWrapping="Wrap"
                                                                        FontSize="12.5"
-                                                                       MouseDoubleClick="TaskTitle_MouseDoubleClick">
+                                                                       MouseLeftButtonDown="TaskTitle_MouseLeftButtonDown">
                                                                 <TextBlock.Style>
                                                                     <Style TargetType="TextBlock">
                                                                         <Style.Triggers>
