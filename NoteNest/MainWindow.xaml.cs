@@ -180,6 +180,23 @@ public partial class MainWindow : Window
         menu.IsOpen = true;
     }
 
+    private void MoveTaskToToday_Click(object sender, RoutedEventArgs e)   => MoveTaskFromMenu(sender, "today");
+    private void MoveTaskToWeek_Click(object sender, RoutedEventArgs e)    => MoveTaskFromMenu(sender, "week");
+    private void MoveTaskToBacklog_Click(object sender, RoutedEventArgs e) => MoveTaskFromMenu(sender, "backlog");
+
+    private void MoveTaskFromMenu(object sender, string targetGroupKey)
+    {
+        // Walk up: sub-MenuItem → parent MenuItem → ContextMenu → PlacementTarget
+        if (sender is MenuItem subItem &&
+            subItem.Parent is MenuItem parentItem &&
+            parentItem.Parent is ContextMenu cm &&
+            cm.PlacementTarget is FrameworkElement fe &&
+            fe.DataContext is TaskViewModel task)
+        {
+            ViewModel.MoveTask(task, targetGroupKey);
+        }
+    }
+
     private void RenameTask_Click(object sender, RoutedEventArgs e)
     {
         var task = GetDataContext<TaskViewModel>(sender);
