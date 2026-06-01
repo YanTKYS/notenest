@@ -42,6 +42,7 @@ public partial class MainWindow : Window
 
         DarkThemeMenuItem.IsChecked = _uiSettings.Theme == AppTheme.Dark;
         vm.ShowLineNumbers = _uiSettings.ShowLineNumbers;
+        vm.MarkerSortOrderIndex = _uiSettings.MarkerSortOrderIndex;
 
         // Wire up dialog callbacks
         vm.ShowInputDialog = (title, prompt) =>
@@ -327,6 +328,17 @@ public partial class MainWindow : Window
         }
     }
 
+    private void EditTaskComment_Click(object sender, RoutedEventArgs e)
+    {
+        TaskViewModel? task = null;
+        if (sender is Button btn && btn.DataContext is TaskViewModel t1)
+            task = t1;
+        else
+            task = GetDataContext<TaskViewModel>(sender);
+        if (task != null)
+            ViewModel.SelectTask(task);
+    }
+
     // ── Editor marker insertion ────────────────────────────────────────────
 
     private void InsertMarker(string markerText)
@@ -539,8 +551,9 @@ public partial class MainWindow : Window
             LastReplaceText = _findReplaceDialog?.ReplaceText ?? _uiSettings.LastReplaceText,
             FindReplaceLeft = _findReplaceDialog?.IsLoaded == true ? _findReplaceDialog.Left : _uiSettings.FindReplaceLeft,
             FindReplaceTop  = _findReplaceDialog?.IsLoaded == true ? _findReplaceDialog.Top  : _uiSettings.FindReplaceTop,
-            ShowLineNumbers = ViewModel.ShowLineNumbers,
-            Theme           = _uiSettings.Theme,
+            ShowLineNumbers      = ViewModel.ShowLineNumbers,
+            MarkerSortOrderIndex = ViewModel.MarkerSortOrderIndex,
+            Theme                = _uiSettings.Theme,
         });
         if (_findReplaceDialog != null)
         {
