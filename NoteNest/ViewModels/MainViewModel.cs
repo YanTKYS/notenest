@@ -13,6 +13,7 @@ public class MainViewModel : BaseViewModel
     private readonly SampleDataService _sampleService = new();
     private readonly MarkerExtractorService _markerService = new();
     private readonly RecentFilesService _recentFilesService = new();
+    private readonly ExportService _exportService = new();
 
     private string _projectName = "";
     private NoteViewModel? _selectedNote;
@@ -538,6 +539,16 @@ public class MainViewModel : BaseViewModel
         IsModified = true;
     }
 
+    public void ExportProjectToText(string outputPath)
+        => _exportService.ExportProjectToText(BuildProject(), outputPath);
+
+    public int ExportNotebooksToTextFiles(string outputDirectory)
+    {
+        var project = BuildProject();
+        _exportService.ExportNotebooksToTextFiles(project, outputDirectory);
+        return project.Notebooks.Count;
+    }
+
     public void ApplyFontSettings(string fontFamily, double fontSize)
     {
         EditorFontFamily = fontFamily;
@@ -807,7 +818,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "0.8.0",
+            Version = "0.8.1",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook

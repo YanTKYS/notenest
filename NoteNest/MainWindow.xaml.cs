@@ -403,6 +403,67 @@ public partial class MainWindow : Window
 
     // ── Edit menu actions ──────────────────────────────────────────────────
 
+    // ── Export handlers ────────────────────────────────────────────────────
+
+    private void ExportProjectText_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            Filter      = "テキストファイル (*.txt)|*.txt",
+            DefaultExt  = ".txt",
+            FileName    = ViewModel.ProjectName
+        };
+        if (dialog.ShowDialog() != true) return;
+
+        try
+        {
+            ViewModel.ExportProjectToText(dialog.FileName);
+            ViewModel.StatusMessage = $"エクスポートしました: {System.IO.Path.GetFileName(dialog.FileName)}";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"エクスポートに失敗しました。\n{ex.Message}", "エラー",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void ExportNotebooksText_Click(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.Notebooks.Count == 0)
+        {
+            MessageBox.Show("エクスポートするノートブックがありません。", "情報",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var dialog = new Microsoft.Win32.OpenFolderDialog
+        {
+            Title = "出力先フォルダを選択してください"
+        };
+        if (dialog.ShowDialog() != true) return;
+
+        var dir = dialog.FolderName;
+        if (!System.IO.Directory.Exists(dir))
+        {
+            MessageBox.Show("選択したフォルダが存在しません。", "エラー",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        try
+        {
+            var count = ViewModel.ExportNotebooksToTextFiles(dir);
+            MessageBox.Show($"{count} 件のノートブックをエクスポートしました。\n出力先: {dir}",
+                "エクスポート完了", MessageBoxButton.OK, MessageBoxImage.Information);
+            ViewModel.StatusMessage = $"{count} 件のノートブックをエクスポートしました。";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"エクスポートに失敗しました。\n{ex.Message}", "エラー",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     private void ShowFindReplace_Click(object sender, RoutedEventArgs e) => OpenFindReplace();
 
     private void DarkTheme_Click(object sender, RoutedEventArgs e)
