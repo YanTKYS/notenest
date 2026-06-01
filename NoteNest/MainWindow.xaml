@@ -8,6 +8,7 @@
         MinWidth="800" MinHeight="520"
         Background="{DynamicResource AppBg}"
         Closing="Window_Closing"
+        SizeChanged="Window_SizeChanged"
         PreviewKeyDown="Window_PreviewKeyDown">
 
     <Window.InputBindings>
@@ -70,6 +71,9 @@
                 <MenuItem Header="ダークテーマ(_D)" IsCheckable="True"
                           x:Name="DarkThemeMenuItem"
                           Click="DarkTheme_Click"/>
+                <MenuItem Header="右ペインを折り畳む(_P)" IsCheckable="True"
+                          x:Name="RightPaneCollapseMenuItem"
+                          Click="ToggleRightPane_Click"/>
                 <Separator/>
                 <MenuItem Header="フォント設定(_O)..." Click="ShowFontSettings_Click"/>
             </MenuItem>
@@ -113,11 +117,11 @@
         <!-- ═══ Main 3-pane layout ═══ -->
         <Grid TextElement.Foreground="{DynamicResource AppFg}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="220" MinWidth="140" MaxWidth="400"/>
+                <ColumnDefinition x:Name="LeftPaneColumn"     Width="220" MinWidth="140" MaxWidth="400"/>
                 <ColumnDefinition Width="4"/>
                 <ColumnDefinition Width="*"   MinWidth="280"/>
-                <ColumnDefinition Width="4"/>
-                <ColumnDefinition Width="280" MinWidth="200" MaxWidth="420"/>
+                <ColumnDefinition x:Name="RightSplitterColumn" Width="4"/>
+                <ColumnDefinition x:Name="RightPaneColumn"    Width="280" MinWidth="200" MaxWidth="420"/>
             </Grid.ColumnDefinitions>
 
             <!-- ═══ LEFT PANE: Notebook / Note tree ═══ -->
@@ -462,6 +466,9 @@
                             <Button DockPanel.Dock="Right" Content="+" Width="22" Height="22"
                                     Style="{StaticResource IconButton}"
                                     Click="AddTaskMenu_Click" ToolTip="タスクを追加"/>
+                            <Button DockPanel.Dock="Right" Content="«" Width="22" Height="22"
+                                    Style="{StaticResource IconButton}"
+                                    Click="ToggleRightPane_Click" ToolTip="右ペインを折り畳む"/>
                             <TextBlock Text="タスク" FontWeight="Bold" FontSize="13"
                                        VerticalAlignment="Center"/>
                         </DockPanel>

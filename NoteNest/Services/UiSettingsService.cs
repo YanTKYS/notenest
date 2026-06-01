@@ -13,6 +13,12 @@ public class UiSettings
     public bool ShowLineNumbers { get; set; } = false;
     public AppTheme Theme { get; set; } = AppTheme.Light;
     public int MarkerSortOrderIndex { get; set; } = 0;
+    public double WindowWidth { get; set; } = 1100;
+    public double WindowHeight { get; set; } = 720;
+    public bool IsWindowMaximized { get; set; } = false;
+    public double LeftPaneWidth { get; set; } = 220;
+    public double RightPaneWidth { get; set; } = 280;
+    public bool IsRightPaneCollapsed { get; set; } = false;
 }
 
 public class UiSettingsService
