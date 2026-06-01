@@ -5,17 +5,24 @@ namespace NoteNest.Services;
 
 public class RecentFilesService
 {
-    private static readonly string DataPath =
+    private static readonly string DefaultDataPath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                      "NoteNest", "recent-files.json");
     private const int MaxItems = 5;
+
+    private readonly string _dataPath;
+
+    public RecentFilesService(string? dataPath = null)
+    {
+        _dataPath = dataPath ?? DefaultDataPath;
+    }
 
     public List<string> Load()
     {
         try
         {
-            if (!File.Exists(DataPath)) return [];
-            return JsonSerializer.Deserialize<List<string>>(File.ReadAllText(DataPath)) ?? [];
+            if (!File.Exists(_dataPath)) return [];
+            return JsonSerializer.Deserialize<List<string>>(File.ReadAllText(_dataPath)) ?? [];
         }
         catch { return []; }
     }
@@ -28,8 +35,8 @@ public class RecentFilesService
         if (list.Count > MaxItems) list = list.Take(MaxItems).ToList();
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(DataPath)!);
-            File.WriteAllText(DataPath, JsonSerializer.Serialize(list));
+            Directory.CreateDirectory(Path.GetDirectoryName(_dataPath)!);
+            File.WriteAllText(_dataPath, JsonSerializer.Serialize(list));
         }
         catch { }
     }
