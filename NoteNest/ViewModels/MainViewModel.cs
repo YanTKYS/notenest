@@ -235,13 +235,21 @@ public class MainViewModel : BaseViewModel
                 (m.Type == "NOTE"  && _filterNote));
             return _markerSortOrderIndex switch
             {
-                1 => filtered.OrderBy(m => m.Type).ThenBy(m => m.NoteTitle).ThenBy(m => m.LineNumber),
+                1 => filtered.OrderBy(m => MarkerTypeOrder(m.Type)).ThenBy(m => m.NoteTitle).ThenBy(m => m.LineNumber),
                 2 => filtered.OrderBy(m => m.NoteTitle).ThenBy(m => m.LineNumber),
                 3 => filtered.OrderBy(m => m.LineNumber),
                 _ => filtered,
             };
         }
     }
+
+    private static int MarkerTypeOrder(string type) => type switch
+    {
+        "TODO"  => 0,
+        "FIXME" => 1,
+        "NOTE"  => 2,
+        _       => 99,
+    };
 
     public string FilteredMarkerCountText
     {
@@ -858,7 +866,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "1.0.0",
+            Version = "1.1.0",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook
