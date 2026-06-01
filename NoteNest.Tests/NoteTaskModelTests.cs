@@ -107,6 +107,59 @@ public class NoteTaskModelTests : IDisposable
         Assert.Null(task.LinkedNoteId);
     }
 
+    [Fact]
+    public void Load_LegacyJson_WithoutNewSettingsFields_LoadsWithDefaults()
+    {
+        // v0.1.x style json without lastOpenedNoteId / fontFamily / fontSize
+        var legacyJson = """
+            {
+              "version": "0.1.0",
+              "projectId": "old",
+              "projectName": "Legacy",
+              "notebooks": [],
+              "tasks": { "today": [], "week": [], "backlog": [] },
+              "settings": {}
+            }
+            """;
+        File.WriteAllText(_path, legacyJson);
+        var project = _svc.Load(_path);
+
+        Assert.Equal("", project.Settings.LastOpenedNoteId);
+        Assert.Equal("Yu Gothic UI", project.Settings.FontFamily);
+        Assert.Equal(14, project.Settings.FontSize);
+    }
+
+    [Fact]
+    public void Load_JsonWithLinkedNoteId_RoundTripsThroughSave()
+    {
+        var jsonIn = """
+            {
+              "version": "0.8.2",
+              "projectId": "p1",
+              "projectName": "Linked",
+              "notebooks": [
+                { "id": "nb1", "title": "NB",
+                  "notes": [{ "id": "note-target", "title": "対象", "content": "" }]
+                }
+              ],
+              "tasks": {
+                "today": [{ "id": "t1", "title": "L", "isCompleted": false, "comment": "",
+                            "linkedNoteId": "note-target" }],
+                "week": [], "backlog": []
+              },
+              "settings": {}
+            }
+            """;
+        File.WriteAllText(_path, jsonIn);
+
+        var loaded = _svc.Load(_path);
+        Assert.Equal("note-target", loaded.Tasks.Today[0].LinkedNoteId);
+
+        _svc.Save(_path, loaded);
+        var reloaded = _svc.Load(_path);
+        Assert.Equal("note-target", reloaded.Tasks.Today[0].LinkedNoteId);
+    }
+
     private static Project MakeProject(Action<NoteTask> configure)
     {
         var task = new NoteTask { Title = "Test" };

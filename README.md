@@ -89,6 +89,12 @@ dotnet run --project NoteNest/NoteNest.csproj
 
 または Visual Studio 2022 でソリューションファイル `NoteNest.sln` を開いて実行してください。
 
+## バックアップと復元
+
+- NoteNest は保存時に `.notenest` ファイルと同じフォルダに `.bak` を自動作成します（直前の保存内容のみ）
+- `.notenest` が破損した場合は `.bak` をリネームすることで前回保存時点に復元できます
+- 詳細は [docs/operation-note.md](docs/operation-note.md) を参照してください
+
 ## `.notenest` ファイルについて
 
 - 拡張子：`.notenest`
@@ -128,7 +134,7 @@ dotnet run --project NoteNest/NoteNest.csproj
 - NoteNest は複数起動に対応しています。複数のウィンドウでそれぞれ別のプロジェクトを開いて同時利用できます
 - **同じ `.notenest` ファイルを複数ウィンドウで同時編集しないでください。** 後から保存した内容で上書きされます
 
-## v0.8.x の制限
+## v0.9.x の制限
 
 | 機能 | 状態 |
 |------|------|
