@@ -837,7 +837,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "0.9.0",
+            Version = "1.0.0",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook
