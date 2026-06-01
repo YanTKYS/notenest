@@ -73,6 +73,7 @@ public partial class MainWindow : Window
             _savedRightPaneWidth  = _uiSettings.RightPaneWidth;
             RightPaneColumn.Width = new GridLength(_uiSettings.RightPaneWidth);
         }
+        RightPaneCollapseMenuItem.IsChecked = _isRightPaneCollapsed;
 
         // Wire up dialog callbacks
         vm.ShowInputDialog = (title, prompt) =>
