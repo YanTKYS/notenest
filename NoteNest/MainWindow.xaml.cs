@@ -30,6 +30,12 @@ public partial class MainWindow : Window
     private ScrollViewer? _editorScrollViewer;
     private ScrollViewer? _lineNumberScrollViewer;
 
+    // Layout state
+    private double _lastNormalWidth  = 1100;
+    private double _lastNormalHeight = 720;
+    private bool   _isRightPaneCollapsed = false;
+    private double _savedRightPaneWidth  = 280;
+
     public MainWindow()
     {
         // Apply theme before InitializeComponent so DynamicResources resolve to the correct values.
@@ -43,6 +49,30 @@ public partial class MainWindow : Window
         DarkThemeMenuItem.IsChecked = _uiSettings.Theme == AppTheme.Dark;
         vm.ShowLineNumbers = _uiSettings.ShowLineNumbers;
         vm.MarkerSortOrderIndex = _uiSettings.MarkerSortOrderIndex;
+
+        // Restore window size
+        if (_uiSettings.WindowWidth >= 200 && _uiSettings.WindowHeight >= 100)
+        {
+            Width  = _uiSettings.WindowWidth;
+            Height = _uiSettings.WindowHeight;
+        }
+        _lastNormalWidth  = Width;
+        _lastNormalHeight = Height;
+        if (_uiSettings.IsWindowMaximized) WindowState = WindowState.Maximized;
+
+        // Restore pane widths and right pane collapse state
+        if (_uiSettings.LeftPaneWidth > 0)
+            LeftPaneColumn.Width = new GridLength(_uiSettings.LeftPaneWidth);
+        if (_uiSettings.IsRightPaneCollapsed)
+        {
+            _savedRightPaneWidth = _uiSettings.RightPaneWidth > 0 ? _uiSettings.RightPaneWidth : 280;
+            CollapseRightPane();
+        }
+        else if (_uiSettings.RightPaneWidth > 0)
+        {
+            _savedRightPaneWidth  = _uiSettings.RightPaneWidth;
+            RightPaneColumn.Width = new GridLength(_uiSettings.RightPaneWidth);
+        }
 
         // Wire up dialog callbacks
         vm.ShowInputDialog = (title, prompt) =>
@@ -526,6 +556,28 @@ public partial class MainWindow : Window
         _themeService.Apply(_uiSettings.Theme);
     }
 
+    private void ToggleRightPane_Click(object sender, RoutedEventArgs e)
+    {
+        if (_isRightPaneCollapsed) ExpandRightPane(); else CollapseRightPane();
+        RightPaneCollapseMenuItem.IsChecked = _isRightPaneCollapsed;
+    }
+
+    private void CollapseRightPane()
+    {
+        var w = RightPaneColumn.Width.Value;
+        if (w > 0) _savedRightPaneWidth = w;
+        RightSplitterColumn.Width = new GridLength(0);
+        RightPaneColumn.Width     = new GridLength(0);
+        _isRightPaneCollapsed     = true;
+    }
+
+    private void ExpandRightPane()
+    {
+        RightSplitterColumn.Width = new GridLength(4);
+        RightPaneColumn.Width     = new GridLength(_savedRightPaneWidth);
+        _isRightPaneCollapsed     = false;
+    }
+
     private void ShowFontSettings_Click(object sender, RoutedEventArgs e)
     {
         var d = new FontSettingsDialog(ViewModel.EditorFontFamily, ViewModel.EditorFontSize)
@@ -537,6 +589,15 @@ public partial class MainWindow : Window
     }
 
     // ── Window events ──────────────────────────────────────────────────────
+
+    private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (WindowState == WindowState.Normal)
+        {
+            _lastNormalWidth  = Width;
+            _lastNormalHeight = Height;
+        }
+    }
 
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
@@ -554,6 +615,12 @@ public partial class MainWindow : Window
             ShowLineNumbers      = ViewModel.ShowLineNumbers,
             MarkerSortOrderIndex = ViewModel.MarkerSortOrderIndex,
             Theme                = _uiSettings.Theme,
+            WindowWidth          = _lastNormalWidth,
+            WindowHeight         = _lastNormalHeight,
+            IsWindowMaximized    = WindowState == WindowState.Maximized,
+            LeftPaneWidth        = LeftPaneColumn.Width.Value,
+            RightPaneWidth       = _isRightPaneCollapsed ? _savedRightPaneWidth : RightPaneColumn.Width.Value,
+            IsRightPaneCollapsed = _isRightPaneCollapsed,
         });
         if (_findReplaceDialog != null)
         {
