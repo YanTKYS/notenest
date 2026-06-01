@@ -23,6 +23,12 @@ public class ProjectFileService
     public void Save(string path, Project project)
     {
         var json = JsonSerializer.Serialize(project, Options);
-        File.WriteAllText(path, json, Encoding.UTF8);
+        var tempPath   = path + ".tmp";
+        var backupPath = path + ".bak";
+        File.WriteAllText(tempPath, json, Encoding.UTF8);
+        if (File.Exists(path))
+            File.Replace(tempPath, path, backupPath);
+        else
+            File.Move(tempPath, path);
     }
 }

@@ -482,7 +482,11 @@ public class MainViewModel : BaseViewModel
         OnPropertyChanged(nameof(IsTaskCommentMode));
         _isLoadingNote = false;
         Markers.Clear();
+        _projectTodoCount  = 0;
+        _projectFixmeCount = 0;
+        _projectNoteCount  = 0;
         OnPropertyChanged(nameof(MarkerCount));
+        OnPropertyChanged(nameof(ProjectMarkerSummary));
         RaiseFilteredMarkersChanged();
     }
 
@@ -715,7 +719,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "0.6.0",
+            Version = "0.6.1",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook
