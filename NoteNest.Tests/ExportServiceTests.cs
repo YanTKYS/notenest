@@ -198,8 +198,8 @@ public class ExportServiceTests : IDisposable
     {
         var svc     = new ExportService();
         var project = MakeProject("P");
-        AddNote(project, "同名", "N1", "C1");
-        AddNote(project, "同名", "N2", "C2");
+        project.Notebooks.Add(new Notebook { Title = "同名" });
+        project.Notebooks.Add(new Notebook { Title = "同名" });
 
         svc.ExportNotebooksToTextFiles(project, _tempDir);
 
