@@ -75,12 +75,12 @@
         </Menu>
 
         <!-- ═══ Status bar ═══ -->
-        <StatusBar DockPanel.Dock="Bottom" Background="#F0F0F0" Padding="4,2" FontSize="12">
+        <StatusBar DockPanel.Dock="Bottom" Background="{StaticResource StatusBarBg}" Padding="4,2" FontSize="12">
             <TextBlock Text="{Binding StatusMessage}"/>
             <Separator/>
-            <TextBlock Text="{Binding EditorFontFamily}" Foreground="#777"/>
+            <TextBlock Text="{Binding EditorFontFamily}" Foreground="{StaticResource SubtleFg}"/>
             <TextBlock Text=" "/>
-            <TextBlock Text="{Binding EditorFontSize, StringFormat={}{0}pt}" Foreground="#777"/>
+            <TextBlock Text="{Binding EditorFontSize, StringFormat={}{0}pt}" Foreground="{StaticResource SubtleFg}"/>
             <Separator Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}"/>
             <TextBlock Text="{Binding UnsavedIndicatorText}"
                        Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}">
@@ -242,11 +242,15 @@
                             <Button Content="新規プロジェクト"
                                     Command="{Binding NewProjectCommand}"
                                     Padding="10,4" Margin="0,0,8,0" FontSize="11.5"
-                                    Background="#E6C800" BorderBrush="#B09600" Foreground="#3A2B00"/>
+                                    Background="{StaticResource BannerPrimaryBg}"
+                                    BorderBrush="{StaticResource BannerPrimaryBorder}"
+                                    Foreground="{StaticResource BannerPrimaryFg}"/>
                             <Button Content="名前を付けて保存..."
                                     Command="{Binding SaveAsProjectCommand}"
                                     Padding="10,4" FontSize="11.5"
-                                    Background="#4A90D9" BorderBrush="#2E6DA4" Foreground="White"/>
+                                    Background="{StaticResource BannerSecondaryBg}"
+                                    BorderBrush="{StaticResource BannerSecondaryBorder}"
+                                    Foreground="{StaticResource BannerSecondaryFg}"/>
                         </StackPanel>
                         <TextBlock Text="サンプルプロジェクトが表示されています。新しいプロジェクトを作成するか、.notenest ファイルとして保存してください。"
                                    FontSize="11.5" Foreground="{StaticResource SampleBannerFg}" TextWrapping="Wrap"
@@ -317,7 +321,7 @@
                              VerticalScrollBarVisibility="Hidden"
                              HorizontalScrollBarVisibility="Hidden"
                              BorderThickness="0,0,1,0"
-                             BorderBrush="#E0E0E0"
+                             BorderBrush="{StaticResource PaneBorder}"
                              Padding="8,12,6,12"
                              Background="{StaticResource LineNumberBg}"
                              Foreground="{StaticResource LineNumberFg}"
@@ -361,7 +365,7 @@
                         Background="{StaticResource SidebarBg}"
                         Padding="12,5">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="挿入：" FontSize="11" Foreground="#888"
+                        <TextBlock Text="挿入：" FontSize="11" Foreground="{StaticResource MutedFg}"
                                    VerticalAlignment="Center" Margin="0,0,6,0"/>
                         <Button Content="[TODO]"  Click="InsertTodo_Click"
                                 Style="{StaticResource IconButton}" FontSize="11.5"
@@ -381,7 +385,7 @@
                           Background="{StaticResource PaneBorder}" ShowsPreview="True"/>
 
             <!-- ═══ RIGHT PANE ═══ -->
-            <Grid Grid.Column="4" Background="#FAFAFA">
+            <Grid Grid.Column="4" Background="{StaticResource RightPaneBg}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="3*" MinHeight="150"/>
                     <RowDefinition Height="4"/>
@@ -433,7 +437,7 @@
                                             <DockPanel>
                                                 <TextBlock DockPanel.Dock="Right"
                                                            Text="{Binding CountText}"
-                                                           Foreground="#999" FontSize="11"
+                                                           Foreground="{StaticResource FaintFg}" FontSize="11"
                                                            VerticalAlignment="Center" Margin="4,0,0,0"/>
                                                 <Button DockPanel.Dock="Right"
                                                         Content="+" Width="18" Height="18"
@@ -462,7 +466,7 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <Border Padding="10,6"
-                                                            BorderBrush="#EEEEEE"
+                                                            BorderBrush="{StaticResource ItemBorderBrush}"
                                                             BorderThickness="0,0,0,1"
                                                             AllowDrop="True"
                                                             PreviewMouseLeftButtonDown="TaskItem_PreviewMouseLeftButtonDown"
@@ -546,11 +550,11 @@
                         <DockPanel>
                             <TextBlock DockPanel.Dock="Right"
                                        Text="{Binding FilteredMarkerCountText}"
-                                       Foreground="#888" FontSize="12"
+                                       Foreground="{StaticResource MutedFg}" FontSize="12"
                                        VerticalAlignment="Center"/>
                             <TextBlock DockPanel.Dock="Right"
                                        Text="？"
-                                       Foreground="#BBBBBB"
+                                       Foreground="{StaticResource HintFg}"
                                        FontSize="12"
                                        VerticalAlignment="Center"
                                        Margin="0,0,8,0"
@@ -574,7 +578,7 @@
                     <!-- Marker filter row -->
                     <Border Grid.Row="1"
                             BorderBrush="{StaticResource PaneBorder}" BorderThickness="0,0,0,1"
-                            Background="#FAFAFA" Padding="10,5">
+                            Background="{StaticResource RightPaneBg}" Padding="10,5">
                         <StackPanel Orientation="Horizontal">
                             <CheckBox Content="TODO"  IsChecked="{Binding FilterTodo}"
                                       Foreground="{StaticResource TodoBrush}"  FontSize="11" Margin="0,0,10,0"/>
@@ -591,7 +595,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Padding="10,8"
-                                            BorderBrush="#EEEEEE" BorderThickness="0,0,0,1"
+                                            BorderBrush="{StaticResource ItemBorderBrush}" BorderThickness="0,0,0,1"
                                             Cursor="Hand"
                                             MouseLeftButtonDown="Marker_MouseLeftButtonDown">
                                         <Border.Style>
@@ -610,16 +614,16 @@
                                                            FontWeight="Bold" FontSize="11"
                                                            Width="46" DockPanel.Dock="Left"/>
                                                 <TextBlock Text="{Binding LineLabel}"
-                                                           Foreground="#888" FontSize="11"
+                                                           Foreground="{StaticResource MutedFg}" FontSize="11"
                                                            Margin="0,0,6,0" VerticalAlignment="Center"
                                                            DockPanel.Dock="Left"/>
                                                 <TextBlock Text="{Binding NoteTitle}"
-                                                           Foreground="#666" FontSize="11"
+                                                           Foreground="{StaticResource SecondaryFg}" FontSize="11"
                                                            VerticalAlignment="Center"
                                                            TextTrimming="CharacterEllipsis"/>
                                             </DockPanel>
                                             <TextBlock Text="{Binding Excerpt}"
-                                                       Foreground="#555" FontSize="11.5"
+                                                       Foreground="{StaticResource PrimaryFg}" FontSize="11.5"
                                                        TextTrimming="CharacterEllipsis"
                                                        Margin="0,3,0,0"/>
                                         </StackPanel>
@@ -632,10 +636,10 @@
                     <!-- Project-wide marker summary -->
                     <Border Grid.Row="3"
                             BorderBrush="{StaticResource PaneBorder}" BorderThickness="0,1,0,0"
-                            Background="#F5F5F5"
+                            Background="{StaticResource SidebarBg}"
                             Padding="12,6">
                         <TextBlock Text="{Binding ProjectMarkerSummary}"
-                                   FontSize="11" Foreground="#888"
+                                   FontSize="11" Foreground="{StaticResource MutedFg}"
                                    TextWrapping="Wrap"/>
                     </Border>
                 </Grid>
