@@ -354,6 +354,7 @@ public class MainViewModel : BaseViewModel
             SelectedNote = null;
             ClearEditor();
         }
+        ClearTaskLinksToNoteIds(nb.Notes.Select(n => n.Id));
         Notebooks.Remove(nb);
         IsModified = true;
         RefreshMarkers();
@@ -390,6 +391,7 @@ public class MainViewModel : BaseViewModel
             if (nb.Notes.Remove(note))
             {
                 nb.Model.Notes.Remove(note.Model);
+                ClearTaskLinksToNoteIds(new[] { note.Id });
                 if (SelectedNote == note) ClearEditor();
                 IsModified = true;
                 OnPropertyChanged(nameof(RelatedNoteChoices));
@@ -857,5 +859,24 @@ public class MainViewModel : BaseViewModel
         OnPropertyChanged(nameof(MarkerCount));
         OnPropertyChanged(nameof(ProjectMarkerSummary));
         RaiseFilteredMarkersChanged();
+    }
+
+    private void ClearTaskLinksToNoteIds(IEnumerable<string> deletedNoteIds)
+    {
+        var ids = deletedNoteIds.ToHashSet();
+
+        foreach (var group in TaskGroups)
+        foreach (var task in group.Tasks)
+        {
+            if (task.LinkedNoteId != null && ids.Contains(task.LinkedNoteId))
+                task.LinkedNoteId = null;
+        }
+
+        if (_editingTaskRelatedNote != null && ids.Contains(_editingTaskRelatedNote.Id))
+        {
+            _editingTaskRelatedNote = null;
+            OnPropertyChanged(nameof(EditingTaskRelatedNote));
+            OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
+        }
     }
 }
