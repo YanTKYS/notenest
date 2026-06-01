@@ -3,28 +3,40 @@ using Xunit;
 
 namespace NoteNest.Tests;
 
-// Integration tests: write to %AppData%\NoteNest\recent-files.json.
-// Tests are additive — they do not reset the file beforehand.
-public class RecentFilesServiceTests
+public class RecentFilesServiceTests : IDisposable
 {
-    private readonly RecentFilesService _svc = new();
+    private readonly string _dir =
+        Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+    private readonly RecentFilesService _svc;
+
+    public RecentFilesServiceTests()
+    {
+        Directory.CreateDirectory(_dir);
+        _svc = new RecentFilesService(Path.Combine(_dir, "recent-files.json"));
+    }
+
+    public void Dispose()
+    {
+        if (Directory.Exists(_dir))
+            Directory.Delete(_dir, recursive: true);
+    }
 
     [Fact]
     public void Add_DuplicatePath_MovedToFront()
     {
-        _svc.Add("test/path/a");
-        _svc.Add("test/path/b");
-        _svc.Add("test/path/a");
+        _svc.Add("path/a");
+        _svc.Add("path/b");
+        _svc.Add("path/a");
 
         var list = _svc.Load();
-        Assert.Equal("test/path/a", list[0]);
+        Assert.Equal("path/a", list[0]);
     }
 
     [Fact]
     public void Add_ExceedsMaxFive_ListTrimmed()
     {
         for (int i = 0; i < 7; i++)
-            _svc.Add($"test/path/{i}");
+            _svc.Add($"path/{i}");
 
         var list = _svc.Load();
         Assert.True(list.Count <= 5);
@@ -33,10 +45,16 @@ public class RecentFilesServiceTests
     [Fact]
     public void Add_NewPath_AppearsAtFront()
     {
-        _svc.Add("test/existing");
-        _svc.Add("test/newest");
+        _svc.Add("path/existing");
+        _svc.Add("path/newest");
 
         var list = _svc.Load();
-        Assert.Equal("test/newest", list[0]);
+        Assert.Equal("path/newest", list[0]);
+    }
+
+    [Fact]
+    public void Load_EmptyState_ReturnsEmpty()
+    {
+        Assert.Empty(_svc.Load());
     }
 }
