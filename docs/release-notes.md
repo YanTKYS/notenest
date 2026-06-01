@@ -1,5 +1,44 @@
 # リリースノート
 
+## v0.8.1 — テキストエクスポート機能
+
+**リリース日：** 2026-06-01
+
+### 追加した機能
+
+#### プロジェクト全体のテキストエクスポート
+- ファイルメニュー → エクスポート → プロジェクト全体をテキスト出力... から `.txt` ファイルとして出力可能
+- 全ノートブック・全ノートを1つのファイルにまとめて出力する
+- ノートブック名・ノート名・本文を `===` / `---` の区切り付きで整形
+
+#### ノートブックごとのテキストエクスポート
+- ファイルメニュー → エクスポート → ノートブックごとにテキスト出力... から出力フォルダを選択
+- ノートブックごとに1つの `.txt` ファイルを作成する
+- 同名ノートブックが複数ある場合は自動で連番を付与（例: `メモ.txt`, `メモ_2.txt`）
+
+#### ファイル名安全化
+- Windowsで使用できない文字（`\ / : * ? " < > |`）を `_` に自動置換
+- 前後の空白を除去し、空になった場合は `notebook` で代替
+
+#### 出力仕様
+- 文字コード：UTF-8（BOM 付き、Windows メモ帳で正常に開ける）
+- `[[ノート名]]`・`[TODO]` `[FIXME]` `[NOTE]` はプレーンテキストとしてそのまま出力
+
+#### 出力対象外（v0.8.1）
+- タスク一覧・タスクコメント・タスクとノートの関連付け情報
+- マーカー集計・リンク一覧・バックリンク
+
+### コード変更
+
+- `NoteNest/Services/ExportService.cs`: エクスポートサービスを新規作成（`BuildProjectText` / `BuildNotebookText` / `SanitizeFileName` / `GetUniqueFilePath`）
+- `NoteNest/ViewModels/MainViewModel.cs`: `ExportProjectToText` / `ExportNotebooksToTextFiles` を追加
+- `NoteNest/MainWindow.xaml`: ファイルメニューにエクスポートサブメニューを追加
+- `NoteNest/MainWindow.xaml.cs`: `ExportProjectText_Click` / `ExportNotebooksText_Click` を追加
+- `NoteNest.Tests/ExportServiceTests.cs`: エクスポートサービスの単体テスト（22 件）を新規作成
+- `NoteNest.csproj`: `FileVersion` / `InformationalVersion` を `0.8.1` に更新
+
+---
+
 ## v0.8.0 — ノート間リンク・タスクとノートの関連付け
 
 **リリース日：** 2026-06-01
