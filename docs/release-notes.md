@@ -6,6 +6,11 @@
 
 ### 追加・改善した機能
 
+#### ノートタイトルの重複禁止
+- ノート追加・名前変更時に、プロジェクト内で既に使用されているタイトルは設定できないよう制限
+- 重複する名前を入力するとエラーメッセージを表示して処理を中断する
+- 既存の `.notenest` ファイルに重複タイトルが含まれている場合は従来どおり読み込み可能
+
 #### ノートリンク挿入を選択式に変更
 - エディタ右クリック → ノートリンクを挿入... でノート一覧から選択してリンクを挿入できるように変更
 - 選択リストには「ノートブック名 / ノート名」形式で表示（手入力不要）
@@ -21,9 +26,9 @@
 ### コード変更
 
 - `NoteNest/Dialogs/NotePickerDialog.xaml` / `.xaml.cs`: ノート選択ダイアログを新規作成（`NotePickerItem` レコード型含む）
-- `NoteNest/ViewModels/MainViewModel.cs`: `IsNoteEditMode` プロパティを追加、バージョンを `0.8.2` に更新
+- `NoteNest/ViewModels/MainViewModel.cs`: `IsNoteEditMode` / `NoteNameExists()` を追加、バージョンを `0.8.2` に更新
 - `NoteNest/MainWindow.xaml`: ノートコンテキストメニューに「このノートへのリンクを挿入」を追加、エディタコンテキストメニューの挿入項目に `IsEnabled` バインドを追加
-- `NoteNest/MainWindow.xaml.cs`: `InsertNoteLink_Click` を `NotePickerDialog` 使用に変更、`InsertNoteLinkFromNote_Click` / `InsertTextAtCaret` を追加
+- `NoteNest/MainWindow.xaml.cs`: `InsertNoteLink_Click` を `NotePickerDialog` 使用に変更、`InsertNoteLinkFromNote_Click` / `InsertTextAtCaret` を追加、ノート追加・名前変更の4ハンドラに重複チェックを追加
 - `NoteNest.csproj`: `FileVersion` / `InformationalVersion` を `0.8.2` に更新
 
 ---

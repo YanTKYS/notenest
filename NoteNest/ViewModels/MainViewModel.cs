@@ -511,6 +511,16 @@ public class MainViewModel : BaseViewModel
         return null;
     }
 
+    public bool NoteNameExists(string title, NoteViewModel? excludeSelf = null)
+    {
+        foreach (var nb in Notebooks)
+            foreach (var n in nb.Notes)
+                if (n != excludeSelf &&
+                    string.Equals(n.Title, title, StringComparison.OrdinalIgnoreCase))
+                    return true;
+        return false;
+    }
+
     public void NavigateToNote(NoteViewModel note)
     {
         SelectNote(note);
