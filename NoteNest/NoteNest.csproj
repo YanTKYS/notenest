@@ -12,6 +12,7 @@
     <FileVersion>0.6.1.0</FileVersion>
     <InformationalVersion>0.6.1</InformationalVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
 </Project>
