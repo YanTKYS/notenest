@@ -1,6 +1,6 @@
 # リリースノート
 
-## v0.6.1 — 保存安全性・検索状態復元・マーカーリセット・自動テスト
+## v0.7.0 — 保存安全性・検索状態復元・マーカーリセット・自動テスト
 
 **リリース日：** 2026-06-01
 
@@ -33,8 +33,8 @@
 - `MainViewModel.ClearEditor()`: `_projectTodoCount` / `_projectFixmeCount` / `_projectNoteCount` のリセットと `ProjectMarkerSummary` 通知を追加
 - `NoteNest.Tests/`: xUnit テストプロジェクトを新規作成（`MarkerExtractorServiceTests`・`ProjectFileServiceTests`・`TaskGroupViewModelTests`・`RecentFilesServiceTests`）
 - `NoteNest.sln`: `NoteNest.Tests` をソリューションに追加
-- `NoteNest.csproj`: `FileVersion` / `InformationalVersion` を `0.6.1` に更新
-- `BuildProject()` の保存バージョンを `"0.6.1"` に更新
+- `NoteNest.csproj`: `FileVersion` / `InformationalVersion` を `0.7.0` に更新
+- `BuildProject()` の保存バージョンを `"0.7.0"` に更新
 
 ---
 
