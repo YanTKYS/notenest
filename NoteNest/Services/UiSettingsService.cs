@@ -12,6 +12,7 @@ public class UiSettings
     public double? FindReplaceTop { get; set; }
     public bool ShowLineNumbers { get; set; } = false;
     public AppTheme Theme { get; set; } = AppTheme.Light;
+    public int MarkerSortOrderIndex { get; set; } = 0;
 }
 
 public class UiSettingsService

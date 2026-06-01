@@ -530,6 +530,7 @@
                                                             Drop="TaskItem_Drop">
                                                         <Border.ContextMenu>
                                                             <ContextMenu>
+                                                                <MenuItem Header="コメントを編集(_E)..." Click="EditTaskComment_Click"/>
                                                                 <MenuItem Header="名前変更..." Click="RenameTask_Click"/>
                                                                 <MenuItem Header="グループを変更">
                                                                     <MenuItem Header="今日のタスク" Click="MoveTaskToToday_Click"/>
@@ -565,6 +566,17 @@
                                                                        Margin="4,0,0,0"
                                                                        ToolTip="このタスクにはコメントがあります"
                                                                        Visibility="{Binding HasComment, Converter={StaticResource BoolToVis}}"/>
+                                                            <Button DockPanel.Dock="Right"
+                                                                    Content="✏"
+                                                                    FontSize="10"
+                                                                    VerticalAlignment="Center"
+                                                                    Margin="4,0,0,0"
+                                                                    Padding="3,1"
+                                                                    ToolTip="コメントを編集"
+                                                                    Click="EditTaskComment_Click"
+                                                                    Background="Transparent"
+                                                                    BorderThickness="0"
+                                                                    Cursor="Hand"/>
                                                             <TextBlock Text="{Binding Title}"
                                                                        VerticalAlignment="Center"
                                                                        TextWrapping="Wrap"
@@ -647,14 +659,26 @@
                     <Border Grid.Row="1"
                             BorderBrush="{DynamicResource PaneBorder}" BorderThickness="0,0,0,1"
                             Background="{DynamicResource RightPaneBg}" Padding="10,5">
-                        <StackPanel Orientation="Horizontal">
-                            <CheckBox Content="TODO"  IsChecked="{Binding FilterTodo}"
-                                      Foreground="{DynamicResource TodoBrush}"  FontSize="11" Margin="0,0,10,0"/>
-                            <CheckBox Content="FIXME" IsChecked="{Binding FilterFixme}"
-                                      Foreground="{DynamicResource FixmeBrush}" FontSize="11" Margin="0,0,10,0"/>
-                            <CheckBox Content="NOTE"  IsChecked="{Binding FilterNote}"
-                                      Foreground="{DynamicResource NoteBrush}"  FontSize="11"/>
-                        </StackPanel>
+                        <DockPanel>
+                            <ComboBox DockPanel.Dock="Right"
+                                      SelectedIndex="{Binding MarkerSortOrderIndex}"
+                                      FontSize="11"
+                                      Width="68"
+                                      VerticalAlignment="Center">
+                                <ComboBoxItem Content="抽出順"/>
+                                <ComboBoxItem Content="種別順"/>
+                                <ComboBoxItem Content="ノート順"/>
+                                <ComboBoxItem Content="行番号順"/>
+                            </ComboBox>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <CheckBox Content="TODO"  IsChecked="{Binding FilterTodo}"
+                                          Foreground="{DynamicResource TodoBrush}"  FontSize="11" Margin="0,0,10,0"/>
+                                <CheckBox Content="FIXME" IsChecked="{Binding FilterFixme}"
+                                          Foreground="{DynamicResource FixmeBrush}" FontSize="11" Margin="0,0,10,0"/>
+                                <CheckBox Content="NOTE"  IsChecked="{Binding FilterNote}"
+                                          Foreground="{DynamicResource NoteBrush}"  FontSize="11"/>
+                            </StackPanel>
+                        </DockPanel>
                     </Border>
 
                     <!-- Marker list -->

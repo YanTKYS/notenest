@@ -216,11 +216,32 @@ public class MainViewModel : BaseViewModel
         set { SetProperty(ref _filterNote, value); RaiseFilteredMarkersChanged(); }
     }
 
-    public IEnumerable<MarkerViewModel> FilteredMarkers =>
-        Markers.Where(m =>
-            (m.Type == "TODO"  && _filterTodo)  ||
-            (m.Type == "FIXME" && _filterFixme) ||
-            (m.Type == "NOTE"  && _filterNote));
+    // 0=抽出順, 1=種別順, 2=ノート順, 3=行番号順
+    private int _markerSortOrderIndex = 0;
+
+    public int MarkerSortOrderIndex
+    {
+        get => _markerSortOrderIndex;
+        set { SetProperty(ref _markerSortOrderIndex, value); RaiseFilteredMarkersChanged(); }
+    }
+
+    public IEnumerable<MarkerViewModel> FilteredMarkers
+    {
+        get
+        {
+            var filtered = Markers.Where(m =>
+                (m.Type == "TODO"  && _filterTodo)  ||
+                (m.Type == "FIXME" && _filterFixme) ||
+                (m.Type == "NOTE"  && _filterNote));
+            return _markerSortOrderIndex switch
+            {
+                1 => filtered.OrderBy(m => m.Type).ThenBy(m => m.NoteTitle).ThenBy(m => m.LineNumber),
+                2 => filtered.OrderBy(m => m.NoteTitle).ThenBy(m => m.LineNumber),
+                3 => filtered.OrderBy(m => m.LineNumber),
+                _ => filtered,
+            };
+        }
+    }
 
     public string FilteredMarkerCountText
     {
