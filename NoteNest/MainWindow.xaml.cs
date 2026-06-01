@@ -13,6 +13,7 @@ public partial class MainWindow : Window
     private MainViewModel ViewModel => (MainViewModel)DataContext;
     private FindReplaceDialog? _findReplaceDialog;
     private readonly UiSettingsService _uiSettingsService = new();
+    private UiSettings _uiSettings = new();
     private bool _suppressTreeSelectionChanged;
 
     // Task drag-and-drop state
@@ -33,8 +34,8 @@ public partial class MainWindow : Window
         var vm = new MainViewModel();
         DataContext = vm;
 
-        var uiSettings = _uiSettingsService.Load();
-        vm.ShowLineNumbers = uiSettings.ShowLineNumbers;
+        _uiSettings = _uiSettingsService.Load();
+        vm.ShowLineNumbers = _uiSettings.ShowLineNumbers;
 
         // Wire up dialog callbacks
         vm.ShowInputDialog = (title, prompt) =>
@@ -341,10 +342,10 @@ public partial class MainWindow : Window
         }
         _uiSettingsService.Save(new UiSettings
         {
-            LastSearchText  = _findReplaceDialog?.SearchText  ?? "",
-            LastReplaceText = _findReplaceDialog?.ReplaceText ?? "",
-            FindReplaceLeft = _findReplaceDialog?.IsLoaded == true ? _findReplaceDialog.Left : (double?)null,
-            FindReplaceTop  = _findReplaceDialog?.IsLoaded == true ? _findReplaceDialog.Top  : (double?)null,
+            LastSearchText  = _findReplaceDialog?.SearchText  ?? _uiSettings.LastSearchText,
+            LastReplaceText = _findReplaceDialog?.ReplaceText ?? _uiSettings.LastReplaceText,
+            FindReplaceLeft = _findReplaceDialog?.IsLoaded == true ? _findReplaceDialog.Left : _uiSettings.FindReplaceLeft,
+            FindReplaceTop  = _findReplaceDialog?.IsLoaded == true ? _findReplaceDialog.Top  : _uiSettings.FindReplaceTop,
             ShowLineNumbers = ViewModel.ShowLineNumbers,
         });
         if (_findReplaceDialog != null)
@@ -379,9 +380,8 @@ public partial class MainWindow : Window
         if (_findReplaceDialog == null || !_findReplaceDialog.IsLoaded)
         {
             _findReplaceDialog = new FindReplaceDialog(EditorBox) { Owner = this };
-            var s = _uiSettingsService.Load();
-            _findReplaceDialog.RestoreState(s.LastSearchText, s.LastReplaceText,
-                                            s.FindReplaceLeft, s.FindReplaceTop);
+            _findReplaceDialog.RestoreState(_uiSettings.LastSearchText, _uiSettings.LastReplaceText,
+                                            _uiSettings.FindReplaceLeft, _uiSettings.FindReplaceTop);
         }
         _findReplaceDialog.Show();
         _findReplaceDialog.Activate();

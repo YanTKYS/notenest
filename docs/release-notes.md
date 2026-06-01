@@ -1,5 +1,43 @@
 # リリースノート
 
+## v0.6.1 — 保存安全性・検索状態復元・マーカーリセット・自動テスト
+
+**リリース日：** 2026-06-01
+
+### 修正した問題
+
+#### アトミックファイル保存（破損防止）
+- 保存中にプロセスが強制終了した場合でも `.notenest` ファイルが破損しないよう改善
+- `.tmp` ファイルに書き込み完了後、`File.Replace()` で差し替えるアトミック保存に変更
+- 以前のファイルは `.bak` として自動バックアップされ、再起動後でも復旧可能
+
+#### 検索状態の未復元を修正
+- 検索ダイアログを一度も開かずにアプリを終了した場合、次回起動時に検索テキスト・置換テキスト・ダイアログ位置が失われていた問題を修正
+- 起動時に読み込んだ `UiSettings` をフィールド（`_uiSettings`）にキャッシュし、ダイアログが未オープンの場合のフォールバックとして使用
+
+#### 全ノート削除後のマーカー集計未リセットを修正
+- すべてのノートを削除してエディタが空になった場合、右下ペインの全体集計（TODO/FIXME/NOTE 件数）が前の値のまま残っていた問題を修正
+- `ClearEditor()` 呼び出し時に `_projectTodoCount` / `_projectFixmeCount` / `_projectNoteCount` を 0 にリセット
+
+### 追加
+
+#### 自動テストプロジェクト（NoteNest.Tests）
+- xUnit を使用したテストプロジェクト `NoteNest.Tests` を新規追加
+- テスト対象：`MarkerExtractorService.Extract()`、`ProjectFileService.Save()/Load()`、`TaskGroupViewModel` の各操作、`RecentFilesService.Add()`
+
+### コード変更
+
+- `ProjectFileService.Save()`: `.tmp` 書き込み → `File.Replace()` / `File.Move()` に変更
+- `MainWindow.xaml.cs`: `_uiSettings` フィールドを追加、起動時キャッシュ・終了時フォールバックに利用
+- `MainWindow.xaml.cs`: `OpenFindReplace()` が `_uiSettingsService.Load()` を再呼び出ししなくなった
+- `MainViewModel.ClearEditor()`: `_projectTodoCount` / `_projectFixmeCount` / `_projectNoteCount` のリセットと `ProjectMarkerSummary` 通知を追加
+- `NoteNest.Tests/`: xUnit テストプロジェクトを新規作成（`MarkerExtractorServiceTests`・`ProjectFileServiceTests`・`TaskGroupViewModelTests`・`RecentFilesServiceTests`）
+- `NoteNest.sln`: `NoteNest.Tests` をソリューションに追加
+- `NoteNest.csproj`: `FileVersion` / `InformationalVersion` を `0.6.1` に更新
+- `BuildProject()` の保存バージョンを `"0.6.1"` に更新
+
+---
+
 ## v0.6.0 — クロスグループタスク移動・ノートブック間ノート移動
 
 **リリース日：** 2026-05-31
