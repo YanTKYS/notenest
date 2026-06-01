@@ -65,6 +65,9 @@
             <SolidColorBrush x:Key="BannerSecondaryBorder" Color="#2E6DA4"/>
             <SolidColorBrush x:Key="BannerSecondaryFg"     Color="White"/>
 
+            <!-- Brushes: icon button -->
+            <SolidColorBrush x:Key="IconButtonHoverBg" Color="#E8EEFF"/>
+
             <!-- Icon button style (flat, no border) -->
             <Style x:Key="IconButton" TargetType="Button">
                 <Setter Property="Background"   Value="Transparent"/>
@@ -73,11 +76,11 @@
                 <Setter Property="Cursor"       Value="Hand"/>
                 <Setter Property="Padding"      Value="4,2"/>
                 <Setter Property="FontSize"     Value="14"/>
-                <Setter Property="Foreground"   Value="#555"/>
+                <Setter Property="Foreground"   Value="{StaticResource PrimaryFg}"/>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="#2B5CE6"/>
-                        <Setter Property="Background" Value="#E8EEFF"/>
+                        <Setter Property="Foreground" Value="{StaticResource AccentBlue}"/>
+                        <Setter Property="Background" Value="{StaticResource IconButtonHoverBg}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
