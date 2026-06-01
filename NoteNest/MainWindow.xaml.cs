@@ -567,18 +567,20 @@ public partial class MainWindow : Window
     {
         var w = RightPaneColumn.Width.Value;
         if (w > 0) _savedRightPaneWidth = w;
-        RightSplitterColumn.Width    = new GridLength(0);
-        RightPaneColumn.MinWidth     = 0;
-        RightPaneColumn.Width        = new GridLength(0);
-        _isRightPaneCollapsed        = true;
+        RightSplitterColumn.Width        = new GridLength(0);
+        RightPaneColumn.MinWidth         = 0;
+        RightPaneColumn.Width            = new GridLength(0);
+        _isRightPaneCollapsed            = true;
+        RightPaneExpandButton.Visibility = Visibility.Visible;
     }
 
     private void ExpandRightPane()
     {
-        RightSplitterColumn.Width = new GridLength(4);
-        RightPaneColumn.MinWidth  = 200;
-        RightPaneColumn.Width     = new GridLength(_savedRightPaneWidth);
-        _isRightPaneCollapsed     = false;
+        RightSplitterColumn.Width        = new GridLength(4);
+        RightPaneColumn.MinWidth         = 200;
+        RightPaneColumn.Width            = new GridLength(_savedRightPaneWidth);
+        _isRightPaneCollapsed            = false;
+        RightPaneExpandButton.Visibility = Visibility.Collapsed;
     }
 
     private void ShowFontSettings_Click(object sender, RoutedEventArgs e)

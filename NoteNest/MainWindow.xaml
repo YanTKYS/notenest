@@ -354,7 +354,6 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-
                     <!-- Line number gutter -->
                     <TextBox Grid.Column="0"
                              x:Name="LineNumberBox"
@@ -417,6 +416,17 @@
                         </TextBox.Style>
                     </TextBox>
                 </Grid>
+
+                <!-- Right pane expand handle (visible when right pane is collapsed) -->
+                <Button Grid.Row="3"
+                        x:Name="RightPaneExpandButton"
+                        Content="»" Width="20"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Style="{StaticResource IconButton}"
+                        Click="ToggleRightPane_Click"
+                        ToolTip="右ペインを表示"
+                        Visibility="Collapsed"
+                        Panel.ZIndex="1"/>
 
                 <!-- Marker insertion buttons -->
                 <Border Grid.Row="4"
