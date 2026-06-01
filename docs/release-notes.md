@@ -1,5 +1,33 @@
 # リリースノート
 
+## v0.8.2 — ノートリンク挿入UI改善
+
+**リリース日：** 2026-06-01
+
+### 追加・改善した機能
+
+#### ノートリンク挿入を選択式に変更
+- エディタ右クリック → ノートリンクを挿入... でノート一覧から選択してリンクを挿入できるように変更
+- 選択リストには「ノートブック名 / ノート名」形式で表示（手入力不要）
+- ノートが存在しない名前のリンクを誤って作成する問題を防止
+- タスクコメント編集中はメニュー項目が無効化される
+
+#### 左ペインのノート右クリックからリンク挿入
+- 左ペインのノートを右クリック → このノートへのリンクを挿入 を追加
+- 右クリックしたノートをリンク先として、現在編集中の本文カーソル位置に `[[ノート名]]` を挿入
+- **右クリックしたノートへの画面遷移は行わない**
+- タスクコメント編集中は挿入不可（情報メッセージを表示）
+
+### コード変更
+
+- `NoteNest/Dialogs/NotePickerDialog.xaml` / `.xaml.cs`: ノート選択ダイアログを新規作成（`NotePickerItem` レコード型含む）
+- `NoteNest/ViewModels/MainViewModel.cs`: `IsNoteEditMode` プロパティを追加、バージョンを `0.8.2` に更新
+- `NoteNest/MainWindow.xaml`: ノートコンテキストメニューに「このノートへのリンクを挿入」を追加、エディタコンテキストメニューの挿入項目に `IsEnabled` バインドを追加
+- `NoteNest/MainWindow.xaml.cs`: `InsertNoteLink_Click` を `NotePickerDialog` 使用に変更、`InsertNoteLinkFromNote_Click` / `InsertTextAtCaret` を追加
+- `NoteNest.csproj`: `FileVersion` / `InformationalVersion` を `0.8.2` に更新
+
+---
+
 ## v0.8.1 — テキストエクスポート機能
 
 **リリース日：** 2026-06-01

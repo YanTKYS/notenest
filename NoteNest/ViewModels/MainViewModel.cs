@@ -251,6 +251,7 @@ public class MainViewModel : BaseViewModel
     }
 
     public bool IsTaskCommentMode => _editorMode == EditorMode.TaskComment;
+    public bool IsNoteEditMode    => _editorMode == EditorMode.NoteEdit;
 
     public string EditorTitle =>
         _editorMode == EditorMode.TaskComment && _editingTask != null
@@ -311,6 +312,7 @@ public class MainViewModel : BaseViewModel
         OnPropertyChanged(nameof(CurrentNoteTitle));
         OnPropertyChanged(nameof(EditorTitle));
         OnPropertyChanged(nameof(IsTaskCommentMode));
+        OnPropertyChanged(nameof(IsNoteEditMode));
         _isLoadingNote = false;
         RefreshMarkers();
     }
@@ -324,6 +326,7 @@ public class MainViewModel : BaseViewModel
         OnPropertyChanged(nameof(EditorContent));
         OnPropertyChanged(nameof(EditorTitle));
         OnPropertyChanged(nameof(IsTaskCommentMode));
+        OnPropertyChanged(nameof(IsNoteEditMode));
         _isLoadingNote = false;
 
         _editingTaskRelatedNote = FindNoteById(task.LinkedNoteId);
@@ -576,6 +579,7 @@ public class MainViewModel : BaseViewModel
         OnPropertyChanged(nameof(CurrentNoteTitle));
         OnPropertyChanged(nameof(EditorTitle));
         OnPropertyChanged(nameof(IsTaskCommentMode));
+        OnPropertyChanged(nameof(IsNoteEditMode));
         OnPropertyChanged(nameof(EditingTaskRelatedNote));
         OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
         _isLoadingNote = false;
@@ -736,6 +740,7 @@ public class MainViewModel : BaseViewModel
             OnPropertyChanged(nameof(EditorContent));
             OnPropertyChanged(nameof(EditorTitle));
             OnPropertyChanged(nameof(IsTaskCommentMode));
+            OnPropertyChanged(nameof(IsNoteEditMode));
             _isLoadingNote = false;
             RefreshMarkers();
         }
@@ -818,7 +823,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "0.8.1",
+            Version = "0.8.2",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook

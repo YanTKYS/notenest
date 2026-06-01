@@ -190,6 +190,8 @@
                                         <MenuItem Header="上に移動" Click="MoveNoteUp_Click"/>
                                         <MenuItem Header="下に移動" Click="MoveNoteDown_Click"/>
                                         <Separator/>
+                                        <MenuItem Header="このノートへのリンクを挿入" Click="InsertNoteLinkFromNote_Click"/>
+                                        <Separator/>
                                         <MenuItem Header="名前変更..." Click="RenameNote_Click"/>
                                         <Separator/>
                                         <MenuItem Header="削除"        Click="DeleteNote_Click"/>
@@ -394,7 +396,9 @@
                                 <Separator/>
                                 <MenuItem Header="ノートリンクを開く(_L)" Click="OpenNoteLink_Click"
                                           InputGestureText="Ctrl+Enter"/>
-                                <MenuItem Header="ノートリンクを挿入(_I)..." Click="InsertNoteLink_Click"/>
+                                <MenuItem Header="ノートリンクを挿入(_I)..." Click="InsertNoteLink_Click"
+                                          IsEnabled="{Binding PlacementTarget.DataContext.IsNoteEditMode,
+                                                      RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                             </ContextMenu>
                         </TextBox.ContextMenu>
                         <TextBox.Style>

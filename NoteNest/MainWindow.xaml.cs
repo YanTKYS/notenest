@@ -318,14 +318,7 @@ public partial class MainWindow : Window
     // ── Editor marker insertion ────────────────────────────────────────────
 
     private void InsertMarker(string markerText)
-    {
-        var insertion = $"{markerText} ";
-        var caret = EditorBox.CaretIndex;
-        EditorBox.Select(caret, 0);
-        EditorBox.SelectedText = insertion;
-        EditorBox.CaretIndex = caret + insertion.Length;
-        EditorBox.Focus();
-    }
+        => InsertTextAtCaret($"{markerText} ");
 
     private void InsertTodo_Click(object sender, RoutedEventArgs e)  => InsertMarker("[TODO]");
     private void InsertFixme_Click(object sender, RoutedEventArgs e) => InsertMarker("[FIXME]");
@@ -351,9 +344,37 @@ public partial class MainWindow : Window
 
     private void InsertNoteLink_Click(object sender, RoutedEventArgs e)
     {
-        var d = new InputDialog("ノートリンク挿入", "リンク先のノート名を入力してください:") { Owner = this };
-        if (d.ShowDialog() != true || string.IsNullOrWhiteSpace(d.ResultText)) return;
-        var text = $"[[{d.ResultText.Trim()}]]";
+        if (ViewModel.IsTaskCommentMode) return;
+        var items = ViewModel.Notebooks
+            .SelectMany(nb => nb.Notes.Select(n => new NotePickerItem(nb.Title, n)))
+            .ToList();
+        if (items.Count == 0)
+        {
+            MessageBox.Show("リンクできるノートがありません。", "情報",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+        var d = new NotePickerDialog(items) { Owner = this };
+        if (d.ShowDialog() != true || d.SelectedNote == null) return;
+        InsertTextAtCaret($"[[{d.SelectedNote.Title}]]");
+    }
+
+    private void InsertNoteLinkFromNote_Click(object sender, RoutedEventArgs e)
+    {
+        var note = GetDataContext<NoteViewModel>(sender);
+        if (note == null) return;
+        if (ViewModel.IsTaskCommentMode)
+        {
+            MessageBox.Show("タスクコメント編集中はノートリンクを挿入できません。\nノート本文を編集中のときに使用してください。",
+                "情報", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+        if (ViewModel.SelectedNote == null) return;
+        InsertTextAtCaret($"[[{note.Title}]]");
+    }
+
+    private void InsertTextAtCaret(string text)
+    {
         var caret = EditorBox.CaretIndex;
         EditorBox.Select(caret, 0);
         EditorBox.SelectedText = text;
