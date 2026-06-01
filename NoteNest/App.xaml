@@ -44,6 +44,27 @@
             <!-- Brushes: marker list -->
             <SolidColorBrush x:Key="MarkerHoverBg" Color="#F0F4FF"/>
 
+            <!-- Brushes: text hierarchy -->
+            <SolidColorBrush x:Key="SubtleFg"    Color="#777777"/>
+            <SolidColorBrush x:Key="MutedFg"     Color="#888888"/>
+            <SolidColorBrush x:Key="SecondaryFg" Color="#666666"/>
+            <SolidColorBrush x:Key="PrimaryFg"   Color="#555555"/>
+            <SolidColorBrush x:Key="FaintFg"     Color="#999999"/>
+            <SolidColorBrush x:Key="HintFg"      Color="#BBBBBB"/>
+
+            <!-- Brushes: chrome / panes -->
+            <SolidColorBrush x:Key="StatusBarBg"     Color="#F0F0F0"/>
+            <SolidColorBrush x:Key="RightPaneBg"     Color="#FAFAFA"/>
+            <SolidColorBrush x:Key="ItemBorderBrush" Color="#EEEEEE"/>
+
+            <!-- Brushes: sample banner action buttons -->
+            <SolidColorBrush x:Key="BannerPrimaryBg"       Color="#E6C800"/>
+            <SolidColorBrush x:Key="BannerPrimaryBorder"   Color="#B09600"/>
+            <SolidColorBrush x:Key="BannerPrimaryFg"       Color="#3A2B00"/>
+            <SolidColorBrush x:Key="BannerSecondaryBg"     Color="#4A90D9"/>
+            <SolidColorBrush x:Key="BannerSecondaryBorder" Color="#2E6DA4"/>
+            <SolidColorBrush x:Key="BannerSecondaryFg"     Color="White"/>
+
             <!-- Icon button style (flat, no border) -->
             <Style x:Key="IconButton" TargetType="Button">
                 <Setter Property="Background"   Value="Transparent"/>
