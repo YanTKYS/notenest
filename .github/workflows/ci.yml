@@ -17,10 +17,13 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore
-        run: dotnet restore NoteNest/NoteNest.csproj
+        run: dotnet restore NoteNest.sln
 
       - name: Build
-        run: dotnet build NoteNest/NoteNest.csproj -c Release --no-restore
+        run: dotnet build NoteNest.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test NoteNest.Tests/NoteNest.Tests.csproj -c Release --no-build --no-restore
 
       - uses: actions/upload-artifact@v4
         with:
