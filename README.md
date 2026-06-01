@@ -106,7 +106,7 @@ dotnet run --project NoteNest/NoteNest.csproj
 
 ```json
 {
-  "version": "0.2.0",
+  "version": "0.9.0",
   "projectId": "...",
   "projectName": "業務改善プロジェクト",
   "notebooks": [...],
