@@ -137,7 +137,31 @@ public partial class MainWindow : Window
         {
             TryOpenNoteLink();
             e.Handled = true;
+            return;
         }
+        if (Keyboard.Modifiers == ModifierKeys.Control &&
+            (e.Key == Key.OemPlus || e.Key == Key.Add))
+        {
+            ViewModel.EditorFontSize = Math.Min(36, ViewModel.EditorFontSize + 1);
+            e.Handled = true;
+            return;
+        }
+        if (Keyboard.Modifiers == ModifierKeys.Control &&
+            (e.Key == Key.OemMinus || e.Key == Key.Subtract))
+        {
+            ViewModel.EditorFontSize = Math.Max(8, ViewModel.EditorFontSize - 1);
+            e.Handled = true;
+        }
+    }
+
+    private void EditorBox_SelectionChanged(object sender, RoutedEventArgs e)
+    {
+        var caret     = EditorBox.CaretIndex;
+        var lineIndex = EditorBox.GetLineIndexFromCharacterIndex(caret);
+        if (lineIndex < 0) lineIndex = 0;
+        var lineStart = EditorBox.GetCharacterIndexFromLineIndex(lineIndex);
+        var col       = caret - lineStart + 1;
+        ViewModel.CaretPositionText = $"{lineIndex + 1}:{col}";
     }
 
     // ── Tree events ────────────────────────────────────────────────────────

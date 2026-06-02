@@ -97,6 +97,8 @@
             <TextBlock Text="{Binding EditorFontFamily}" Foreground="{DynamicResource SubtleFg}"/>
             <TextBlock Text=" "/>
             <TextBlock Text="{Binding EditorFontSize, StringFormat={}{0}pt}" Foreground="{DynamicResource SubtleFg}"/>
+            <Separator/>
+            <TextBlock Text="{Binding CaretPositionText}" Foreground="{DynamicResource SubtleFg}"/>
             <Separator Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}"/>
             <TextBlock Text="{Binding UnsavedIndicatorText}"
                        Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}">
@@ -391,7 +393,8 @@
                              VerticalContentAlignment="Top"
                              SpellCheck.IsEnabled="False"
                              Loaded="EditorBox_Loaded"
-                             TextChanged="EditorBox_TextChanged">
+                             TextChanged="EditorBox_TextChanged"
+                             SelectionChanged="EditorBox_SelectionChanged">
                         <TextBox.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="切り取り(_T)"  Command="ApplicationCommands.Cut"/>
