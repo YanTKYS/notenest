@@ -134,6 +134,13 @@ public class MainViewModel : BaseViewModel
         set => SetProperty(ref _editorFontSize, value);
     }
 
+    private string _caretPositionText = "";
+    public string CaretPositionText
+    {
+        get => _caretPositionText;
+        set => SetProperty(ref _caretPositionText, value);
+    }
+
     public string StatusMessage
     {
         get => _statusMessage;
@@ -626,6 +633,7 @@ public class MainViewModel : BaseViewModel
         OnPropertyChanged(nameof(EditingTaskRelatedNote));
         OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
         _isLoadingNote = false;
+        CaretPositionText = "";
         Markers.Clear();
         _projectTodoCount  = 0;
         _projectFixmeCount = 0;
@@ -866,7 +874,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "1.2.1",
+            Version = "1.2.2",
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook
