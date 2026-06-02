@@ -1,5 +1,29 @@
 # リリースノート
 
+## v1.2.3 — 内部リファクタリング
+
+**リリース日：** 2026-06-02
+
+### 概要
+
+今後の backlog 対応（特に L1 ノート絞り込み、M3 リンク管理タブ、M9 ノート名変更時のリンク影響警告、M11 リンク切れの手動チェック、M5 ノート作成日・更新日記録、M6 自動保存）の下準備として、内部構造のリファクタリングのみを実施。**ユーザー向けの動作変更はなし。**
+
+### 主な変更内容
+
+- `Project.CurrentSchemaVersion` 定数を導入し、`.notenest` 保存時のバージョン文字列を一元化（将来のスキーマ変更・マイグレーション処理の足場）
+- `MainViewModel.AllNotes` プロパティを導入し、複数箇所で重複していた `Notebooks.SelectMany(...)` を集約。マーカー集計・リンク検索・ID検索などはすべて `AllNotes` 経由に変更
+- `MainViewModel.FindNotebookOf(note)` ヘルパーを導入し、ノートが属するノートブックを取得するロジックを集約（`DeleteNote` / `MoveNoteUp/Down` / `MoveNoteToNotebook` / `MainWindow.FindNotebookTitleOf` を簡略化）
+- `MainViewModel.EnsureCanDiscardChanges(question)` を導入し、`NewProject` / `OpenProject` / `OpenRecentFile` で重複していた未保存変更の確認パターンを集約
+- `MainWindow.ShowError` / `ShowInfo` / `Confirm` ヘルパーを導入し、13 箇所以上にあった `MessageBox.Show(...)` のボイラープレートを簡略化
+- `RenameNoteWithDialog` / `DeleteNoteWithConfirm` / `AddNoteToNotebookViaDialog` で「右クリックメニュー版」と「メニューバー版」の重複ハンドラを集約
+
+### 影響範囲
+
+- データファイル（`.notenest`）の新規保存時、`version` フィールドが `"1.2.3"` になる（既存ファイルの読込は従来どおり）
+- アプリケーションバージョンは 1.2.2.0 → 1.2.3.0
+
+---
+
 ## v1.2.2 — ステータスバー行列表示・フォントサイズショートカット
 
 **リリース日：** 2026-06-02
