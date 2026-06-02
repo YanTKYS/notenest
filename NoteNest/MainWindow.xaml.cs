@@ -86,6 +86,8 @@ public partial class MainWindow : Window
             MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question)
                 == MessageBoxResult.Yes;
 
+        vm.ShowErrorDialog = (title, message) => ShowError(message, title);
+
         vm.RequestClose = Close;
 
         vm.NavigateToLine = lineNumber =>
@@ -204,30 +206,23 @@ public partial class MainWindow : Window
     private void AddNote_Click(object sender, RoutedEventArgs e)
     {
         var nb = GetSelectedNotebook();
-        if (nb == null)
-        {
-            MessageBox.Show("先にノートブックを選択または追加してください。", "情報",
-                            MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
-        var d = new InputDialog("ノート追加", "ノート名を入力してください:") { Owner = this };
-        if (d.ShowDialog() != true || string.IsNullOrWhiteSpace(d.ResultText)) return;
-        var title = d.ResultText.Trim();
-        if (!ViewModel.AddNoteToNotebook(nb, title))
-            MessageBox.Show($"ノート名「{title}」は既に使用されています。", "エラー",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+        if (nb == null) { ShowInfo("先にノートブックを選択または追加してください。"); return; }
+        AddNoteToNotebookViaDialog(nb);
     }
 
     private void AddNoteToNotebook_Click(object sender, RoutedEventArgs e)
     {
         var nb = GetDataContext<NotebookViewModel>(sender);
-        if (nb == null) return;
+        if (nb != null) AddNoteToNotebookViaDialog(nb);
+    }
+
+    private void AddNoteToNotebookViaDialog(NotebookViewModel nb)
+    {
         var d = new InputDialog("ノート追加", "ノート名を入力してください:") { Owner = this };
         if (d.ShowDialog() != true || string.IsNullOrWhiteSpace(d.ResultText)) return;
         var title = d.ResultText.Trim();
         if (!ViewModel.AddNoteToNotebook(nb, title))
-            MessageBox.Show($"ノート名「{title}」は既に使用されています。", "エラー",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowError($"ノート名「{title}」は既に使用されています。");
     }
 
     private void RenameNotebook_Click(object sender, RoutedEventArgs e)
@@ -255,8 +250,8 @@ public partial class MainWindow : Window
     {
         var nb = GetDataContext<NotebookViewModel>(sender);
         if (nb == null) return;
-        if (MessageBox.Show($"ノートブック「{nb.Title}」を削除しますか？\n含まれるノートもすべて削除されます。この操作は取り消せません。",
-                            "削除の確認", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+        if (Confirm($"ノートブック「{nb.Title}」を削除しますか？\n含まれるノートもすべて削除されます。この操作は取り消せません。",
+                    "削除の確認"))
             ViewModel.DeleteNotebook(nb);
     }
 
@@ -273,48 +268,33 @@ public partial class MainWindow : Window
     }
 
     private void RenameNote_Click(object sender, RoutedEventArgs e)
-    {
-        var note = GetDataContext<NoteViewModel>(sender);
-        if (note == null) return;
-        var d = new InputDialog("名前変更", "新しいノート名:", note.Title) { Owner = this };
-        if (d.ShowDialog() != true || string.IsNullOrWhiteSpace(d.ResultText)) return;
-        var newTitle = d.ResultText.Trim();
-        if (!ViewModel.RenameNote(note, newTitle))
-            MessageBox.Show($"ノート名「{newTitle}」は既に使用されています。", "エラー",
-                MessageBoxButton.OK, MessageBoxImage.Error);
-    }
+        => RenameNoteWithDialog(GetDataContext<NoteViewModel>(sender));
 
     private void DeleteNote_Click(object sender, RoutedEventArgs e)
-    {
-        var note = GetDataContext<NoteViewModel>(sender);
-        if (note == null) return;
-        var nbTitle = FindNotebookTitleOf(note);
-        var location = nbTitle != null ? $"（{nbTitle}）" : "";
-        if (MessageBox.Show($"ノート「{note.Title}」{location}を削除しますか？\nこの操作は取り消せません。",
-                            "削除の確認", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-            ViewModel.DeleteNote(note);
-    }
+        => DeleteNoteWithConfirm(GetDataContext<NoteViewModel>(sender));
 
     private void RenameSelectedNote_Click(object sender, RoutedEventArgs e)
+        => RenameNoteWithDialog(ViewModel.SelectedNote);
+
+    private void DeleteSelectedNote_Click(object sender, RoutedEventArgs e)
+        => DeleteNoteWithConfirm(ViewModel.SelectedNote);
+
+    private void RenameNoteWithDialog(NoteViewModel? note)
     {
-        var note = ViewModel.SelectedNote;
         if (note == null) return;
         var d = new InputDialog("名前変更", "新しいノート名:", note.Title) { Owner = this };
         if (d.ShowDialog() != true || string.IsNullOrWhiteSpace(d.ResultText)) return;
         var newTitle = d.ResultText.Trim();
         if (!ViewModel.RenameNote(note, newTitle))
-            MessageBox.Show($"ノート名「{newTitle}」は既に使用されています。", "エラー",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowError($"ノート名「{newTitle}」は既に使用されています。");
     }
 
-    private void DeleteSelectedNote_Click(object sender, RoutedEventArgs e)
+    private void DeleteNoteWithConfirm(NoteViewModel? note)
     {
-        var note = ViewModel.SelectedNote;
         if (note == null) return;
         var nbTitle = FindNotebookTitleOf(note);
         var location = nbTitle != null ? $"（{nbTitle}）" : "";
-        if (MessageBox.Show($"ノート「{note.Title}」{location}を削除しますか？\nこの操作は取り消せません。",
-                            "削除の確認", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+        if (Confirm($"ノート「{note.Title}」{location}を削除しますか？\nこの操作は取り消せません。", "削除の確認"))
             ViewModel.DeleteNote(note);
     }
 
@@ -416,8 +396,7 @@ public partial class MainWindow : Window
         var note = ViewModel.FindNoteByTitle(linkTitle);
         if (note == null)
         {
-            MessageBox.Show($"ノート「{linkTitle}」が見つかりません。", "リンク先なし",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            ShowInfo($"ノート「{linkTitle}」が見つかりません。", "リンク先なし");
             return;
         }
         ViewModel.NavigateToNote(note);
@@ -431,12 +410,7 @@ public partial class MainWindow : Window
         var items = ViewModel.Notebooks
             .SelectMany(nb => nb.Notes.Select(n => new NotePickerItem(nb.Title, n)))
             .ToList();
-        if (items.Count == 0)
-        {
-            MessageBox.Show("リンクできるノートがありません。", "情報",
-                MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
+        if (items.Count == 0) { ShowInfo("リンクできるノートがありません。"); return; }
         var d = new NotePickerDialog(items) { Owner = this };
         if (d.ShowDialog() != true || d.SelectedNote == null) return;
         InsertTextAtCaret($"[[{d.SelectedNote.Title}]]");
@@ -448,19 +422,18 @@ public partial class MainWindow : Window
         if (note == null) return;
         if (ViewModel.IsTaskCommentMode)
         {
-            MessageBox.Show("タスクコメント編集中はノートリンクを挿入できません。\nノート本文を編集中のときに使用してください。",
-                "情報", MessageBoxButton.OK, MessageBoxImage.Information);
+            ShowInfo("タスクコメント編集中はノートリンクを挿入できません。\nノート本文を編集中のときに使用してください。");
             return;
         }
         if (ViewModel.SelectedNote == null) return;
         if (ViewModel.NoteNameExists(note.Title, excludeSelf: note))
         {
-            var result = MessageBox.Show(
+            if (!Confirm(
                 $"「{note.Title}」という名前のノートが複数あります。\n" +
                 $"[[{note.Title}]] リンクは最初に見つかったノートへ解決される場合があります。\n\n" +
                 "このノートへのリンクを挿入しますか？",
-                "同名ノートの警告", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result != MessageBoxResult.Yes) return;
+                "同名ノートの警告"))
+                return;
         }
         InsertTextAtCaret($"[[{note.Title}]]");
     }
@@ -487,7 +460,7 @@ public partial class MainWindow : Window
         if (note != null)
             ViewModel.NavigateToNote(note);
         else
-            MessageBox.Show("関連ノートが見つかりません。", "情報", MessageBoxButton.OK, MessageBoxImage.Information);
+            ShowInfo("関連ノートが見つかりません。");
     }
 
     private void SetRelatedNote_Click(object sender, RoutedEventArgs e)
@@ -496,11 +469,11 @@ public partial class MainWindow : Window
         if (task == null) return;
         var d = new InputDialog("関連ノートを設定", "ノート名を入力してください:") { Owner = this };
         if (d.ShowDialog() != true || string.IsNullOrWhiteSpace(d.ResultText)) return;
-        var note = ViewModel.FindNoteByTitle(d.ResultText.Trim());
+        var noteTitle = d.ResultText.Trim();
+        var note = ViewModel.FindNoteByTitle(noteTitle);
         if (note == null)
         {
-            MessageBox.Show($"ノート「{d.ResultText.Trim()}」が見つかりません。", "エラー",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowError($"ノート「{noteTitle}」が見つかりません。");
             return;
         }
         ViewModel.SetTaskRelatedNote(task, note);
@@ -535,19 +508,13 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"エクスポートに失敗しました。\n{ex.Message}", "エラー",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowError($"エクスポートに失敗しました。\n{ex.Message}");
         }
     }
 
     private void ExportNotebooksText_Click(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.Notebooks.Count == 0)
-        {
-            MessageBox.Show("エクスポートするノートブックがありません。", "情報",
-                MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
+        if (ViewModel.Notebooks.Count == 0) { ShowInfo("エクスポートするノートブックがありません。"); return; }
 
         var dialog = new Microsoft.Win32.OpenFolderDialog
         {
@@ -556,24 +523,17 @@ public partial class MainWindow : Window
         if (dialog.ShowDialog() != true) return;
 
         var dir = dialog.FolderName;
-        if (!System.IO.Directory.Exists(dir))
-        {
-            MessageBox.Show("選択したフォルダが存在しません。", "エラー",
-                MessageBoxButton.OK, MessageBoxImage.Error);
-            return;
-        }
+        if (!System.IO.Directory.Exists(dir)) { ShowError("選択したフォルダが存在しません。"); return; }
 
         try
         {
             var count = ViewModel.ExportNotebooksToTextFiles(dir);
-            MessageBox.Show($"{count} 件のノートブックをエクスポートしました。\n出力先: {dir}",
-                "エクスポート完了", MessageBoxButton.OK, MessageBoxImage.Information);
+            ShowInfo($"{count} 件のノートブックをエクスポートしました。\n出力先: {dir}", "エクスポート完了");
             ViewModel.StatusMessage = $"{count} 件のノートブックをエクスポートしました。";
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"エクスポートに失敗しました。\n{ex.Message}", "エラー",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowError($"エクスポートに失敗しました。\n{ex.Message}");
         }
     }
 
@@ -705,12 +665,19 @@ public partial class MainWindow : Window
         return ViewModel.Notebooks.Count > 0 ? ViewModel.Notebooks[0] : null;
     }
 
-    private string? FindNotebookTitleOf(NoteViewModel note)
-    {
-        foreach (var nb in ViewModel.Notebooks)
-            if (nb.Notes.Contains(note)) return nb.Title;
-        return null;
-    }
+    private string? FindNotebookTitleOf(NoteViewModel note) =>
+        ViewModel.FindNotebookOf(note)?.Title;
+
+    // 通知ダイアログ共通処理。MessageBox 呼び出しのボイラープレートを集約する。
+    private void ShowError(string message, string title = "エラー") =>
+        MessageBox.Show(this, message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+
+    private void ShowInfo(string message, string title = "情報") =>
+        MessageBox.Show(this, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+
+    private bool Confirm(string message, string title = "確認",
+        MessageBoxImage icon = MessageBoxImage.Warning) =>
+        MessageBox.Show(this, message, title, MessageBoxButton.YesNo, icon) == MessageBoxResult.Yes;
 
     // Gets DataContext from a MenuItem in a ContextMenu
     private static T? GetDataContext<T>(object sender) where T : class

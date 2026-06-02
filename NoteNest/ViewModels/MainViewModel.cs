@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using NoteNest.Models;
@@ -41,6 +40,7 @@ public class MainViewModel : BaseViewModel
     // Callbacks registered by MainWindow
     public Func<string, string, string?>? ShowInputDialog { get; set; }
     public Func<string, string, bool>? ShowConfirmDialog { get; set; }
+    public Action<string, string>? ShowErrorDialog { get; set; }
     public Action? RequestClose { get; set; }
     public Action<int>? NavigateToLine { get; set; }
     public Action<MarkerViewModel>? NavigateToMarker { get; set; }
@@ -294,8 +294,10 @@ public class MainViewModel : BaseViewModel
             ? $"タスクコメント：{_editingTask.Title}"
             : SelectedNote?.Title ?? "";
 
-    public IEnumerable<NoteViewModel> RelatedNoteChoices =>
-        Notebooks.SelectMany(nb => nb.Notes);
+    // プロジェクト全体のノート列挙。全ノート横断処理（検索、リンク解決、マーカー集計等）はここを起点に書く。
+    public IEnumerable<NoteViewModel> AllNotes => Notebooks.SelectMany(nb => nb.Notes);
+
+    public IEnumerable<NoteViewModel> RelatedNoteChoices => AllNotes;
 
     public NoteViewModel? EditingTaskRelatedNote
     {
@@ -430,37 +432,31 @@ public class MainViewModel : BaseViewModel
 
     public void DeleteNote(NoteViewModel note)
     {
-        foreach (var nb in Notebooks)
-        {
-            if (nb.Notes.Remove(note))
-            {
-                nb.Model.Notes.Remove(note.Model);
-                ClearTaskLinksToNoteIds(new[] { note.Id });
-                if (SelectedNote == note) ClearEditor();
-                IsModified = true;
-                OnPropertyChanged(nameof(RelatedNoteChoices));
-                RefreshMarkers();
-                return;
-            }
-        }
+        var nb = FindNotebookOf(note);
+        if (nb == null) return;
+        nb.Notes.Remove(note);
+        nb.Model.Notes.Remove(note.Model);
+        ClearTaskLinksToNoteIds(new[] { note.Id });
+        if (SelectedNote == note) ClearEditor();
+        IsModified = true;
+        OnPropertyChanged(nameof(RelatedNoteChoices));
+        RefreshMarkers();
     }
 
     public void MoveNoteUp(NoteViewModel note)
     {
-        foreach (var nb in Notebooks)
-        {
-            var idx = nb.Notes.IndexOf(note);
-            if (idx > 0) { nb.Notes.Move(idx, idx - 1); IsModified = true; return; }
-        }
+        var nb = FindNotebookOf(note);
+        if (nb == null) return;
+        var idx = nb.Notes.IndexOf(note);
+        if (idx > 0) { nb.Notes.Move(idx, idx - 1); IsModified = true; }
     }
 
     public void MoveNoteDown(NoteViewModel note)
     {
-        foreach (var nb in Notebooks)
-        {
-            var idx = nb.Notes.IndexOf(note);
-            if (idx >= 0 && idx < nb.Notes.Count - 1) { nb.Notes.Move(idx, idx + 1); IsModified = true; return; }
-        }
+        var nb = FindNotebookOf(note);
+        if (nb == null) return;
+        var idx = nb.Notes.IndexOf(note);
+        if (idx >= 0 && idx < nb.Notes.Count - 1) { nb.Notes.Move(idx, idx + 1); IsModified = true; }
     }
 
     public void MoveNotebookUp(NotebookViewModel nb)
@@ -499,7 +495,7 @@ public class MainViewModel : BaseViewModel
 
     public void MoveNoteToNotebook(NoteViewModel note, NotebookViewModel targetNotebook)
     {
-        var sourceNotebook = Notebooks.FirstOrDefault(nb => nb.Notes.Contains(note));
+        var sourceNotebook = FindNotebookOf(note);
         if (sourceNotebook == null || sourceNotebook == targetNotebook) return;
         sourceNotebook.Notes.Remove(note);
         sourceNotebook.Model.Notes.Remove(note.Model);
@@ -532,34 +528,20 @@ public class MainViewModel : BaseViewModel
     public NoteViewModel? FindNoteById(string? id)
     {
         if (string.IsNullOrEmpty(id)) return null;
-        foreach (var nb in Notebooks)
-        {
-            var note = nb.Notes.FirstOrDefault(n => n.Id == id);
-            if (note != null) return note;
-        }
-        return null;
+        return AllNotes.FirstOrDefault(n => n.Id == id);
     }
 
-    public NoteViewModel? FindNoteByTitle(string title)
-    {
-        foreach (var nb in Notebooks)
-        {
-            var note = nb.Notes.FirstOrDefault(n =>
-                string.Equals(n.Title, title, StringComparison.OrdinalIgnoreCase));
-            if (note != null) return note;
-        }
-        return null;
-    }
+    public NoteViewModel? FindNoteByTitle(string title) =>
+        AllNotes.FirstOrDefault(n =>
+            string.Equals(n.Title, title, StringComparison.OrdinalIgnoreCase));
 
-    public bool NoteNameExists(string title, NoteViewModel? excludeSelf = null)
-    {
-        foreach (var nb in Notebooks)
-            foreach (var n in nb.Notes)
-                if (n != excludeSelf &&
-                    string.Equals(n.Title, title, StringComparison.OrdinalIgnoreCase))
-                    return true;
-        return false;
-    }
+    public bool NoteNameExists(string title, NoteViewModel? excludeSelf = null) =>
+        AllNotes.Any(n => n != excludeSelf &&
+            string.Equals(n.Title, title, StringComparison.OrdinalIgnoreCase));
+
+    // ノートが属するノートブックを返す。M3/M9 のリンク影響調査で利用予定。
+    public NotebookViewModel? FindNotebookOf(NoteViewModel note) =>
+        Notebooks.FirstOrDefault(nb => nb.Notes.Contains(note));
 
     public void NavigateToNote(NoteViewModel note)
     {
@@ -615,6 +597,14 @@ public class MainViewModel : BaseViewModel
         return ShowConfirmDialog?.Invoke("未保存の変更", "保存されていない変更があります。終了しますか？") ?? true;
     }
 
+    // 未保存変更がある場合に確認ダイアログを出す共通処理。
+    // 続行可（保存不要、または破棄を選択）なら true。M6 自動保存導入時はここで保存して true を返す形に拡張する想定。
+    private bool EnsureCanDiscardChanges(string question)
+    {
+        if (!IsModified) return true;
+        return ShowConfirmDialog?.Invoke("未保存の変更", question) ?? true;
+    }
+
     // ── Private helpers ──────────────────────────────────────────────────────
 
     private void ClearEditor()
@@ -645,7 +635,7 @@ public class MainViewModel : BaseViewModel
 
     private void NewProject()
     {
-        if (IsModified && ShowConfirmDialog?.Invoke("未保存の変更", "保存されていない変更があります。新規プロジェクトを作成しますか？") != true)
+        if (!EnsureCanDiscardChanges("保存されていない変更があります。新規プロジェクトを作成しますか？"))
             return;
         LoadProject(_sampleService.Create(), null);
         StatusMessage = "新規プロジェクトを作成しました。";
@@ -653,8 +643,7 @@ public class MainViewModel : BaseViewModel
 
     private void OpenProject()
     {
-        if (IsModified && ShowConfirmDialog?.Invoke("未保存の変更", "保存されていない変更があります。続けますか？") != true)
-            return;
+        if (!EnsureCanDiscardChanges("保存されていない変更があります。続けますか？")) return;
 
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
@@ -672,7 +661,7 @@ public class MainViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"ファイルを開けませんでした。\n{ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowErrorDialog?.Invoke("エラー", $"ファイルを開けませんでした。\n{ex.Message}");
         }
     }
 
@@ -713,7 +702,7 @@ public class MainViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"保存に失敗しました。\n{ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowErrorDialog?.Invoke("エラー", $"保存に失敗しました。\n{ex.Message}");
             return false;
         }
     }
@@ -725,8 +714,7 @@ public class MainViewModel : BaseViewModel
 
     private void OpenRecentFile(string path)
     {
-        if (IsModified && ShowConfirmDialog?.Invoke("未保存の変更", "保存されていない変更があります。続けますか？") != true)
-            return;
+        if (!EnsureCanDiscardChanges("保存されていない変更があります。続けますか？")) return;
         try
         {
             var project = _fileService.Load(path);
@@ -735,8 +723,7 @@ public class MainViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"ファイルを開けませんでした。\n{ex.Message}", "エラー",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowErrorDialog?.Invoke("エラー", $"ファイルを開けませんでした。\n{ex.Message}");
         }
     }
 
@@ -845,15 +832,7 @@ public class MainViewModel : BaseViewModel
         EditorFontSize   = project.Settings.FontSize;
 
         // Restore last opened note
-        NoteViewModel? lastNote = null;
-        if (!string.IsNullOrEmpty(project.Settings.LastOpenedNoteId))
-        {
-            foreach (var nb in Notebooks)
-            {
-                lastNote = nb.Notes.FirstOrDefault(n => n.Id == project.Settings.LastOpenedNoteId);
-                if (lastNote != null) break;
-            }
-        }
+        var lastNote = FindNoteById(project.Settings.LastOpenedNoteId);
         if (lastNote == null && Notebooks.Count > 0 && Notebooks[0].Notes.Count > 0)
             lastNote = Notebooks[0].Notes[0];
 
@@ -874,7 +853,7 @@ public class MainViewModel : BaseViewModel
 
         return new Project
         {
-            Version = "1.2.2",
+            Version = Project.CurrentSchemaVersion,
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
             Notebooks = Notebooks.Select(nb => new Notebook
@@ -907,17 +886,14 @@ public class MainViewModel : BaseViewModel
     {
         Markers.Clear();
         int todo = 0, fixme = 0, noteCount = 0;
-        foreach (var nb in Notebooks)
+        foreach (var n in AllNotes)
         {
-            foreach (var n in nb.Notes)
+            foreach (var m in _markerService.Extract(n.Content, n.Title))
             {
-                foreach (var m in _markerService.Extract(n.Content, n.Title))
-                {
-                    Markers.Add(new MarkerViewModel(m, n));
-                    if (m.Type == "TODO")       todo++;
-                    else if (m.Type == "FIXME") fixme++;
-                    else if (m.Type == "NOTE")  noteCount++;
-                }
+                Markers.Add(new MarkerViewModel(m, n));
+                if (m.Type == "TODO")       todo++;
+                else if (m.Type == "FIXME") fixme++;
+                else if (m.Type == "NOTE")  noteCount++;
             }
         }
         _projectTodoCount  = todo;
