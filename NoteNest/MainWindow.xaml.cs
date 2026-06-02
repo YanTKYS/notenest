@@ -142,14 +142,16 @@ public partial class MainWindow : Window
         if (Keyboard.Modifiers == ModifierKeys.Control &&
             (e.Key == Key.OemPlus || e.Key == Key.Add))
         {
-            ViewModel.EditorFontSize = Math.Min(36, ViewModel.EditorFontSize + 1);
+            ViewModel.ApplyFontSettings(ViewModel.EditorFontFamily,
+                Math.Min(36, ViewModel.EditorFontSize + 1));
             e.Handled = true;
             return;
         }
         if (Keyboard.Modifiers == ModifierKeys.Control &&
             (e.Key == Key.OemMinus || e.Key == Key.Subtract))
         {
-            ViewModel.EditorFontSize = Math.Max(8, ViewModel.EditorFontSize - 1);
+            ViewModel.ApplyFontSettings(ViewModel.EditorFontFamily,
+                Math.Max(8, ViewModel.EditorFontSize - 1));
             e.Handled = true;
         }
     }

@@ -112,7 +112,7 @@ dotnet run --project NoteNest/NoteNest.csproj
 
 ```json
 {
-  "version": "1.2.1",
+  "version": "1.2.2",
   "projectId": "...",
   "projectName": "業務改善プロジェクト",
   "notebooks": [...],
@@ -134,6 +134,9 @@ dotnet run --project NoteNest/NoteNest.csproj
 | `Ctrl+O` | プロジェクトを開く |
 | `Ctrl+F` | 検索／置換ダイアログを開く |
 | `Ctrl+H` | 検索／置換ダイアログを開く |
+| `Ctrl+Enter` | カーソル位置のノートリンクを開く |
+| `Ctrl+=` / `Ctrl+Numpad+` | エディタフォントサイズを拡大（最大 36pt） |
+| `Ctrl+-` / `Ctrl+Numpad-` | エディタフォントサイズを縮小（最小 8pt） |
 
 ## 複数起動時の注意
 
