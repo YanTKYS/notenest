@@ -591,6 +591,25 @@ public class MainViewModel : BaseViewModel
         IsModified       = true;
     }
 
+    // 起動時引数から渡されたファイルパスを開く。
+    // 拡張子・存在確認は呼び出し元（MainWindow）で済ませてから呼ぶこと。
+    // 成功時は true、失敗時は false を返す（エラー通知は ShowErrorDialog を通じて行う）。
+    public bool OpenFileAtStartup(string path)
+    {
+        try
+        {
+            var project = _fileService.Load(path);
+            LoadProject(project, path);
+            StatusMessage = $"プロジェクトを開きました: {System.IO.Path.GetFileName(path)}";
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ShowErrorDialog?.Invoke("エラー", $"ファイルを開けませんでした。\n{ex.Message}");
+            return false;
+        }
+    }
+
     public bool ConfirmCloseIfModified()
     {
         if (!IsModified) return true;
