@@ -8,6 +8,8 @@ public partial class App : Application
 {
     private void App_Startup(object sender, StartupEventArgs e)
     {
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
         var startupPath = e.Args.Length > 0 ? e.Args[0] : null;
 
         if (startupPath == null)
@@ -21,6 +23,8 @@ public partial class App : Application
         }
 
         var window = new MainWindow(startupPath);
+        MainWindow = window;
+        ShutdownMode = ShutdownMode.OnMainWindowClose;
         window.Show();
     }
 }
