@@ -36,8 +36,13 @@ public partial class MainWindow : Window
     private bool   _isRightPaneCollapsed = false;
     private double _savedRightPaneWidth  = 280;
 
-    public MainWindow()
+    // ファイル関連付け・コマンドライン起動時に開くパス。null なら通常起動（サンプル）。
+    private readonly string? _startupFilePath;
+
+    public MainWindow(string? startupFilePath = null)
     {
+        _startupFilePath = startupFilePath;
+
         // Apply theme before InitializeComponent so DynamicResources resolve to the correct values.
         _uiSettings = _uiSettingsService.Load();
         _themeService.Apply(_uiSettings.Theme);
@@ -124,6 +129,29 @@ public partial class MainWindow : Window
         };
 
         vm.SyncTreeSelectionCallback = note => SyncTreeSelection(note);
+
+        // 起動引数があれば、ウィンドウ表示後にファイルを開く。
+        // Loaded 後に実行することで MessageBox の Owner が正しく設定される。
+        if (_startupFilePath != null)
+            Loaded += (_, _) => OpenStartupFile(_startupFilePath);
+    }
+
+    // ── Startup file loading ───────────────────────────────────────────────
+
+    private void OpenStartupFile(string path)
+    {
+        if (!path.EndsWith(".notenest", StringComparison.OrdinalIgnoreCase))
+        {
+            ShowError($"NoteNest で開けるファイルではありません。\n.notenest ファイルを指定してください。\n\n{path}",
+                      "ファイルを開けません");
+            return;
+        }
+        if (!System.IO.File.Exists(path))
+        {
+            ShowError($"指定されたファイルが見つかりません。\n\n{path}", "ファイルを開けません");
+            return;
+        }
+        ViewModel.OpenFileAtStartup(path);
     }
 
     private void Window_PreviewKeyDown(object sender, KeyEventArgs e)

@@ -99,6 +99,17 @@ dotnet run --project NoteNest/NoteNest.csproj
 
 または Visual Studio 2022 でソリューションファイル `NoteNest.sln` を開いて実行してください。
 
+### ファイル関連付けからの起動（v1.2.5〜）
+
+Windows の「既定のアプリ」または右クリック → プログラムから開く → 常にこのアプリで開く で `.notenest` ファイルを NoteNest.exe に関連付けると、`.notenest` ファイルをダブルクリックするだけで直接開けます。
+
+```
+NoteNest.exe "C:\path\to\project.notenest"
+```
+
+- 関連付け自体の登録は Windows 側で手動で行ってください（インストーラーや自動登録は v1.2.5 では提供していません）
+- 同じ `.notenest` ファイルを複数ウィンドウで同時に開かないでください（後から保存した内容で上書きされます）
+
 ## バックアップと復元
 
 - NoteNest は保存時に `.notenest` ファイルと同じフォルダに `.bak` を自動作成します（直前の保存内容のみ）
@@ -116,7 +127,7 @@ dotnet run --project NoteNest/NoteNest.csproj
 
 ```json
 {
-  "version": "1.2.4",
+  "version": "1.2.5",
   "projectId": "...",
   "projectName": "業務改善プロジェクト",
   "notebooks": [...],
@@ -147,7 +158,7 @@ dotnet run --project NoteNest/NoteNest.csproj
 - NoteNest は複数起動に対応しています。複数のウィンドウでそれぞれ別のプロジェクトを開いて同時利用できます
 - **同じ `.notenest` ファイルを複数ウィンドウで同時編集しないでください。** 後から保存した内容で上書きされます
 
-## v1.2.4 時点の制限
+## v1.2.5 時点の制限
 
 | 機能 | 状態 |
 |------|------|
