@@ -147,7 +147,7 @@
                         <Button DockPanel.Dock="Right" Content="+" Width="22" Height="22"
                                 Style="{StaticResource IconButton}"
                                 Click="LeftPaneAdd_Click" ToolTip="追加"/>
-                        <TextBlock Text="{Binding ProjectName}"
+                        <TextBlock Text="{Binding ProjectDisplayName}"
                                    FontWeight="Bold" FontSize="13"
                                    TextTrimming="CharacterEllipsis"
                                    VerticalAlignment="Center"/>

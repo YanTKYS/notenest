@@ -194,6 +194,11 @@ public class MainViewModel : BaseViewModel
         }
     }
 
+    public string ProjectDisplayName =>
+        _currentFilePath != null
+            ? System.IO.Path.GetFileName(_currentFilePath)
+            : "新規プロジェクト";
+
     public int MarkerCount => Markers.Count;
     public string? CurrentNoteTitle => SelectedNote?.Title;
 
@@ -705,6 +710,7 @@ public class MainViewModel : BaseViewModel
         {
             _currentFilePath = dialog.FileName;
             OnPropertyChanged(nameof(WindowTitle));
+            OnPropertyChanged(nameof(ProjectDisplayName));
         }
     }
 
@@ -863,6 +869,7 @@ public class MainViewModel : BaseViewModel
 
         IsModified = false;
         OnPropertyChanged(nameof(WindowTitle));
+        OnPropertyChanged(nameof(ProjectDisplayName));
         OnPropertyChanged(nameof(RelatedNoteChoices));
     }
 
