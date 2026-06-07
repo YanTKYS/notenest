@@ -5,20 +5,17 @@ public partial class MainViewModel
     public void SelectNote(NoteViewModel note)
     {
         _editor.SelectNote(note);
-        RefreshMarkers();
     }
 
     public void AddNotebookWithTitle(string title)
     {
         _notes.AddNotebook(title);
-        IsModified = true;
         StatusMessage = $"ノートブック「{title}」を追加しました。";
     }
 
     public void RenameNotebook(NotebookViewModel notebook, string newTitle)
     {
         _notes.RenameNotebook(notebook, newTitle);
-        IsModified = true;
     }
 
     public void DeleteNotebook(NotebookViewModel notebook)
@@ -26,16 +23,12 @@ public partial class MainViewModel
         if (SelectedNote != null && notebook.Notes.Contains(SelectedNote)) ClearEditor();
         var deletedNoteIds = _notes.DeleteNotebook(notebook);
         ClearTaskLinksToNoteIds(deletedNoteIds);
-        IsModified = true;
-        RefreshMarkers();
     }
 
     public bool AddNoteToNotebook(NotebookViewModel notebook, string title)
     {
         var note = _notes.AddNote(notebook, title);
         if (note == null) return false;
-        IsModified = true;
-        OnPropertyChanged(nameof(RelatedNoteChoices));
         SelectNote(note);
         StatusMessage = $"ノート「{title}」を追加しました。";
         return true;
@@ -44,13 +37,6 @@ public partial class MainViewModel
     public bool RenameNote(NoteViewModel note, string newTitle)
     {
         if (!_notes.RenameNote(note, newTitle)) return false;
-        if (SelectedNote == note)
-        {
-            OnPropertyChanged(nameof(CurrentNoteTitle));
-            OnPropertyChanged(nameof(EditorTitle));
-            RefreshMarkers();
-        }
-        IsModified = true;
         return true;
     }
 
@@ -59,20 +45,16 @@ public partial class MainViewModel
         if (!_notes.DeleteNote(note)) return;
         ClearTaskLinksToNoteIds(new[] { note.Id });
         if (SelectedNote == note) ClearEditor();
-        IsModified = true;
-        OnPropertyChanged(nameof(RelatedNoteChoices));
-        RefreshMarkers();
     }
 
-    public void MoveNoteUp(NoteViewModel note) { if (_notes.MoveNoteUp(note)) IsModified = true; }
-    public void MoveNoteDown(NoteViewModel note) { if (_notes.MoveNoteDown(note)) IsModified = true; }
-    public void MoveNotebookUp(NotebookViewModel notebook) { if (_notes.MoveNotebookUp(notebook)) IsModified = true; }
-    public void MoveNotebookDown(NotebookViewModel notebook) { if (_notes.MoveNotebookDown(notebook)) IsModified = true; }
+    public void MoveNoteUp(NoteViewModel note) => _notes.MoveNoteUp(note);
+    public void MoveNoteDown(NoteViewModel note) => _notes.MoveNoteDown(note);
+    public void MoveNotebookUp(NotebookViewModel notebook) => _notes.MoveNotebookUp(notebook);
+    public void MoveNotebookDown(NotebookViewModel notebook) => _notes.MoveNotebookDown(notebook);
 
     public void MoveNoteToNotebook(NoteViewModel note, NotebookViewModel targetNotebook)
     {
         if (!_notes.MoveNoteToNotebook(note, targetNotebook)) return;
-        IsModified = true;
         StatusMessage = $"ノート「{note.Title}」を「{targetNotebook.Title}」に移動しました。";
     }
 

@@ -5,7 +5,6 @@ public partial class MainViewModel
     public void SelectTask(TaskViewModel task)
     {
         _editor.SelectTask(task, FindNoteById(task.LinkedNoteId));
-        RefreshMarkers();
     }
 
     public void MoveTaskToGroupAt(TaskViewModel source, TaskViewModel target)
@@ -26,7 +25,6 @@ public partial class MainViewModel
     public void RenameTask(TaskViewModel task, string newTitle)
     {
         _tasks.RenameTask(task, newTitle);
-        if (_editor.EditingTask == task) OnPropertyChanged(nameof(EditorTitle));
     }
 
     public void SetTaskRelatedNote(TaskViewModel task, NoteViewModel note)
@@ -56,10 +54,7 @@ public partial class MainViewModel
     private void DeleteTask(TaskViewModel task)
     {
         if (_editor.EditingTask == task)
-        {
             _editor.ReturnToSelectedNote();
-            RefreshMarkers();
-        }
         _tasks.DeleteTask(task);
     }
 }

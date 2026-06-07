@@ -153,6 +153,7 @@ public partial class MainViewModel
         if (filePath != null) RecordRecentFile(filePath);
 
         var lastNote = _documentService.Load(project, _notes, _tasks, _editor);
+        _markers.Refresh(_notes.AllNotes);
 
         if (lastNote != null)
             SelectNote(lastNote);

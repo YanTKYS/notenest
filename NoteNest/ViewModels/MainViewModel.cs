@@ -23,6 +23,7 @@ public partial class MainViewModel : BaseViewModel
     private readonly TaskBoardViewModel _tasks = new();
     private readonly MarkerPanelViewModel _markers = new(new MarkerExtractorService());
     private readonly EditorStateViewModel _editor = new();
+    private readonly WorkspaceChangeCoordinator _changeCoordinator;
     private DateTime _unsavedSince;
     private DispatcherTimer? _unsavedTimer;
 
@@ -39,16 +40,8 @@ public partial class MainViewModel : BaseViewModel
 
     public MainViewModel()
     {
-        _notes.Changed += NoteWorkspaceChanged;
-        _tasks.Changed += TaskBoardChanged;
-        _editor.ContentEdited += EditorContentEdited;
-        _editor.RelatedNoteChanged += EditorRelatedNoteChanged;
-        _editor.SettingsChanged += (_, _) => IsModified = true;
-        _editor.PropertyChanged += EditorPropertyChanged;
-        _markers.PropertyChanged += (_, e) => OnPropertyChanged(
-            e.PropertyName == nameof(MarkerPanelViewModel.SortOrderIndex)
-                ? nameof(MarkerSortOrderIndex)
-                : e.PropertyName);
+        _changeCoordinator = new WorkspaceChangeCoordinator(_notes, _tasks, _markers, _editor);
+        _changeCoordinator.Changed += WorkspaceChanged;
 
         OpenRecentCommand          = new RelayCommand(param => { if (param is string path) OpenRecentFile(path); });
         ToggleLineNumbersCommand   = new RelayCommand(_ => ShowLineNumbers = !ShowLineNumbers);
@@ -229,46 +222,10 @@ public partial class MainViewModel : BaseViewModel
     public ICommand OpenRecentCommand   { get; }
     public ICommand ToggleLineNumbersCommand { get; }
 
-    private void EditorContentEdited(object? sender, EventArgs e)
+    private void WorkspaceChanged(object? sender, WorkspaceChangeEventArgs e)
     {
-        if (_editor.IsTaskCommentMode && _editor.EditingTask != null)
-            _tasks.UpdateComment(_editor.EditingTask, _editor.Content);
-        else if (_editor.IsNoteEditMode && _editor.SelectedNote != null)
-            _notes.UpdateContent(_editor.SelectedNote, _editor.Content);
-    }
-
-    private void EditorRelatedNoteChanged(object? sender, EventArgs e)
-    {
-        if (_editor.EditingTask != null)
-            _tasks.SetRelatedNote(_editor.EditingTask, _editor.EditingTaskRelatedNote);
-    }
-
-    private void EditorPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        var facadeProperty = e.PropertyName switch
-        {
-            nameof(EditorStateViewModel.Content) => nameof(EditorContent),
-            nameof(EditorStateViewModel.FontFamily) => nameof(EditorFontFamily),
-            nameof(EditorStateViewModel.FontSize) => nameof(EditorFontSize),
-            nameof(EditorStateViewModel.CaretPositionText) => nameof(CaretPositionText),
-            nameof(EditorStateViewModel.ShowLineNumbers) => nameof(ShowLineNumbers),
-            _ => e.PropertyName,
-        };
-        OnPropertyChanged(facadeProperty);
-    }
-
-    private void TaskBoardChanged(object? sender, EventArgs e)
-    {
-        IsModified = true;
-        OnPropertyChanged(nameof(EditorTitle));
-    }
-
-    private void NoteWorkspaceChanged(object? sender, EventArgs e)
-    {
-        IsModified = true;
-        OnPropertyChanged(nameof(RelatedNoteChoices));
-        OnPropertyChanged(nameof(CurrentNoteTitle));
-        OnPropertyChanged(nameof(EditorTitle));
-        RefreshMarkers();
+        if (e.IsDataChanged) IsModified = true;
+        foreach (var propertyName in e.PropertyNames)
+            OnPropertyChanged(propertyName);
     }
 }

@@ -17,6 +17,20 @@ public class MainViewModelCompositionTests
     }
 
     [Fact]
+    public void SelectionChangesDoNotMarkProjectModified()
+    {
+        var main = new MainViewModel();
+        var note = main.Notes.AddNote(main.Notes.AddNotebook("NB"), "Note")!;
+        var task = main.Tasks.AddTask("today", "Task")!;
+        main.IsModified = false;
+
+        main.SelectNote(note);
+        main.SelectTask(task);
+
+        Assert.False(main.IsModified);
+    }
+
+    [Fact]
     public void EditorFacadePropagatesContentAndPersistentSettings()
     {
         var main = new MainViewModel();

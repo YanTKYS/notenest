@@ -19,4 +19,36 @@ public class TaskBoardViewModelTests
         Assert.Equal("Task", Assert.Single(model.Backlog).Title);
         Assert.Equal(2, changeCount);
     }
+
+    [Fact]
+    public void DirectPersistentTaskChangesRaiseChanged()
+    {
+        var board = new TaskBoardViewModel();
+        var task = board.AddTask("today", "Task")!;
+        var changeCount = 0;
+        board.Changed += (_, _) => changeCount++;
+
+        task.Title = "Renamed";
+        task.Comment = "Comment";
+        task.LinkedNoteId = "note-id";
+
+        Assert.Equal(3, changeCount);
+    }
+
+    [Fact]
+    public void ClearLinksRaisesChangedOnlyWhenPersistentDataChanges()
+    {
+        var board = new TaskBoardViewModel();
+        var task = board.AddTask("today", "Task")!;
+        task.LinkedNoteId = "note-id";
+        var changeCount = 0;
+        board.Changed += (_, _) => changeCount++;
+
+        board.ClearLinksToNoteIds(new[] { "other-id" });
+        Assert.Equal(0, changeCount);
+
+        board.ClearLinksToNoteIds(new[] { "note-id" });
+        Assert.Equal(1, changeCount);
+        Assert.Null(task.LinkedNoteId);
+    }
 }

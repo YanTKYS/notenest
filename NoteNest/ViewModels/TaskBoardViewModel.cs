@@ -22,7 +22,12 @@ public sealed class TaskBoardViewModel
 
     public void Load(TaskCollection tasks)
     {
-        foreach (var group in TaskGroups) group.Tasks.Clear();
+        foreach (var group in TaskGroups)
+            foreach (var task in group.Tasks.ToList())
+            {
+                task.PropertyChanged -= TaskPropertyChanged;
+                group.RemoveTask(task);
+            }
         LoadGroup("today", tasks.Today);
         LoadGroup("week", tasks.Week);
         LoadGroup("backlog", tasks.Backlog);
@@ -84,23 +89,11 @@ public sealed class TaskBoardViewModel
         return targetGroup;
     }
 
-    public void RenameTask(TaskViewModel task, string newTitle)
-    {
-        task.Title = newTitle;
-        Changed?.Invoke(this, EventArgs.Empty);
-    }
+    public void RenameTask(TaskViewModel task, string newTitle) => task.Title = newTitle;
 
-    public void UpdateComment(TaskViewModel task, string comment)
-    {
-        task.Comment = comment;
-        Changed?.Invoke(this, EventArgs.Empty);
-    }
+    public void UpdateComment(TaskViewModel task, string comment) => task.Comment = comment;
 
-    public void SetRelatedNote(TaskViewModel task, NoteViewModel? note)
-    {
-        task.LinkedNoteId = note?.Id;
-        Changed?.Invoke(this, EventArgs.Empty);
-    }
+    public void SetRelatedNote(TaskViewModel task, NoteViewModel? note) => task.LinkedNoteId = note?.Id;
 
     public void ClearLinksToNoteIds(IEnumerable<string> deletedNoteIds)
     {
@@ -126,6 +119,12 @@ public sealed class TaskBoardViewModel
 
     private void TaskPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(TaskViewModel.IsCompleted)) Changed?.Invoke(this, EventArgs.Empty);
+        if (e.PropertyName is nameof(TaskViewModel.Title)
+            or nameof(TaskViewModel.IsCompleted)
+            or nameof(TaskViewModel.Comment)
+            or nameof(TaskViewModel.Priority)
+            or nameof(TaskViewModel.DueDate)
+            or nameof(TaskViewModel.LinkedNoteId))
+            Changed?.Invoke(this, EventArgs.Empty);
     }
 }

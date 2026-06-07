@@ -6,12 +6,11 @@ public partial class MainViewModel
     {
         EditorFontFamily = fontFamily;
         EditorFontSize   = fontSize;
-        IsModified       = true;
     }
 
     private void ClearEditor()
     {
         _editor.Clear();
-        _markers.Refresh(Array.Empty<NoteViewModel>());
+        _markers.Refresh(_notes.AllNotes);
     }
 }
