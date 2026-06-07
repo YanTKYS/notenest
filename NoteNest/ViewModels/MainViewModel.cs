@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows.Input;
 using System.Windows.Threading;
-using NoteNest.Models;
 using NoteNest.Services;
 
 namespace NoteNest.ViewModels;
@@ -11,7 +10,6 @@ public partial class MainViewModel : BaseViewModel
 {
     private readonly ProjectFileService _fileService = new();
     private readonly SampleDataService _sampleService = new();
-    private readonly MarkerExtractorService _markerService = new();
     private readonly RecentFilesService _recentFilesService = new();
     private readonly ExportService _exportService = new();
 
@@ -25,9 +23,9 @@ public partial class MainViewModel : BaseViewModel
     private string? _currentFilePath = null;
     private string _currentProjectId = Guid.NewGuid().ToString();
     private bool _isLoadingNote = false;
-    private int _projectTodoCount;
-    private int _projectFixmeCount;
-    private int _projectNoteCount;
+    private readonly NoteWorkspaceViewModel _notes = new();
+    private readonly TaskBoardViewModel _tasks = new();
+    private readonly MarkerPanelViewModel _markers = new(new MarkerExtractorService());
     private DateTime _unsavedSince;
     private DispatcherTimer? _unsavedTimer;
 
@@ -49,12 +47,11 @@ public partial class MainViewModel : BaseViewModel
 
     public MainViewModel()
     {
-        TaskGroups = new ObservableCollection<TaskGroupViewModel>
-        {
-            new("今日のタスク", "today"),
-            new("今週のタスク", "week"),
-            new("バックログ", "backlog"),
-        };
+        _tasks.Changed += (_, _) => IsModified = true;
+        _markers.PropertyChanged += (_, e) => OnPropertyChanged(
+            e.PropertyName == nameof(MarkerPanelViewModel.SortOrderIndex)
+                ? nameof(MarkerSortOrderIndex)
+                : e.PropertyName);
 
         OpenRecentCommand          = new RelayCommand(param => { if (param is string path) OpenRecentFile(path); });
         ToggleLineNumbersCommand   = new RelayCommand(_ => ShowLineNumbers = !ShowLineNumbers);
@@ -111,12 +108,11 @@ public partial class MainViewModel : BaseViewModel
 
             if (_editorMode == EditorMode.TaskComment && _editingTask != null)
             {
-                _editingTask.Comment = value;
-                IsModified = true;
+                _tasks.UpdateComment(_editingTask, value);
             }
             else if (_editorMode == EditorMode.NoteEdit && _selectedNote != null)
             {
-                _selectedNote.Content = value;
+                _notes.UpdateContent(_selectedNote, value);
                 IsModified = true;
                 RefreshMarkers();
             }
@@ -217,72 +213,16 @@ public partial class MainViewModel : BaseViewModel
             ? System.IO.Path.GetFileName(_currentFilePath)
             : "新規プロジェクト";
 
-    public int MarkerCount => Markers.Count;
+    public int MarkerCount => _markers.MarkerCount;
     public string? CurrentNoteTitle => SelectedNote?.Title;
+    public string ProjectMarkerSummary => _markers.ProjectMarkerSummary;
 
-    public string ProjectMarkerSummary =>
-        $"全体  TODO: {_projectTodoCount}  FIXME: {_projectFixmeCount}  NOTE: {_projectNoteCount}";
-
-    // ── Marker filters ────────────────────────────────────────────────────────
-
-    private bool _filterTodo  = true;
-    private bool _filterFixme = true;
-    private bool _filterNote  = true;
-
-    public bool FilterTodo
-    {
-        get => _filterTodo;
-        set { SetProperty(ref _filterTodo, value); RaiseFilteredMarkersChanged(); }
-    }
-
-    public bool FilterFixme
-    {
-        get => _filterFixme;
-        set { SetProperty(ref _filterFixme, value); RaiseFilteredMarkersChanged(); }
-    }
-
-    public bool FilterNote
-    {
-        get => _filterNote;
-        set { SetProperty(ref _filterNote, value); RaiseFilteredMarkersChanged(); }
-    }
-
-    // 0=抽出順, 1=種別順, 2=ノート順, 3=行番号順
-    private int _markerSortOrderIndex = 0;
-
-    public int MarkerSortOrderIndex
-    {
-        get => _markerSortOrderIndex;
-        set { SetProperty(ref _markerSortOrderIndex, value); RaiseFilteredMarkersChanged(); }
-    }
-
-    public IEnumerable<MarkerViewModel> FilteredMarkers
-    {
-        get
-        {
-            var filtered = Markers.Where(m =>
-                (m.Type == "TODO"  && _filterTodo)  ||
-                (m.Type == "FIXME" && _filterFixme) ||
-                (m.Type == "NOTE"  && _filterNote));
-            return _markerSortOrderIndex switch
-            {
-                1 => filtered.OrderBy(m => MarkerTypeOrder(m.Type)).ThenBy(m => m.NoteTitle).ThenBy(m => m.LineNumber),
-                2 => filtered.OrderBy(m => m.NoteTitle).ThenBy(m => m.LineNumber),
-                3 => filtered.OrderBy(m => m.LineNumber),
-                _ => filtered,
-            };
-        }
-    }
-
-    public string FilteredMarkerCountText
-    {
-        get
-        {
-            var total    = Markers.Count;
-            var filtered = FilteredMarkers.Count();
-            return filtered == total ? $"{total}個" : $"{filtered}/{total}個";
-        }
-    }
+    public bool FilterTodo { get => _markers.FilterTodo; set => _markers.FilterTodo = value; }
+    public bool FilterFixme { get => _markers.FilterFixme; set => _markers.FilterFixme = value; }
+    public bool FilterNote { get => _markers.FilterNote; set => _markers.FilterNote = value; }
+    public int MarkerSortOrderIndex { get => _markers.SortOrderIndex; set => _markers.SortOrderIndex = value; }
+    public IEnumerable<MarkerViewModel> FilteredMarkers => _markers.FilteredMarkers;
+    public string FilteredMarkerCountText => _markers.FilteredMarkerCountText;
 
     public bool IsSampleProject
     {
@@ -305,7 +245,7 @@ public partial class MainViewModel : BaseViewModel
             : SelectedNote?.Title ?? "";
 
     // プロジェクト全体のノート列挙。全ノート横断処理（検索、リンク解決、マーカー集計等）はここを起点に書く。
-    public IEnumerable<NoteViewModel> AllNotes => Notebooks.SelectMany(nb => nb.Notes);
+    public IEnumerable<NoteViewModel> AllNotes => _notes.AllNotes;
 
     public IEnumerable<NoteViewModel> RelatedNoteChoices => AllNotes;
 
@@ -317,18 +257,19 @@ public partial class MainViewModel : BaseViewModel
             if (!SetProperty(ref _editingTaskRelatedNote, value)) return;
             OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
             if (_editingTask != null)
-            {
-                _editingTask.LinkedNoteId = value?.Id;
-                IsModified = true;
-            }
+                _tasks.SetRelatedNote(_editingTask, value);
         }
     }
 
     public bool HasEditingTaskRelatedNote => _editingTaskRelatedNote != null;
 
-    public ObservableCollection<NotebookViewModel> Notebooks { get; } = new();
-    public ObservableCollection<TaskGroupViewModel> TaskGroups { get; }
-    public ObservableCollection<MarkerViewModel> Markers { get; } = new();
+    public NoteWorkspaceViewModel Notes => _notes;
+    public TaskBoardViewModel Tasks => _tasks;
+    public MarkerPanelViewModel MarkerPanel => _markers;
+
+    public ObservableCollection<NotebookViewModel> Notebooks => Notes.Notebooks;
+    public ObservableCollection<TaskGroupViewModel> TaskGroups => Tasks.TaskGroups;
+    public ObservableCollection<MarkerViewModel> Markers => MarkerPanel.Markers;
     public ObservableCollection<RecentFileViewModel> RecentFiles { get; } = new();
     public bool HasRecentFiles => RecentFiles.Count > 0;
 

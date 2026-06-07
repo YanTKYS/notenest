@@ -1,5 +1,3 @@
-using NoteNest.Models;
-
 namespace NoteNest.ViewModels;
 
 public partial class MainViewModel
@@ -15,103 +13,61 @@ public partial class MainViewModel
         OnPropertyChanged(nameof(IsTaskCommentMode));
         OnPropertyChanged(nameof(IsNoteEditMode));
         _isLoadingNote = false;
-
         _editingTaskRelatedNote = FindNoteById(task.LinkedNoteId);
         OnPropertyChanged(nameof(EditingTaskRelatedNote));
         OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
-
         RefreshMarkers();
     }
 
     public void MoveTaskToGroupAt(TaskViewModel source, TaskViewModel target)
     {
-        var sourceGroup = TaskGroups.FirstOrDefault(g => g.Tasks.Contains(source));
-        var targetGroup = TaskGroups.FirstOrDefault(g => g.Tasks.Contains(target));
-        if (sourceGroup == null || targetGroup == null || source == target) return;
-
-        if (sourceGroup == targetGroup)
-        {
-            var srcIdx = sourceGroup.Tasks.IndexOf(source);
-            var tgtIdx = targetGroup.Tasks.IndexOf(target);
-            sourceGroup.Tasks.Move(srcIdx, tgtIdx);
-        }
-        else
-        {
-            sourceGroup.RemoveTask(source);
-            var tgtIdx = targetGroup.Tasks.IndexOf(target);
-            targetGroup.InsertTask(tgtIdx, source);
+        var sourceGroup = TaskGroups.FirstOrDefault(group => group.Tasks.Contains(source));
+        var targetGroup = TaskGroups.FirstOrDefault(group => group.Tasks.Contains(target));
+        if (!_tasks.MoveTaskToGroupAt(source, target)) return;
+        if (sourceGroup != targetGroup && targetGroup != null)
             StatusMessage = $"タスクを「{targetGroup.Title}」に移動しました。";
-        }
-        IsModified = true;
     }
 
     public void MoveTask(TaskViewModel task, string targetGroupKey)
     {
-        var sourceGroup = TaskGroups.FirstOrDefault(g => g.Tasks.Contains(task));
-        var targetGroup = TaskGroups.FirstOrDefault(g => g.Key == targetGroupKey);
-        if (sourceGroup == null || targetGroup == null || sourceGroup == targetGroup) return;
-
-        sourceGroup.RemoveTask(task);
-        targetGroup.AddTask(task);
-        IsModified = true;
-        StatusMessage = $"タスクを「{targetGroup.Title}」に移動しました。";
+        var targetGroup = _tasks.MoveTask(task, targetGroupKey);
+        if (targetGroup != null) StatusMessage = $"タスクを「{targetGroup.Title}」に移動しました。";
     }
 
     public void RenameTask(TaskViewModel task, string newTitle)
     {
-        task.Title = newTitle;
-        if (_editingTask == task)
-            OnPropertyChanged(nameof(EditorTitle));
-        IsModified = true;
+        _tasks.RenameTask(task, newTitle);
+        if (_editingTask == task) OnPropertyChanged(nameof(EditorTitle));
     }
 
     public void SetTaskRelatedNote(TaskViewModel task, NoteViewModel note)
     {
-        task.LinkedNoteId = note.Id;
+        _tasks.SetRelatedNote(task, note);
         if (_editingTask == task)
         {
             _editingTaskRelatedNote = note;
             OnPropertyChanged(nameof(EditingTaskRelatedNote));
             OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
         }
-        IsModified = true;
         StatusMessage = $"タスク「{task.Title}」に関連ノート「{note.Title}」を設定しました。";
     }
 
     public void ClearTaskRelatedNote(TaskViewModel task)
     {
-        task.LinkedNoteId = null;
+        _tasks.SetRelatedNote(task, null);
         if (_editingTask == task)
         {
             _editingTaskRelatedNote = null;
             OnPropertyChanged(nameof(EditingTaskRelatedNote));
             OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
         }
-        IsModified = true;
     }
 
     private void AddTask(string groupKey)
     {
         var title = ShowInputDialog?.Invoke("タスク追加", "タスク名を入力してください:");
         if (string.IsNullOrWhiteSpace(title)) return;
-
-        var group = TaskGroups.FirstOrDefault(g => g.Key == groupKey);
-        if (group == null) return;
-
-        var task = new TaskViewModel(new NoteTask { Title = title.Trim() });
-        TrackTaskCompletion(task);
-        group.AddTask(task);
-        IsModified = true;
-        StatusMessage = $"タスク「{title.Trim()}」を追加しました。";
-    }
-
-    private void TrackTaskCompletion(TaskViewModel task)
-    {
-        task.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == nameof(TaskViewModel.IsCompleted))
-                IsModified = true;
-        };
+        if (_tasks.AddTask(groupKey, title.Trim()) != null) StatusMessage = $"タスク「{title.Trim()}」を追加しました。";
     }
 
     private void DeleteTask(TaskViewModel task)
@@ -129,14 +85,6 @@ public partial class MainViewModel
             _isLoadingNote = false;
             RefreshMarkers();
         }
-
-        foreach (var group in TaskGroups)
-        {
-            if (group.RemoveTask(task))
-            {
-                IsModified = true;
-                return;
-            }
-        }
+        _tasks.DeleteTask(task);
     }
 }

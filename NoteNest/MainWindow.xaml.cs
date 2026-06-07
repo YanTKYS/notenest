@@ -1,7 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using NoteNest.Dialogs;
 using NoteNest.Models;
 using NoteNest.Services;
@@ -19,13 +18,7 @@ public partial class MainWindow : Window
     private UiSettings _uiSettings = new();
     private bool _suppressTreeSelectionChanged;
 
-    // Task drag-and-drop state
-    private Point _taskDragStartPoint;
-    private TaskViewModel? _draggedTask;
-
-    // Note drag-and-drop state
-    private Point _noteDragStartPoint;
-    private NoteViewModel? _draggedNote;
+    private readonly DragDropState _dragDrop = new();
 
     // Line number gutter scroll sync
     private ScrollViewer? _editorScrollViewer;

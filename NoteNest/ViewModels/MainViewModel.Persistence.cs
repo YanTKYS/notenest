@@ -154,30 +154,8 @@ public partial class MainViewModel
         IsSampleProject = filePath == null;
         if (filePath != null) RecordRecentFile(filePath);
 
-        Notebooks.Clear();
-        foreach (var nb in project.Notebooks)
-            Notebooks.Add(new NotebookViewModel(nb));
-
-        foreach (var group in TaskGroups)
-            group.Tasks.Clear();
-
-        var taskMap = new Dictionary<string, List<NoteTask>>
-        {
-            { "today",   project.Tasks.Today   },
-            { "week",    project.Tasks.Week     },
-            { "backlog", project.Tasks.Backlog  }
-        };
-
-        foreach (var group in TaskGroups)
-        {
-            if (taskMap.TryGetValue(group.Key, out var tasks))
-                foreach (var t in tasks)
-                {
-                    var taskVm = new TaskViewModel(t);
-                    TrackTaskCompletion(taskVm);
-                    group.AddTask(taskVm);
-                }
-        }
+        _notes.Load(project.Notebooks);
+        _tasks.Load(project.Tasks);
 
         EditorFontFamily = project.Settings.FontFamily;
         EditorFontSize   = project.Settings.FontSize;
@@ -201,30 +179,15 @@ public partial class MainViewModel
     private Project BuildProject()
     {
         if (_editorMode == EditorMode.NoteEdit && _selectedNote != null)
-            _selectedNote.Content = _editorContent;
+            _notes.UpdateContent(_selectedNote, _editorContent);
 
         return new Project
         {
             Version = Project.CurrentSchemaVersion,
             ProjectId = _currentProjectId,
             ProjectName = ProjectName,
-            Notebooks = Notebooks.Select(nb => new Notebook
-            {
-                Id    = nb.Id,
-                Title = nb.Title,
-                Notes = nb.Notes.Select(n => new Note
-                {
-                    Id      = n.Id,
-                    Title   = n.Title,
-                    Content = n.Content
-                }).ToList()
-            }).ToList(),
-            Tasks = new TaskCollection
-            {
-                Today   = TaskGroups.First(g => g.Key == "today")  .Tasks.Select(t => t.Model).ToList(),
-                Week    = TaskGroups.First(g => g.Key == "week")   .Tasks.Select(t => t.Model).ToList(),
-                Backlog = TaskGroups.First(g => g.Key == "backlog").Tasks.Select(t => t.Model).ToList()
-            },
+            Notebooks = _notes.BuildModels(),
+            Tasks = _tasks.BuildModel(),
             Settings = new AppSettings
             {
                 LastOpenedNoteId = SelectedNote?.Id ?? "",

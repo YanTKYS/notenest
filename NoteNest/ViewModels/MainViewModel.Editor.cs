@@ -1,5 +1,3 @@
-using NoteNest.Models;
-
 namespace NoteNest.ViewModels;
 
 public partial class MainViewModel
@@ -28,12 +26,6 @@ public partial class MainViewModel
         OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
         _isLoadingNote = false;
         CaretPositionText = "";
-        Markers.Clear();
-        _projectTodoCount  = 0;
-        _projectFixmeCount = 0;
-        _projectNoteCount  = 0;
-        OnPropertyChanged(nameof(MarkerCount));
-        OnPropertyChanged(nameof(ProjectMarkerSummary));
-        RaiseFilteredMarkersChanged();
+        _markers.Refresh(Array.Empty<NoteViewModel>());
     }
 }
