@@ -24,6 +24,52 @@ public class WorkspaceViewModelTests
     }
 
     [Fact]
+    public void NoteWorkspace_RaisesChangedForCollectionTitleAndContentChanges()
+    {
+        var workspace = new NoteWorkspaceViewModel();
+        var changeCount = 0;
+        workspace.Changed += (_, _) => changeCount++;
+
+        var notebook = new NotebookViewModel(new Notebook { Title = "NB" });
+        workspace.Notebooks.Add(notebook);
+        notebook.Title = "Renamed NB";
+        var note = new NoteViewModel(new Note { Title = "Note" });
+        notebook.Notes.Add(note);
+        note.Title = "Renamed Note";
+        note.Content = "[TODO] changed";
+
+        Assert.Equal(5, changeCount);
+    }
+
+    [Fact]
+    public void NoteWorkspace_LoadDoesNotRaiseChanged()
+    {
+        var workspace = new NoteWorkspaceViewModel();
+        var changed = false;
+        workspace.Changed += (_, _) => changed = true;
+
+        workspace.Load(new[] { new Notebook { Title = "Loaded" } });
+
+        Assert.False(changed);
+        Assert.Equal("Loaded", Assert.Single(workspace.Notebooks).Title);
+    }
+
+    [Fact]
+    public void MainViewModel_DirectNoteWorkspaceChangeMarksProjectModifiedAndRefreshesMarkers()
+    {
+        var main = new MainViewModel();
+        var notebook = main.Notes.AddNotebook("NB");
+        var note = main.Notes.AddNote(notebook, "Note")!;
+        var markerCountBeforeChange = main.MarkerCount;
+        main.IsModified = false;
+
+        note.Content = "[TODO] direct change";
+
+        Assert.True(main.IsModified);
+        Assert.Equal(markerCountBeforeChange + 1, main.MarkerCount);
+    }
+
+    [Fact]
     public void TaskBoard_BuildModelPreservesGroupOwnership()
     {
         var board = new TaskBoardViewModel();

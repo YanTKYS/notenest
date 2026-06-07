@@ -47,6 +47,7 @@ public partial class MainViewModel : BaseViewModel
 
     public MainViewModel()
     {
+        _notes.Changed += NoteWorkspaceChanged;
         _tasks.Changed += (_, _) => IsModified = true;
         _markers.PropertyChanged += (_, e) => OnPropertyChanged(
             e.PropertyName == nameof(MarkerPanelViewModel.SortOrderIndex)
@@ -288,4 +289,10 @@ public partial class MainViewModel : BaseViewModel
     public ICommand OpenRecentCommand   { get; }
     public ICommand ToggleLineNumbersCommand { get; }
 
+    private void NoteWorkspaceChanged(object? sender, EventArgs e)
+    {
+        IsModified = true;
+        OnPropertyChanged(nameof(RelatedNoteChoices));
+        RefreshMarkers();
+    }
 }

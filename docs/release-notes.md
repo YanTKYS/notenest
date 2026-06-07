@@ -11,6 +11,7 @@
 - マーカー抽出結果、フィルター、並び順を `MarkerPanelViewModel` へ移した
 - `MainViewModel` は既存XAMLとの互換性を保つファサードと、エディタ・保存を横断するオーケストレーションを担当する
 - `MainWindow` のドラッグ中一時状態を `DragDropState` へ移した
+- `NoteWorkspaceViewModel.Changed` を追加し、直接操作した場合も未保存状態、マーカー、関連ノート候補へ変更を伝播するようにした
 - `.notenest` 保存スキーマは `1.3.1` のまま変更なし
 
 ---
