@@ -37,6 +37,22 @@ public class EditorStateViewModelTests
     }
 
     [Fact]
+    public void DirectRelatedNoteChangeRaisesEventButSelectionDoesNot()
+    {
+        var editor = new EditorStateViewModel();
+        var task = new TaskViewModel(new NoteTask { Title = "Task" });
+        var note = new NoteViewModel(new Note { Title = "Note" });
+        var changeCount = 0;
+        editor.RelatedNoteChanged += (_, _) => changeCount++;
+
+        editor.SelectTask(task, null);
+        editor.EditingTaskRelatedNote = note;
+        editor.EditingTaskRelatedNote = null;
+
+        Assert.Equal(2, changeCount);
+    }
+
+    [Fact]
     public void SelectTaskAndEditRaiseContentEdited()
     {
         var editor = new EditorStateViewModel();

@@ -48,6 +48,37 @@ public class MainViewModelCompositionTests
     }
 
     [Fact]
+    public void EditorRelatedNoteChangePropagatesToEditingTask()
+    {
+        var main = new MainViewModel();
+        var note = main.Notes.AddNote(main.Notes.AddNotebook("NB"), "Note")!;
+        var task = main.Tasks.AddTask("today", "Task")!;
+        main.SelectTask(task);
+        main.IsModified = false;
+
+        main.Editor.EditingTaskRelatedNote = note;
+
+        Assert.Equal(note.Id, task.LinkedNoteId);
+        Assert.True(main.IsModified);
+    }
+
+    [Fact]
+    public void EditorRelatedNoteClearPropagatesToEditingTask()
+    {
+        var main = new MainViewModel();
+        var note = main.Notes.AddNote(main.Notes.AddNotebook("NB"), "Note")!;
+        var task = main.Tasks.AddTask("today", "Task")!;
+        main.SetTaskRelatedNote(task, note);
+        main.SelectTask(task);
+        main.IsModified = false;
+
+        main.Editor.EditingTaskRelatedNote = null;
+
+        Assert.Null(task.LinkedNoteId);
+        Assert.True(main.IsModified);
+    }
+
+    [Fact]
     public void DirectNoteChangeMarksProjectModifiedAndRefreshesMarkers()
     {
         var main = new MainViewModel();

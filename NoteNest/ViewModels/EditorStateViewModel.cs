@@ -23,6 +23,7 @@ public sealed class EditorStateViewModel : BaseViewModel
 
     public event EventHandler? ContentEdited;
     public event EventHandler? SettingsChanged;
+    public event EventHandler? RelatedNoteChanged;
 
     public NoteViewModel? SelectedNote { get => _selectedNote; private set => SetProperty(ref _selectedNote, value); }
     public TaskViewModel? EditingTask { get => _editingTask; private set => SetProperty(ref _editingTask, value); }
@@ -33,6 +34,7 @@ public sealed class EditorStateViewModel : BaseViewModel
         {
             if (!SetProperty(ref _editingTaskRelatedNote, value)) return;
             OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
+            if (!_isLoading) RelatedNoteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
     public EditorMode Mode { get => _mode; private set => SetProperty(ref _mode, value); }

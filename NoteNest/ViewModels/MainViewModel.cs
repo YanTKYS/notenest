@@ -42,6 +42,7 @@ public partial class MainViewModel : BaseViewModel
         _notes.Changed += NoteWorkspaceChanged;
         _tasks.Changed += TaskBoardChanged;
         _editor.ContentEdited += EditorContentEdited;
+        _editor.RelatedNoteChanged += EditorRelatedNoteChanged;
         _editor.SettingsChanged += (_, _) => IsModified = true;
         _editor.PropertyChanged += EditorPropertyChanged;
         _markers.PropertyChanged += (_, e) => OnPropertyChanged(
@@ -197,11 +198,7 @@ public partial class MainViewModel : BaseViewModel
     public NoteViewModel? EditingTaskRelatedNote
     {
         get => _editor.EditingTaskRelatedNote;
-        set
-        {
-            _editor.EditingTaskRelatedNote = value;
-            if (_editor.EditingTask != null) _tasks.SetRelatedNote(_editor.EditingTask, value);
-        }
+        set => _editor.EditingTaskRelatedNote = value;
     }
 
     public bool HasEditingTaskRelatedNote => _editor.HasEditingTaskRelatedNote;
@@ -238,6 +235,12 @@ public partial class MainViewModel : BaseViewModel
             _tasks.UpdateComment(_editor.EditingTask, _editor.Content);
         else if (_editor.IsNoteEditMode && _editor.SelectedNote != null)
             _notes.UpdateContent(_editor.SelectedNote, _editor.Content);
+    }
+
+    private void EditorRelatedNoteChanged(object? sender, EventArgs e)
+    {
+        if (_editor.EditingTask != null)
+            _tasks.SetRelatedNote(_editor.EditingTask, _editor.EditingTaskRelatedNote);
     }
 
     private void EditorPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

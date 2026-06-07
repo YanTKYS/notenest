@@ -31,17 +31,19 @@ public partial class MainViewModel
 
     public void SetTaskRelatedNote(TaskViewModel task, NoteViewModel note)
     {
-        _tasks.SetRelatedNote(task, note);
         if (_editor.EditingTask == task)
             _editor.EditingTaskRelatedNote = note;
+        else
+            _tasks.SetRelatedNote(task, note);
         StatusMessage = $"タスク「{task.Title}」に関連ノート「{note.Title}」を設定しました。";
     }
 
     public void ClearTaskRelatedNote(TaskViewModel task)
     {
-        _tasks.SetRelatedNote(task, null);
         if (_editor.EditingTask == task)
             _editor.EditingTaskRelatedNote = null;
+        else
+            _tasks.SetRelatedNote(task, null);
     }
 
     private void AddTask(string groupKey)

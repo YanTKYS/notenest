@@ -9,6 +9,7 @@
 - エディタの選択対象、編集モード、本文、フォント、行番号表示、関連ノート状態を `EditorStateViewModel` へ移した
 - 保存モデルと責務別 ViewModel 間の読込・変換処理を `ProjectDocumentService` へ移した
 - `MainViewModel` はエディタ状態をファサードとして公開し、ノート・タスクへの本文反映を調停する構成へ縮小した
+- `EditorStateViewModel.EditingTaskRelatedNote` の直接変更も編集中タスクの関連ノートへ伝播するよう、関連ノート変更イベントを追加した
 - 複数責務をまとめていた `WorkspaceViewModelTests` を責務クラス別のテストクラスへ分割し、エディタ状態とプロジェクト変換のテストを追加した
 - `.notenest` 保存スキーマは `1.3.1` のまま変更なし
 
