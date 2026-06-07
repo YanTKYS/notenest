@@ -4,18 +4,7 @@ public partial class MainViewModel
 {
     public void SelectTask(TaskViewModel task)
     {
-        _editorMode = EditorMode.TaskComment;
-        _editingTask = task;
-        _isLoadingNote = true;
-        _editorContent = task.Comment;
-        OnPropertyChanged(nameof(EditorContent));
-        OnPropertyChanged(nameof(EditorTitle));
-        OnPropertyChanged(nameof(IsTaskCommentMode));
-        OnPropertyChanged(nameof(IsNoteEditMode));
-        _isLoadingNote = false;
-        _editingTaskRelatedNote = FindNoteById(task.LinkedNoteId);
-        OnPropertyChanged(nameof(EditingTaskRelatedNote));
-        OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
+        _editor.SelectTask(task, FindNoteById(task.LinkedNoteId));
         RefreshMarkers();
     }
 
@@ -37,30 +26,22 @@ public partial class MainViewModel
     public void RenameTask(TaskViewModel task, string newTitle)
     {
         _tasks.RenameTask(task, newTitle);
-        if (_editingTask == task) OnPropertyChanged(nameof(EditorTitle));
+        if (_editor.EditingTask == task) OnPropertyChanged(nameof(EditorTitle));
     }
 
     public void SetTaskRelatedNote(TaskViewModel task, NoteViewModel note)
     {
         _tasks.SetRelatedNote(task, note);
-        if (_editingTask == task)
-        {
-            _editingTaskRelatedNote = note;
-            OnPropertyChanged(nameof(EditingTaskRelatedNote));
-            OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
-        }
+        if (_editor.EditingTask == task)
+            _editor.EditingTaskRelatedNote = note;
         StatusMessage = $"タスク「{task.Title}」に関連ノート「{note.Title}」を設定しました。";
     }
 
     public void ClearTaskRelatedNote(TaskViewModel task)
     {
         _tasks.SetRelatedNote(task, null);
-        if (_editingTask == task)
-        {
-            _editingTaskRelatedNote = null;
-            OnPropertyChanged(nameof(EditingTaskRelatedNote));
-            OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
-        }
+        if (_editor.EditingTask == task)
+            _editor.EditingTaskRelatedNote = null;
     }
 
     private void AddTask(string groupKey)
@@ -72,17 +53,9 @@ public partial class MainViewModel
 
     private void DeleteTask(TaskViewModel task)
     {
-        if (_editingTask == task)
+        if (_editor.EditingTask == task)
         {
-            _editorMode = EditorMode.NoteEdit;
-            _editingTask = null;
-            _isLoadingNote = true;
-            _editorContent = _selectedNote?.Content ?? "";
-            OnPropertyChanged(nameof(EditorContent));
-            OnPropertyChanged(nameof(EditorTitle));
-            OnPropertyChanged(nameof(IsTaskCommentMode));
-            OnPropertyChanged(nameof(IsNoteEditMode));
-            _isLoadingNote = false;
+            _editor.ReturnToSelectedNote();
             RefreshMarkers();
         }
         _tasks.DeleteTask(task);

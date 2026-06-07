@@ -146,24 +146,13 @@ public partial class MainViewModel
 
     private void LoadProject(Project project, string? filePath)
     {
-        _editorMode = EditorMode.NoteEdit;
-        _editingTask = null;
         _currentProjectId = project.ProjectId;
         ProjectName = project.ProjectName;
         _currentFilePath = filePath;
         IsSampleProject = filePath == null;
         if (filePath != null) RecordRecentFile(filePath);
 
-        _notes.Load(project.Notebooks);
-        _tasks.Load(project.Tasks);
-
-        EditorFontFamily = project.Settings.FontFamily;
-        EditorFontSize   = project.Settings.FontSize;
-
-        // Restore last opened note
-        var lastNote = FindNoteById(project.Settings.LastOpenedNoteId);
-        if (lastNote == null && Notebooks.Count > 0 && Notebooks[0].Notes.Count > 0)
-            lastNote = Notebooks[0].Notes[0];
+        var lastNote = _documentService.Load(project, _notes, _tasks, _editor);
 
         if (lastNote != null)
             SelectNote(lastNote);
@@ -176,24 +165,6 @@ public partial class MainViewModel
         OnPropertyChanged(nameof(RelatedNoteChoices));
     }
 
-    private Project BuildProject()
-    {
-        if (_editorMode == EditorMode.NoteEdit && _selectedNote != null)
-            _notes.UpdateContent(_selectedNote, _editorContent);
-
-        return new Project
-        {
-            Version = Project.CurrentSchemaVersion,
-            ProjectId = _currentProjectId,
-            ProjectName = ProjectName,
-            Notebooks = _notes.BuildModels(),
-            Tasks = _tasks.BuildModel(),
-            Settings = new AppSettings
-            {
-                LastOpenedNoteId = SelectedNote?.Id ?? "",
-                FontFamily       = EditorFontFamily,
-                FontSize         = EditorFontSize
-            }
-        };
-    }
+    private Project BuildProject() =>
+        _documentService.Build(_currentProjectId, ProjectName, _notes, _tasks, _editor);
 }

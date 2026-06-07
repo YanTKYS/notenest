@@ -4,17 +4,7 @@ public partial class MainViewModel
 {
     public void SelectNote(NoteViewModel note)
     {
-        _editorMode = EditorMode.NoteEdit;
-        _editingTask = null;
-        _isLoadingNote = true;
-        SelectedNote = note;
-        _editorContent = note.Content;
-        OnPropertyChanged(nameof(EditorContent));
-        OnPropertyChanged(nameof(CurrentNoteTitle));
-        OnPropertyChanged(nameof(EditorTitle));
-        OnPropertyChanged(nameof(IsTaskCommentMode));
-        OnPropertyChanged(nameof(IsNoteEditMode));
-        _isLoadingNote = false;
+        _editor.SelectNote(note);
         RefreshMarkers();
     }
 
@@ -101,12 +91,8 @@ public partial class MainViewModel
     {
         var ids = deletedNoteIds.ToList();
         _tasks.ClearLinksToNoteIds(ids);
-        if (_editingTaskRelatedNote != null && ids.Contains(_editingTaskRelatedNote.Id))
-        {
-            _editingTaskRelatedNote = null;
-            OnPropertyChanged(nameof(EditingTaskRelatedNote));
-            OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
-        }
+        if (_editor.EditingTaskRelatedNote != null && ids.Contains(_editor.EditingTaskRelatedNote.Id))
+            _editor.EditingTaskRelatedNote = null;
     }
 
     private void AddNotebook()

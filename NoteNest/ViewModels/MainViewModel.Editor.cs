@@ -11,21 +11,7 @@ public partial class MainViewModel
 
     private void ClearEditor()
     {
-        _editorMode = EditorMode.NoteEdit;
-        _editingTask = null;
-        _editingTaskRelatedNote = null;
-        SelectedNote = null;
-        _isLoadingNote = true;
-        _editorContent = "";
-        OnPropertyChanged(nameof(EditorContent));
-        OnPropertyChanged(nameof(CurrentNoteTitle));
-        OnPropertyChanged(nameof(EditorTitle));
-        OnPropertyChanged(nameof(IsTaskCommentMode));
-        OnPropertyChanged(nameof(IsNoteEditMode));
-        OnPropertyChanged(nameof(EditingTaskRelatedNote));
-        OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
-        _isLoadingNote = false;
-        CaretPositionText = "";
+        _editor.Clear();
         _markers.Refresh(Array.Empty<NoteViewModel>());
     }
 }

@@ -12,29 +12,21 @@ public partial class MainViewModel : BaseViewModel
     private readonly SampleDataService _sampleService = new();
     private readonly RecentFilesService _recentFilesService = new();
     private readonly ExportService _exportService = new();
+    private readonly ProjectDocumentService _documentService = new();
 
     private string _projectName = "";
-    private NoteViewModel? _selectedNote;
-    private string _editorContent = "";
-    private string _editorFontFamily = "Yu Gothic UI";
-    private double _editorFontSize = 14;
     private string _statusMessage = "準備完了";
     private bool _isModified = false;
     private string? _currentFilePath = null;
     private string _currentProjectId = Guid.NewGuid().ToString();
-    private bool _isLoadingNote = false;
     private readonly NoteWorkspaceViewModel _notes = new();
     private readonly TaskBoardViewModel _tasks = new();
     private readonly MarkerPanelViewModel _markers = new(new MarkerExtractorService());
+    private readonly EditorStateViewModel _editor = new();
     private DateTime _unsavedSince;
     private DispatcherTimer? _unsavedTimer;
 
-    private enum EditorMode { NoteEdit, TaskComment }
-    private EditorMode _editorMode = EditorMode.NoteEdit;
-    private TaskViewModel? _editingTask = null;
-    private NoteViewModel? _editingTaskRelatedNote = null;
     private bool _isSampleProject = false;
-    private bool _showLineNumbers = false;
 
     // Callbacks registered by MainWindow
     public Func<string, string, string?>? ShowInputDialog { get; set; }
@@ -48,7 +40,10 @@ public partial class MainViewModel : BaseViewModel
     public MainViewModel()
     {
         _notes.Changed += NoteWorkspaceChanged;
-        _tasks.Changed += (_, _) => IsModified = true;
+        _tasks.Changed += TaskBoardChanged;
+        _editor.ContentEdited += EditorContentEdited;
+        _editor.SettingsChanged += (_, _) => IsModified = true;
+        _editor.PropertyChanged += EditorPropertyChanged;
         _markers.PropertyChanged += (_, e) => OnPropertyChanged(
             e.PropertyName == nameof(MarkerPanelViewModel.SortOrderIndex)
                 ? nameof(MarkerSortOrderIndex)
@@ -90,54 +85,12 @@ public partial class MainViewModel : BaseViewModel
         set { SetProperty(ref _projectName, value); OnPropertyChanged(nameof(WindowTitle)); }
     }
 
-    public NoteViewModel? SelectedNote
-    {
-        get => _selectedNote;
-        private set => SetProperty(ref _selectedNote, value);
-    }
+    public NoteViewModel? SelectedNote => _editor.SelectedNote;
 
-    public string EditorContent
-    {
-        get => _editorContent;
-        set
-        {
-            if (_editorContent == value) return;
-            _editorContent = value;
-            OnPropertyChanged();
-
-            if (_isLoadingNote) return;
-
-            if (_editorMode == EditorMode.TaskComment && _editingTask != null)
-            {
-                _tasks.UpdateComment(_editingTask, value);
-            }
-            else if (_editorMode == EditorMode.NoteEdit && _selectedNote != null)
-            {
-                _notes.UpdateContent(_selectedNote, value);
-                IsModified = true;
-                RefreshMarkers();
-            }
-        }
-    }
-
-    public string EditorFontFamily
-    {
-        get => _editorFontFamily;
-        set => SetProperty(ref _editorFontFamily, value);
-    }
-
-    public double EditorFontSize
-    {
-        get => _editorFontSize;
-        set => SetProperty(ref _editorFontSize, value);
-    }
-
-    private string _caretPositionText = "";
-    public string CaretPositionText
-    {
-        get => _caretPositionText;
-        set => SetProperty(ref _caretPositionText, value);
-    }
+    public string EditorContent { get => _editor.Content; set => _editor.Content = value; }
+    public string EditorFontFamily { get => _editor.FontFamily; set => _editor.FontFamily = value; }
+    public double EditorFontSize { get => _editor.FontSize; set => _editor.FontSize = value; }
+    public string CaretPositionText { get => _editor.CaretPositionText; set => _editor.CaretPositionText = value; }
 
     public string StatusMessage
     {
@@ -231,19 +184,10 @@ public partial class MainViewModel : BaseViewModel
         private set => SetProperty(ref _isSampleProject, value);
     }
 
-    public bool ShowLineNumbers
-    {
-        get => _showLineNumbers;
-        set => SetProperty(ref _showLineNumbers, value);
-    }
-
-    public bool IsTaskCommentMode => _editorMode == EditorMode.TaskComment;
-    public bool IsNoteEditMode    => _editorMode == EditorMode.NoteEdit;
-
-    public string EditorTitle =>
-        _editorMode == EditorMode.TaskComment && _editingTask != null
-            ? $"タスクコメント：{_editingTask.Title}"
-            : SelectedNote?.Title ?? "";
+    public bool ShowLineNumbers { get => _editor.ShowLineNumbers; set => _editor.ShowLineNumbers = value; }
+    public bool IsTaskCommentMode => _editor.IsTaskCommentMode;
+    public bool IsNoteEditMode => _editor.IsNoteEditMode;
+    public string EditorTitle => _editor.EditorTitle;
 
     // プロジェクト全体のノート列挙。全ノート横断処理（検索、リンク解決、マーカー集計等）はここを起点に書く。
     public IEnumerable<NoteViewModel> AllNotes => _notes.AllNotes;
@@ -252,21 +196,20 @@ public partial class MainViewModel : BaseViewModel
 
     public NoteViewModel? EditingTaskRelatedNote
     {
-        get => _editingTaskRelatedNote;
+        get => _editor.EditingTaskRelatedNote;
         set
         {
-            if (!SetProperty(ref _editingTaskRelatedNote, value)) return;
-            OnPropertyChanged(nameof(HasEditingTaskRelatedNote));
-            if (_editingTask != null)
-                _tasks.SetRelatedNote(_editingTask, value);
+            _editor.EditingTaskRelatedNote = value;
+            if (_editor.EditingTask != null) _tasks.SetRelatedNote(_editor.EditingTask, value);
         }
     }
 
-    public bool HasEditingTaskRelatedNote => _editingTaskRelatedNote != null;
+    public bool HasEditingTaskRelatedNote => _editor.HasEditingTaskRelatedNote;
 
     public NoteWorkspaceViewModel Notes => _notes;
     public TaskBoardViewModel Tasks => _tasks;
     public MarkerPanelViewModel MarkerPanel => _markers;
+    public EditorStateViewModel Editor => _editor;
 
     public ObservableCollection<NotebookViewModel> Notebooks => Notes.Notebooks;
     public ObservableCollection<TaskGroupViewModel> TaskGroups => Tasks.TaskGroups;
@@ -289,10 +232,40 @@ public partial class MainViewModel : BaseViewModel
     public ICommand OpenRecentCommand   { get; }
     public ICommand ToggleLineNumbersCommand { get; }
 
+    private void EditorContentEdited(object? sender, EventArgs e)
+    {
+        if (_editor.IsTaskCommentMode && _editor.EditingTask != null)
+            _tasks.UpdateComment(_editor.EditingTask, _editor.Content);
+        else if (_editor.IsNoteEditMode && _editor.SelectedNote != null)
+            _notes.UpdateContent(_editor.SelectedNote, _editor.Content);
+    }
+
+    private void EditorPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        var facadeProperty = e.PropertyName switch
+        {
+            nameof(EditorStateViewModel.Content) => nameof(EditorContent),
+            nameof(EditorStateViewModel.FontFamily) => nameof(EditorFontFamily),
+            nameof(EditorStateViewModel.FontSize) => nameof(EditorFontSize),
+            nameof(EditorStateViewModel.CaretPositionText) => nameof(CaretPositionText),
+            nameof(EditorStateViewModel.ShowLineNumbers) => nameof(ShowLineNumbers),
+            _ => e.PropertyName,
+        };
+        OnPropertyChanged(facadeProperty);
+    }
+
+    private void TaskBoardChanged(object? sender, EventArgs e)
+    {
+        IsModified = true;
+        OnPropertyChanged(nameof(EditorTitle));
+    }
+
     private void NoteWorkspaceChanged(object? sender, EventArgs e)
     {
         IsModified = true;
         OnPropertyChanged(nameof(RelatedNoteChoices));
+        OnPropertyChanged(nameof(CurrentNoteTitle));
+        OnPropertyChanged(nameof(EditorTitle));
         RefreshMarkers();
     }
 }
