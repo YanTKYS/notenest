@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using NoteNest.Dialogs;
 using NoteNest.Services;
 using NoteNest.ViewModels;
@@ -9,7 +10,6 @@ namespace NoteNest;
 
 public partial class MainWindow
 {
-
     private void EditorBox_SelectionChanged(object sender, RoutedEventArgs e)
     {
         var caret     = EditorBox.CaretIndex;
