@@ -65,7 +65,7 @@ public class RecentFilesServiceTests : IDisposable
         _svc.Add("path/a");
         _svc.Add("path/b");
 
-        var updated = _svc.Clear();
+        var updated = _svc.ClearAndGetUpdatedList();
 
         Assert.Empty(updated);
         Assert.Empty(_svc.Load());

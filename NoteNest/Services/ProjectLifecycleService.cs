@@ -41,7 +41,7 @@ public sealed class ProjectLifecycleService
 
     public void InitializeRecentFiles() => _session.ReplaceRecentFiles(_recentFiles.Load());
 
-    public void ClearRecentFiles() => _session.ReplaceRecentFiles(_recentFiles.Clear());
+    public void ClearRecentFiles() => _session.ReplaceRecentFiles(_recentFiles.ClearAndGetUpdatedList());
 
     public bool TryAutoSave()
     {

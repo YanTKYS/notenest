@@ -42,7 +42,7 @@ public class RecentFilesService
         return list;
     }
 
-    public IReadOnlyList<string> Clear()
+    public IReadOnlyList<string> ClearAndGetUpdatedList()
     {
         try
         {
@@ -50,15 +50,6 @@ public class RecentFilesService
         }
         catch { }
         return [];
-    }
-
-    public void Clear()
-    {
-        try
-        {
-            if (File.Exists(_dataPath)) File.Delete(_dataPath);
-        }
-        catch { }
     }
 
     public void Remove(string filePath)

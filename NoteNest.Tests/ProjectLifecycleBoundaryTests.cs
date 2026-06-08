@@ -20,6 +20,18 @@ public class ProjectLifecycleBoundaryTests
     }
 
     [Fact]
+    public void RecentFilesClearOperationHasAnUnambiguousApiName()
+    {
+        var clearMethods = typeof(RecentFilesService).GetMethods(BindingFlags.Instance | BindingFlags.Public)
+            .Where(method => method.Name.Contains("Clear", StringComparison.Ordinal))
+            .Select(method => method.Name)
+            .ToArray();
+
+        Assert.Single(clearMethods);
+        Assert.Equal(nameof(RecentFilesService.ClearAndGetUpdatedList), clearMethods[0]);
+    }
+
+    [Fact]
     public void LifecycleExposesSnapshotWithoutOwningFileFormatConversion()
     {
         var methods = typeof(ProjectLifecycleService).GetMethods(BindingFlags.Instance | BindingFlags.Public);
