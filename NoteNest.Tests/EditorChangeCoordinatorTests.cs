@@ -37,5 +37,6 @@ public class EditorChangeCoordinatorTests
 
         Assert.NotEmpty(changes);
         Assert.DoesNotContain(changes, change => change.IsDataChanged);
+        Assert.Contains(changes, change => change.PropertyNames.Contains(nameof(MainViewModel.CurrentNoteTitle)));
     }
 }

@@ -7,11 +7,11 @@
 ### 保守性改善
 
 - `MainViewModel` の公開プロパティ、コマンド、UIコールバックを `MainViewModel.Facade.cs` に集約し、XAML互換ファサード、責務所有者入口、横断表示、UI境界の分類をコード上で明示した
-- XAML、MainWindow、横断処理のいずれからも使用されていなかった `Markers`、`MarkerCount`、`AllNotes`、`CurrentNoteTitle` の重複ファサードを削除した
-- 削除した `CurrentNoteTitle` に対する通知と、公開ファサードに存在しないSessionプロパティの過剰な中継通知を除去した
+- `Markers`、`MarkerCount`、`AllNotes`、`CurrentNoteTitle`、`LastSavedAt` は既存コード・テストとの公開互換契約として維持し、責務所有者への単純中継であることを明確にした
+- 互換ファサードの `CurrentNoteTitle` と `LastSavedAt` に必要な変更通知を維持し、それ以外の公開されていないSessionプロパティだけ過剰中継を抑制した
 - MainViewModel内部の単純な自己ファサード経由処理を一部、責務所有者への直接委譲へ整理した
 - マーカー再抽出用partialも、削除した `AllNotes` ファサードではなく `NoteWorkspaceViewModel.AllNotes` を参照するよう統一した
-- ファサード中継契約、重複プロパティの非公開化、有効な通知名を確認するテストを追加した
+- ファサード中継契約、既存公開プロパティの互換性、有効な通知名を確認するテストを追加した
 
 ### 互換性
 

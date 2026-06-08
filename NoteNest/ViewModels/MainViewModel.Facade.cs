@@ -54,9 +54,14 @@ public partial class MainViewModel
     public bool HasEditingTaskRelatedNote => _editor.HasEditingTaskRelatedNote;
     public ObservableCollection<NotebookViewModel> Notebooks => _notes.Notebooks;
     public ObservableCollection<TaskGroupViewModel> TaskGroups => _tasks.TaskGroups;
+    public ObservableCollection<MarkerViewModel> Markers => _markers.Markers;
+    public int MarkerCount => _markers.MarkerCount;
+    public IEnumerable<NoteViewModel> AllNotes => _notes.AllNotes;
+    public string? CurrentNoteTitle => _editor.SelectedNote?.Title;
     public ObservableCollection<RecentFileViewModel> RecentFiles => _session.RecentFiles;
     public bool HasRecentFiles => _session.HasRecentFiles;
     public string? CurrentFilePath => _session.CurrentFilePath;
+    public DateTime? LastSavedAt => _session.LastSavedAt;
     public bool IsAutoSaveEnabled
     {
         get => _isAutoSaveEnabled;

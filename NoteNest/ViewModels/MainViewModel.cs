@@ -70,7 +70,8 @@ public partial class MainViewModel : BaseViewModel
             or nameof(ProjectSessionViewModel.UnsavedIndicatorText)
             or nameof(ProjectSessionViewModel.IsUnsavedWarning)
             or nameof(ProjectSessionViewModel.IsSampleProject)
-            or nameof(ProjectSessionViewModel.HasRecentFiles))
+            or nameof(ProjectSessionViewModel.HasRecentFiles)
+            or nameof(ProjectSessionViewModel.LastSavedAt))
             OnPropertyChanged(e.PropertyName);
     }
 

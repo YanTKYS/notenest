@@ -1,4 +1,3 @@
-using System.Reflection;
 using NoteNest.Services;
 using NoteNest.ViewModels;
 using Xunit;
@@ -21,16 +20,17 @@ public class MainViewModelFacadeTests
     }
 
     [Fact]
-    public void RedundantOwnerPropertiesAreNotRepeatedOnFacade()
+    public void ExistingCompatibilityPropertiesForwardToResponsibilityOwners()
     {
-        var publicProperties = typeof(MainViewModel).GetProperties(BindingFlags.Instance | BindingFlags.Public)
-            .Select(property => property.Name)
-            .ToHashSet();
+        var main = new MainViewModel();
+        var note = main.Notes.AddNote(main.Notes.AddNotebook("NB"), "Note")!;
+        main.SelectNote(note);
 
-        Assert.DoesNotContain("Markers", publicProperties);
-        Assert.DoesNotContain("MarkerCount", publicProperties);
-        Assert.DoesNotContain("AllNotes", publicProperties);
-        Assert.DoesNotContain("CurrentNoteTitle", publicProperties);
+        Assert.Same(main.MarkerPanel.Markers, main.Markers);
+        Assert.Equal(main.MarkerPanel.MarkerCount, main.MarkerCount);
+        Assert.Equal(main.Notes.AllNotes.ToArray(), main.AllNotes.ToArray());
+        Assert.Equal(main.Editor.SelectedNote?.Title, main.CurrentNoteTitle);
+        Assert.Equal(main.Session.LastSavedAt, main.LastSavedAt);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class MainViewModelFacadeTests
         Assert.Contains(nameof(MainViewModel.ProjectName), changed);
         Assert.Contains(nameof(MainViewModel.ProjectDisplayName), changed);
         Assert.DoesNotContain(nameof(ProjectSessionViewModel.ProjectId), changed);
-        Assert.DoesNotContain(nameof(ProjectSessionViewModel.LastSavedAt), changed);
+        Assert.Contains(nameof(MainViewModel.LastSavedAt), changed);
     }
 
     [Fact]
@@ -74,6 +74,6 @@ public class MainViewModelFacadeTests
 
         Assert.NotNull(change);
         Assert.Contains(nameof(MainViewModel.RelatedNoteChoices), change!.PropertyNames);
-        Assert.DoesNotContain("CurrentNoteTitle", change.PropertyNames);
+        Assert.Contains(nameof(MainViewModel.CurrentNoteTitle), change.PropertyNames);
     }
 }
