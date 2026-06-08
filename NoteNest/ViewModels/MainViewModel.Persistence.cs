@@ -22,13 +22,13 @@ public partial class MainViewModel
 
     public bool ConfirmCloseIfModified()
     {
-        if (!IsModified) return true;
+        if (!_session.IsModified) return true;
         return ShowConfirmDialog?.Invoke("未保存の変更", "保存されていない変更があります。終了しますか？") ?? true;
     }
 
     private bool EnsureCanDiscardChanges(string question)
     {
-        if (!IsModified) return true;
+        if (!_session.IsModified) return true;
         return ShowConfirmDialog?.Invoke("未保存の変更", question) ?? true;
     }
 
@@ -56,7 +56,7 @@ public partial class MainViewModel
 
     private void SaveProjectAs()
     {
-        var path = SelectSaveProjectPath?.Invoke(ProjectName);
+        var path = SelectSaveProjectPath?.Invoke(_session.ProjectName);
         if (path != null) DoSave(path);
     }
 

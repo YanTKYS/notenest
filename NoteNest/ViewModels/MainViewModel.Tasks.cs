@@ -9,8 +9,8 @@ public partial class MainViewModel
 
     public void MoveTaskToGroupAt(TaskViewModel source, TaskViewModel target)
     {
-        var sourceGroup = TaskGroups.FirstOrDefault(group => group.Tasks.Contains(source));
-        var targetGroup = TaskGroups.FirstOrDefault(group => group.Tasks.Contains(target));
+        var sourceGroup = _tasks.TaskGroups.FirstOrDefault(group => group.Tasks.Contains(source));
+        var targetGroup = _tasks.TaskGroups.FirstOrDefault(group => group.Tasks.Contains(target));
         if (!_tasks.MoveTaskToGroupAt(source, target)) return;
         if (sourceGroup != targetGroup && targetGroup != null)
             StatusMessage = $"タスクを「{targetGroup.Title}」に移動しました。";

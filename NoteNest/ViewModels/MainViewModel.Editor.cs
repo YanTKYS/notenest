@@ -4,8 +4,8 @@ public partial class MainViewModel
 {
     public void ApplyFontSettings(string fontFamily, double fontSize)
     {
-        EditorFontFamily = fontFamily;
-        EditorFontSize   = fontSize;
+        _editor.FontFamily = fontFamily;
+        _editor.FontSize   = fontSize;
     }
 
     private void ClearEditor()

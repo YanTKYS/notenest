@@ -23,7 +23,6 @@ public sealed class NoteChangeCoordinator
         Changed?.Invoke(this, WorkspaceChangeEventArgs.Create(true,
         [
             nameof(MainViewModel.RelatedNoteChoices),
-            nameof(MainViewModel.CurrentNoteTitle),
             nameof(MainViewModel.EditorTitle),
             nameof(MainViewModel.CurrentNoteTimestampSummary),
         ]));

@@ -12,7 +12,6 @@ public class MainViewModelCompositionTests
 
         Assert.Same(main.Notes.Notebooks, main.Notebooks);
         Assert.Same(main.Tasks.TaskGroups, main.TaskGroups);
-        Assert.Same(main.MarkerPanel.Markers, main.Markers);
         Assert.Equal(main.Editor.Content, main.EditorContent);
     }
 
@@ -98,13 +97,13 @@ public class MainViewModelCompositionTests
         var main = new MainViewModel();
         var notebook = main.Notes.AddNotebook("NB");
         var note = main.Notes.AddNote(notebook, "Note")!;
-        var markerCountBeforeChange = main.MarkerCount;
+        var markerCountBeforeChange = main.MarkerPanel.MarkerCount;
         main.IsModified = false;
 
         note.Content = "[TODO] direct change";
 
         Assert.True(main.IsModified);
-        Assert.Equal(markerCountBeforeChange + 1, main.MarkerCount);
+        Assert.Equal(markerCountBeforeChange + 1, main.MarkerPanel.MarkerCount);
     }
 
     [Fact]
