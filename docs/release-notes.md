@@ -1,5 +1,24 @@
 # リリースノート
 
+## v1.4.3 — DialogService 周辺の整理
+
+**リリース日：** 2026-06-08
+
+### 保守性改善
+
+- `DialogService` の責務を、アプリ固有ダイアログの生成・Owner設定に加えて、プロジェクト／エクスポートのファイル・フォルダ選択まで含むUIダイアログ境界として整理した
+- `MainWindow` から `SaveFileDialog`／`OpenFolderDialog` と検索・置換ダイアログ型の直接保持を除去し、呼び出し口を `DialogService` に統一した
+- `MainViewModel` から `OpenFileDialog`／`SaveFileDialog` の直接生成を除去し、プロジェクトパス選択を軽量なコールバック経由に変更した
+- 起動ダイアログ生成を `DialogService.ShowStartupDialog` へ移し、`App` が具体的なダイアログ型を意識しない構成にした
+- 具体的ダイアログ型の所有境界、パス選択コールバック、統一されたファイル選択入口を確認するテストを追加した
+
+### 互換性
+
+- ダイアログの表示内容、ユーザー操作、`.notenest` 保存形式に変更なし（保存スキーマバージョンは `1.4.1` のまま）
+- `IDialogService` 化や全面DI導入は行わず、既存構成を維持した軽量な整理に限定した
+
+---
+
 ## v1.4.2 — ProjectLifecycleService の責務境界整理
 
 **リリース日：** 2026-06-08

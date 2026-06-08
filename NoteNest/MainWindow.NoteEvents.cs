@@ -2,7 +2,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using NoteNest.Dialogs;
 using NoteNest.ViewModels;
 
 namespace NoteNest;

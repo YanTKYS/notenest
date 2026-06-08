@@ -2,7 +2,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using NoteNest.Dialogs;
 using NoteNest.Services;
 using NoteNest.ViewModels;
 
@@ -54,7 +53,7 @@ public partial class MainWindow
     {
         if (ViewModel.IsTaskCommentMode) return;
         var items = ViewModel.Notebooks
-            .SelectMany(nb => nb.Notes.Select(n => new NotePickerItem(nb.Title, n)))
+            .SelectMany(nb => nb.Notes.Select(n => (NotebookTitle: nb.Title, Note: n)))
             .ToList();
         if (items.Count == 0) { ShowInfo("リンクできるノートがありません。"); return; }
         var note = _dialogs.PickNote(items);

@@ -1,7 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using NoteNest.Dialogs;
 using NoteNest.Models;
 using NoteNest.Services;
 using NoteNest.ViewModels;
@@ -11,7 +10,6 @@ namespace NoteNest;
 public partial class MainWindow : Window
 {
     private MainViewModel ViewModel => (MainViewModel)DataContext;
-    private FindReplaceDialog? _findReplaceDialog;
     private readonly UiSettingsService _uiSettingsService = new();
     private readonly ThemeService _themeService = new();
     private readonly DialogService _dialogs;
@@ -80,6 +78,8 @@ public partial class MainWindow : Window
         vm.ShowInputDialog = (title, prompt) => _dialogs.ShowInput(title, prompt);
         vm.ShowConfirmDialog = (title, message) => _dialogs.Confirm(message, title);
         vm.ShowErrorDialog = (title, message) => _dialogs.ShowError(message, title);
+        vm.SelectOpenProjectPath = _dialogs.SelectProjectOpenPath;
+        vm.SelectSaveProjectPath = _dialogs.SelectProjectSavePath;
 
         vm.RequestClose = Close;
 
@@ -226,12 +226,18 @@ public partial class MainWindow : Window
             e.Cancel = true;
             return;
         }
+        var findReplaceState = _dialogs.GetFindReplaceState(
+            _uiSettings.LastSearchText,
+            _uiSettings.LastReplaceText,
+            _uiSettings.FindReplaceLeft,
+            _uiSettings.FindReplaceTop);
+
         _uiSettingsService.Save(new UiSettings
         {
-            LastSearchText  = _findReplaceDialog?.SearchText  ?? _uiSettings.LastSearchText,
-            LastReplaceText = _findReplaceDialog?.ReplaceText ?? _uiSettings.LastReplaceText,
-            FindReplaceLeft = _findReplaceDialog?.IsLoaded == true ? _findReplaceDialog.Left : _uiSettings.FindReplaceLeft,
-            FindReplaceTop  = _findReplaceDialog?.IsLoaded == true ? _findReplaceDialog.Top  : _uiSettings.FindReplaceTop,
+            LastSearchText  = findReplaceState.LastSearchText,
+            LastReplaceText = findReplaceState.LastReplaceText,
+            FindReplaceLeft = findReplaceState.Left,
+            FindReplaceTop  = findReplaceState.Top,
             ShowLineNumbers      = ViewModel.ShowLineNumbers,
             MarkerSortOrderIndex = ViewModel.MarkerSortOrderIndex,
             Theme                = _uiSettings.Theme,
@@ -243,11 +249,7 @@ public partial class MainWindow : Window
             IsRightPaneCollapsed = _isRightPaneCollapsed,
             IsAutoSaveEnabled     = ViewModel.IsAutoSaveEnabled,
         });
-        if (_findReplaceDialog != null)
-        {
-            _findReplaceDialog.ForceClose = true;
-            _findReplaceDialog.Close();
-        }
+        _dialogs.CloseFindReplace();
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────

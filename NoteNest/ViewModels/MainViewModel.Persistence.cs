@@ -44,13 +44,8 @@ public partial class MainViewModel
     {
         if (!EnsureCanDiscardChanges("保存されていない変更があります。続けますか？")) return;
 
-        var dialog = new Microsoft.Win32.OpenFileDialog
-        {
-            Filter = "NoteNest プロジェクト (*.notenest)|*.notenest|すべてのファイル (*.*)|*.*",
-            DefaultExt = ".notenest"
-        };
-
-        if (dialog.ShowDialog() == true) TryOpenProject(dialog.FileName);
+        var path = SelectOpenProjectPath?.Invoke();
+        if (path != null) TryOpenProject(path);
     }
 
     private void SaveProject()
@@ -61,14 +56,8 @@ public partial class MainViewModel
 
     private void SaveProjectAs()
     {
-        var dialog = new Microsoft.Win32.SaveFileDialog
-        {
-            Filter = "NoteNest プロジェクト (*.notenest)|*.notenest",
-            DefaultExt = ".notenest",
-            FileName = ProjectName
-        };
-
-        if (dialog.ShowDialog() == true) DoSave(dialog.FileName);
+        var path = SelectSaveProjectPath?.Invoke(ProjectName);
+        if (path != null) DoSave(path);
     }
 
     private bool DoSave(string path)

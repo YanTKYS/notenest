@@ -1,9 +1,4 @@
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using NoteNest.Dialogs;
-using NoteNest.ViewModels;
 
 namespace NoteNest;
 
@@ -18,18 +13,12 @@ public partial class MainWindow
             ShowInfo("現在のノートを選択してください。");
             return;
         }
-        var extension = NoteNest.Services.ExportService.GetExtension(options.Format);
-        var dialog = new Microsoft.Win32.SaveFileDialog
-        {
-            Filter = $"{extension} ファイル (*{extension})|*{extension}",
-            DefaultExt = extension,
-            FileName = GetExportDefaultFileName(options),
-        };
-        if (dialog.ShowDialog() != true) return;
+        var outputPath = _dialogs.SelectExportOutputPath(options, GetExportDefaultFileName(options));
+        if (outputPath == null) return;
         try
         {
-            ViewModel.Export(options, dialog.FileName);
-            ViewModel.StatusMessage = $"エクスポートしました: {System.IO.Path.GetFileName(dialog.FileName)}";
+            ViewModel.Export(options, outputPath);
+            ViewModel.StatusMessage = $"エクスポートしました: {System.IO.Path.GetFileName(outputPath)}";
         }
         catch (Exception ex) { ShowError($"エクスポートに失敗しました。\n{ex.Message}"); }
     }
@@ -54,18 +43,13 @@ public partial class MainWindow
 
     private void ExportProjectText_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new Microsoft.Win32.SaveFileDialog
-        {
-            Filter      = "テキストファイル (*.txt)|*.txt",
-            DefaultExt  = ".txt",
-            FileName    = ViewModel.ProjectName
-        };
-        if (dialog.ShowDialog() != true) return;
+        var outputPath = _dialogs.SelectProjectTextExportPath(ViewModel.ProjectName);
+        if (outputPath == null) return;
 
         try
         {
-            ViewModel.ExportProjectToText(dialog.FileName);
-            ViewModel.StatusMessage = $"エクスポートしました: {System.IO.Path.GetFileName(dialog.FileName)}";
+            ViewModel.ExportProjectToText(outputPath);
+            ViewModel.StatusMessage = $"エクスポートしました: {System.IO.Path.GetFileName(outputPath)}";
         }
         catch (Exception ex)
         {
@@ -77,13 +61,8 @@ public partial class MainWindow
     {
         if (ViewModel.Notebooks.Count == 0) { ShowInfo("エクスポートするノートブックがありません。"); return; }
 
-        var dialog = new Microsoft.Win32.OpenFolderDialog
-        {
-            Title = "出力先フォルダを選択してください"
-        };
-        if (dialog.ShowDialog() != true) return;
-
-        var dir = dialog.FolderName;
+        var dir = _dialogs.SelectNotebookExportFolder();
+        if (dir == null) return;
         if (!System.IO.Directory.Exists(dir)) { ShowError("選択したフォルダが存在しません。"); return; }
 
         try
@@ -118,15 +97,10 @@ public partial class MainWindow
     private bool Confirm(string message, string title = "確認",
         MessageBoxImage icon = MessageBoxImage.Warning) => _dialogs.Confirm(message, title, icon);
 
-    private void OpenFindReplace()
-    {
-        if (_findReplaceDialog == null || !_findReplaceDialog.IsLoaded)
-        {
-            _findReplaceDialog = _dialogs.CreateFindReplace(EditorBox);
-            _findReplaceDialog.RestoreState(_uiSettings.LastSearchText, _uiSettings.LastReplaceText,
-                                            _uiSettings.FindReplaceLeft, _uiSettings.FindReplaceTop);
-        }
-        _findReplaceDialog.Show();
-        _findReplaceDialog.Activate();
-    }
+    private void OpenFindReplace() =>
+        _dialogs.ShowFindReplace(EditorBox,
+            _uiSettings.LastSearchText,
+            _uiSettings.LastReplaceText,
+            _uiSettings.FindReplaceLeft,
+            _uiSettings.FindReplaceTop);
 }

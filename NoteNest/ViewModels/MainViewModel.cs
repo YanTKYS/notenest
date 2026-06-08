@@ -25,6 +25,8 @@ public partial class MainViewModel : BaseViewModel
     public Func<string, string, string?>? ShowInputDialog { get; set; }
     public Func<string, string, bool>? ShowConfirmDialog { get; set; }
     public Action<string, string>? ShowErrorDialog { get; set; }
+    public Func<string?>? SelectOpenProjectPath { get; set; }
+    public Func<string, string?>? SelectSaveProjectPath { get; set; }
     public Action? RequestClose { get; set; }
     public Action<int>? NavigateToLine { get; set; }
     public Action<MarkerViewModel>? NavigateToMarker { get; set; }
