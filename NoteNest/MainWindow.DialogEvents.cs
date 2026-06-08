@@ -23,7 +23,7 @@ public partial class MainWindow
         {
             Filter = $"{extension} ファイル (*{extension})|*{extension}",
             DefaultExt = extension,
-            FileName = ViewModel.SelectedNote?.Title ?? ViewModel.ProjectName,
+            FileName = GetExportDefaultFileName(options),
         };
         if (dialog.ShowDialog() != true) return;
         try
@@ -33,6 +33,16 @@ public partial class MainWindow
         }
         catch (Exception ex) { ShowError($"エクスポートに失敗しました。\n{ex.Message}"); }
     }
+
+
+    private string GetExportDefaultFileName(NoteNest.Models.ExportOptions options) => options.Target switch
+    {
+        NoteNest.Models.ExportTarget.CurrentNote => ViewModel.SelectedNote?.Title ?? ViewModel.ProjectName,
+        NoteNest.Models.ExportTarget.CurrentNotebook => ViewModel.SelectedNote == null
+            ? ViewModel.ProjectName
+            : ViewModel.FindNotebookOf(ViewModel.SelectedNote)?.Title ?? ViewModel.ProjectName,
+        _ => ViewModel.ProjectName,
+    };
 
     private void ClearRecentFiles_Click(object sender, RoutedEventArgs e)
     {

@@ -51,7 +51,10 @@ public sealed class EditorChangeCoordinator
             nameof(EditorStateViewModel.SelectedNote) => nameof(MainViewModel.SelectedNote),
             _ => e.PropertyName,
         };
-        if (e.PropertyName == nameof(EditorStateViewModel.SelectedNote))
+        if (e.PropertyName is nameof(EditorStateViewModel.SelectedNote)
+            or nameof(EditorStateViewModel.IsTaskCommentMode)
+            or nameof(EditorStateViewModel.IsNoteEditMode)
+            or nameof(EditorStateViewModel.EditorTitle))
             Publish(false, facadeProperty, nameof(MainViewModel.CurrentNoteTimestampSummary));
         else
             Publish(false, facadeProperty);

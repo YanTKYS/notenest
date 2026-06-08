@@ -32,7 +32,12 @@ public class ExportService
                 .Where(notebook => notebook.Notes.Count > 0).ToList(),
             _ => project.Notebooks,
         };
-        var scoped = new Project { ProjectName = project.ProjectName, Notebooks = notebooks, Tasks = project.Tasks };
+        var scoped = new Project
+        {
+            ProjectName = project.ProjectName,
+            Notebooks = notebooks,
+            Tasks = ScopeTasks(project.Tasks, options.Target, notebooks),
+        };
         var text = options.Format switch
         {
             ExportFormat.Markdown => BuildMarkdown(scoped, options),
@@ -41,6 +46,22 @@ public class ExportService
         };
         File.WriteAllText(outputPath, text, Encoding.UTF8);
     }
+
+
+    private static TaskCollection ScopeTasks(TaskCollection tasks, ExportTarget target, IEnumerable<Notebook> scopedNotebooks)
+    {
+        if (target == ExportTarget.Project) return tasks;
+        var noteIds = scopedNotebooks.SelectMany(notebook => notebook.Notes).Select(note => note.Id).ToHashSet();
+        return new TaskCollection
+        {
+            Today = FilterLinkedTasks(tasks.Today, noteIds),
+            Week = FilterLinkedTasks(tasks.Week, noteIds),
+            Backlog = FilterLinkedTasks(tasks.Backlog, noteIds),
+        };
+    }
+
+    private static List<NoteTask> FilterLinkedTasks(IEnumerable<NoteTask> tasks, HashSet<string> noteIds) =>
+        tasks.Where(task => task.LinkedNoteId != null && noteIds.Contains(task.LinkedNoteId)).ToList();
 
     public static string GetExtension(ExportFormat format) => format switch
     {

@@ -51,8 +51,20 @@ public sealed class V141FeatureTests : IDisposable
         var project = new Project
         {
             ProjectName = "P",
-            Notebooks = [new Notebook { Id = "nb", Title = "NB", Notes = [new Note { Id = "note", Title = "N", Content = "[TODO] marker" }] }],
-            Tasks = new TaskCollection { Today = [new NoteTask { Title = "Task" }] },
+            Notebooks =
+            [
+                new Notebook { Id = "nb", Title = "NB", Notes = [new Note { Id = "note", Title = "N", Content = "[TODO] marker" }] },
+                new Notebook { Id = "other-nb", Title = "Other", Notes = [new Note { Id = "other-note", Title = "OtherNote", Content = "" }] },
+            ],
+            Tasks = new TaskCollection
+            {
+                Today =
+                [
+                    new NoteTask { Title = "Linked Task", LinkedNoteId = "note" },
+                    new NoteTask { Title = "Other Task", LinkedNoteId = "other-note" },
+                    new NoteTask { Title = "Unlinked Task" },
+                ],
+            },
         };
         var service = new ExportService();
         var markdown = Path.Combine(_directory, "export.md");
@@ -61,9 +73,16 @@ public sealed class V141FeatureTests : IDisposable
         service.Export(project, new ExportOptions(ExportTarget.CurrentNote, ExportFormat.Markdown, true, true), markdown, "nb", "note");
         service.Export(project, new ExportOptions(ExportTarget.Project, ExportFormat.Html, true, true), html);
 
-        Assert.Contains("## Tasks", File.ReadAllText(markdown));
-        Assert.Contains("## Markers", File.ReadAllText(markdown));
-        Assert.Contains("<html>", File.ReadAllText(html));
+        var markdownText = File.ReadAllText(markdown);
+        Assert.Contains("## Tasks", markdownText);
+        Assert.Contains("Linked Task", markdownText);
+        Assert.DoesNotContain("Other Task", markdownText);
+        Assert.DoesNotContain("Unlinked Task", markdownText);
+        Assert.Contains("## Markers", markdownText);
+        var htmlText = File.ReadAllText(html);
+        Assert.Contains("<html>", htmlText);
+        Assert.Contains("Other Task", htmlText);
+        Assert.Contains("Unlinked Task", htmlText);
         Assert.Equal(".md", ExportService.GetExtension(ExportFormat.Markdown));
     }
 

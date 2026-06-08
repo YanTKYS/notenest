@@ -122,4 +122,21 @@ public class MainViewModelCompositionTests
         Assert.Contains(nameof(MainViewModel.StatusMessage), changed);
         Assert.Contains(nameof(MainViewModel.WindowTitle), changed);
     }
+
+    [Fact]
+    public void TaskCommentModeSuppressesNoteTimestampTooltipText()
+    {
+        var main = new MainViewModel();
+        var note = main.Notes.AddNote(main.Notes.AddNotebook("NB"), "Note")!;
+        var task = main.Tasks.AddTask("today", "Task")!;
+
+        main.SelectNote(note);
+        Assert.NotEmpty(main.CurrentNoteTimestampSummary);
+
+        main.SelectTask(task);
+        Assert.Equal("", main.CurrentNoteTimestampSummary);
+
+        main.SelectNote(note);
+        Assert.NotEmpty(main.CurrentNoteTimestampSummary);
+    }
 }

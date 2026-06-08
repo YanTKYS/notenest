@@ -157,7 +157,7 @@ public partial class MainViewModel : BaseViewModel
         get => _isAutoSaveEnabled;
         set => SetProperty(ref _isAutoSaveEnabled, value);
     }
-    public string CurrentNoteTimestampSummary => SelectedNote?.TimestampSummary ?? "";
+    public string CurrentNoteTimestampSummary => IsTaskCommentMode ? "" : SelectedNote?.TimestampSummary ?? "";
     public string ProjectInfo => $"プロジェクト名: {ProjectName}\nファイル: {CurrentFilePath ?? "未保存"}\nノートブック: {Notebooks.Count}\nノート: {AllNotes.Count()}\nタスク: {TaskGroups.Sum(group => group.Tasks.Count)}\nマーカー: {MarkerCount}\n最終保存: {(LastSavedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "未保存")}";
 
     // ── Commands ─────────────────────────────────────────────────────────────
