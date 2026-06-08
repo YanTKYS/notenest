@@ -9,6 +9,39 @@ namespace NoteNest;
 
 public partial class MainWindow
 {
+    private void Export_Click(object sender, RoutedEventArgs e)
+    {
+        var options = _dialogs.ShowExportOptions();
+        if (options == null) return;
+        if (options.Target != NoteNest.Models.ExportTarget.Project && ViewModel.SelectedNote == null)
+        {
+            ShowInfo("現在のノートを選択してください。");
+            return;
+        }
+        var extension = NoteNest.Services.ExportService.GetExtension(options.Format);
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            Filter = $"{extension} ファイル (*{extension})|*{extension}",
+            DefaultExt = extension,
+            FileName = ViewModel.SelectedNote?.Title ?? ViewModel.ProjectName,
+        };
+        if (dialog.ShowDialog() != true) return;
+        try
+        {
+            ViewModel.Export(options, dialog.FileName);
+            ViewModel.StatusMessage = $"エクスポートしました: {System.IO.Path.GetFileName(dialog.FileName)}";
+        }
+        catch (Exception ex) { ShowError($"エクスポートに失敗しました。\n{ex.Message}"); }
+    }
+
+    private void ClearRecentFiles_Click(object sender, RoutedEventArgs e)
+    {
+        if (Confirm("最近使ったファイルの履歴をクリアしますか？", "履歴のクリア"))
+            ViewModel.ClearRecentFilesCommand.Execute(null);
+    }
+
+    private void ShowProjectInfo_Click(object sender, RoutedEventArgs e) => _dialogs.ShowProjectInfo(ViewModel.ProjectInfo);
+
     private void ExportProjectText_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new Microsoft.Win32.SaveFileDialog

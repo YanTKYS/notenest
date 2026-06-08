@@ -17,6 +17,8 @@ public partial class MainViewModel : BaseViewModel
     private readonly WorkspaceChangeCoordinator _changeCoordinator;
     private readonly ProjectLifecycleService _lifecycle;
     private readonly DispatcherTimer _unsavedTimer;
+    private readonly DispatcherTimer _autoSaveTimer;
+    private bool _isAutoSaveEnabled;
 
     // Callbacks registered by MainWindow
     public Func<string, string, string?>? ShowInputDialog { get; set; }
@@ -31,6 +33,9 @@ public partial class MainViewModel : BaseViewModel
     {
         _unsavedTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
         _unsavedTimer.Tick += (_, _) => _session.RefreshUnsavedStatus();
+        _autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(5) };
+        _autoSaveTimer.Tick += (_, _) => AutoSave();
+        _autoSaveTimer.Start();
 
         _changeCoordinator = new WorkspaceChangeCoordinator(_notes, _tasks, _markers, _editor);
         _changeCoordinator.Changed += WorkspaceChanged;
@@ -39,6 +44,7 @@ public partial class MainViewModel : BaseViewModel
         _lifecycle.InitializeRecentFiles();
 
         OpenRecentCommand          = new RelayCommand(param => { if (param is string path) OpenRecentFile(path); });
+        ClearRecentFilesCommand     = new RelayCommand(_ => ClearRecentFiles());
         ToggleLineNumbersCommand   = new RelayCommand(_ => ShowLineNumbers = !ShowLineNumbers);
         NewProjectCommand          = new RelayCommand(NewProject);
         OpenProjectCommand         = new RelayCommand(OpenProject);
@@ -144,6 +150,15 @@ public partial class MainViewModel : BaseViewModel
     public ObservableCollection<MarkerViewModel> Markers => MarkerPanel.Markers;
     public ObservableCollection<RecentFileViewModel> RecentFiles => _session.RecentFiles;
     public bool HasRecentFiles => _session.HasRecentFiles;
+    public string? CurrentFilePath => _session.CurrentFilePath;
+    public DateTime? LastSavedAt => _session.LastSavedAt;
+    public bool IsAutoSaveEnabled
+    {
+        get => _isAutoSaveEnabled;
+        set => SetProperty(ref _isAutoSaveEnabled, value);
+    }
+    public string CurrentNoteTimestampSummary => SelectedNote?.TimestampSummary ?? "";
+    public string ProjectInfo => $"プロジェクト名: {ProjectName}\nファイル: {CurrentFilePath ?? "未保存"}\nノートブック: {Notebooks.Count}\nノート: {AllNotes.Count()}\nタスク: {TaskGroups.Sum(group => group.Tasks.Count)}\nマーカー: {MarkerCount}\n最終保存: {(LastSavedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "未保存")}";
 
     // ── Commands ─────────────────────────────────────────────────────────────
 
@@ -158,6 +173,7 @@ public partial class MainViewModel : BaseViewModel
     public ICommand ToggleGroupCommand  { get; }
     public ICommand MarkerClickCommand  { get; }
     public ICommand OpenRecentCommand   { get; }
+    public ICommand ClearRecentFilesCommand { get; }
     public ICommand ToggleLineNumbersCommand { get; }
 
     private void SessionPropertyChanged(object? sender, PropertyChangedEventArgs e)

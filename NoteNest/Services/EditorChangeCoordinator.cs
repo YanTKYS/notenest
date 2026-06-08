@@ -48,9 +48,13 @@ public sealed class EditorChangeCoordinator
             nameof(EditorStateViewModel.FontSize) => nameof(MainViewModel.EditorFontSize),
             nameof(EditorStateViewModel.CaretPositionText) => nameof(MainViewModel.CaretPositionText),
             nameof(EditorStateViewModel.ShowLineNumbers) => nameof(MainViewModel.ShowLineNumbers),
+            nameof(EditorStateViewModel.SelectedNote) => nameof(MainViewModel.SelectedNote),
             _ => e.PropertyName,
         };
-        Publish(false, facadeProperty);
+        if (e.PropertyName == nameof(EditorStateViewModel.SelectedNote))
+            Publish(false, facadeProperty, nameof(MainViewModel.CurrentNoteTimestampSummary));
+        else
+            Publish(false, facadeProperty);
     }
 
     private void Publish(bool isDataChanged, params string?[] propertyNames) =>

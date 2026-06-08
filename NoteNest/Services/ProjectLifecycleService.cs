@@ -1,3 +1,4 @@
+using System.IO;
 using NoteNest.Models;
 using NoteNest.ViewModels;
 
@@ -43,6 +44,19 @@ public sealed class ProjectLifecycleService
 
     public void InitializeRecentFiles() => _session.ReplaceRecentFiles(_recentFiles.Load());
 
+    public void ClearRecentFiles()
+    {
+        _recentFiles.Clear();
+        _session.ReplaceRecentFiles([]);
+    }
+
+    public bool TryAutoSave()
+    {
+        if (!_session.IsModified || _session.CurrentFilePath == null) return false;
+        Save(_session.CurrentFilePath);
+        return true;
+    }
+
     public void CreateNew() => Load(_samples.Create(), null);
 
     public void Open(string path) => Load(_files.Load(path), path);
@@ -57,6 +71,9 @@ public sealed class ProjectLifecycleService
     public Project Build() =>
         _documents.Build(_session.ProjectId, _session.ProjectName, _notes, _tasks, _editor);
 
+    public void Export(ExportOptions options, string outputPath, string? notebookId, string? noteId) =>
+        _exports.Export(Build(), options, outputPath, notebookId, noteId);
+
     public void ExportProjectToText(string outputPath) =>
         _exports.ExportProjectToText(Build(), outputPath);
 
@@ -69,7 +86,8 @@ public sealed class ProjectLifecycleService
 
     private void Load(Project project, string? filePath)
     {
-        _session.Start(project.ProjectId, project.ProjectName, filePath);
+        _session.Start(project.ProjectId, project.ProjectName, filePath,
+            filePath != null && File.Exists(filePath) ? File.GetLastWriteTime(filePath) : null);
         var lastNote = _documents.Load(project, _notes, _tasks, _editor);
         _markers.Refresh(_notes.AllNotes);
 

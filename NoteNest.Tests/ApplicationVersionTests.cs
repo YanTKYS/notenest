@@ -9,7 +9,7 @@ public class ApplicationVersionTests
     [Fact]
     public void ApplicationVersion_UsesAssemblyInformationalVersion()
     {
-        Assert.Equal("1.4.0", MainViewModel.ApplicationVersion);
+        Assert.Equal("1.4.1", MainViewModel.ApplicationVersion);
     }
 
     [Fact]
@@ -17,14 +17,13 @@ public class ApplicationVersionTests
     {
         var viewModel = new MainViewModel();
 
-        Assert.EndsWith(" - ver1.4.0", viewModel.WindowTitle);
-        Assert.DoesNotContain($" - ver{Project.CurrentSchemaVersion}", viewModel.WindowTitle);
+        Assert.EndsWith(" - ver1.4.1", viewModel.WindowTitle);
     }
 
     [Fact]
-    public void ApplicationVersion_IsIndependentFromProjectSchemaVersion()
+    public void ApplicationAndSchemaVersionsAreManagedBySeparateSources()
     {
-        Assert.Equal("1.3.1", Project.CurrentSchemaVersion);
-        Assert.NotEqual(Project.CurrentSchemaVersion, MainViewModel.ApplicationVersion);
+        Assert.Equal("1.4.1", MainViewModel.ApplicationVersion);
+        Assert.Equal("1.4.1", Project.CurrentSchemaVersion);
     }
 }

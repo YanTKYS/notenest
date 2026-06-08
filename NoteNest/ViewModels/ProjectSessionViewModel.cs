@@ -14,6 +14,7 @@ public sealed class ProjectSessionViewModel : BaseViewModel
     private bool _isModified;
     private bool _isSampleProject;
     private DateTime _unsavedSince;
+    private DateTime? _lastSavedAt;
 
     public ProjectSessionViewModel(Func<DateTime>? now = null)
     {
@@ -36,6 +37,7 @@ public sealed class ProjectSessionViewModel : BaseViewModel
     }
 
     public string? CurrentFilePath => _currentFilePath;
+    public DateTime? LastSavedAt { get => _lastSavedAt; private set => SetProperty(ref _lastSavedAt, value); }
 
     public string ProjectDisplayName =>
         _currentFilePath != null ? Path.GetFileName(_currentFilePath) : "新規プロジェクト";
@@ -74,11 +76,12 @@ public sealed class ProjectSessionViewModel : BaseViewModel
     public ObservableCollection<RecentFileViewModel> RecentFiles { get; } = new();
     public bool HasRecentFiles => RecentFiles.Count > 0;
 
-    public void Start(string projectId, string projectName, string? filePath)
+    public void Start(string projectId, string projectName, string? filePath, DateTime? lastSavedAt = null)
     {
         SetProperty(ref _projectId, projectId, nameof(ProjectId));
         ProjectName = projectName;
         SetCurrentFilePath(filePath);
+        LastSavedAt = lastSavedAt;
         IsSampleProject = filePath == null;
         IsModified = false;
     }
@@ -87,6 +90,7 @@ public sealed class ProjectSessionViewModel : BaseViewModel
     {
         SetCurrentFilePath(filePath);
         IsSampleProject = false;
+        LastSavedAt = _now();
         IsModified = false;
     }
 

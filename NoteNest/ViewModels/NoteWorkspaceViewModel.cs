@@ -42,6 +42,8 @@ public sealed class NoteWorkspaceViewModel
             Id = note.Id,
             Title = note.Title,
             Content = note.Content,
+            CreatedAt = note.CreatedAt,
+            UpdatedAt = note.UpdatedAt,
         }).ToList(),
     }).ToList();
 

@@ -2,6 +2,12 @@ namespace NoteNest.ViewModels;
 
 public partial class MainViewModel
 {
+    public void Export(NoteNest.Models.ExportOptions options, string outputPath)
+    {
+        var notebookId = SelectedNote == null ? null : FindNotebookOf(SelectedNote)?.Id;
+        _lifecycle.Export(options, outputPath, notebookId, SelectedNote?.Id);
+    }
+
     public void ExportProjectToText(string outputPath) => _lifecycle.ExportProjectToText(outputPath);
 
     public int ExportNotebooksToTextFiles(string outputDirectory) =>
@@ -84,6 +90,25 @@ public partial class MainViewModel
     {
         if (!EnsureCanDiscardChanges("保存されていない変更があります。続けますか？")) return;
         TryOpenProject(path);
+    }
+
+    private void ClearRecentFiles()
+    {
+        _lifecycle.ClearRecentFiles();
+        StatusMessage = "最近使ったファイルをクリアしました。";
+    }
+
+    private void AutoSave()
+    {
+        if (!IsAutoSaveEnabled) return;
+        try
+        {
+            if (_lifecycle.TryAutoSave()) StatusMessage = "自動保存しました。";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"自動保存に失敗しました: {ex.Message}";
+        }
     }
 
     private bool TryOpenProject(string path)

@@ -49,6 +49,7 @@ public partial class MainWindow : Window
         DarkThemeMenuItem.IsChecked = _uiSettings.Theme == AppTheme.Dark;
         vm.ShowLineNumbers = _uiSettings.ShowLineNumbers;
         vm.MarkerSortOrderIndex = _uiSettings.MarkerSortOrderIndex;
+        vm.IsAutoSaveEnabled = _uiSettings.IsAutoSaveEnabled;
 
         // Restore window size
         if (_uiSettings.WindowWidth >= 200 && _uiSettings.WindowHeight >= 100)
@@ -240,6 +241,7 @@ public partial class MainWindow : Window
             LeftPaneWidth        = LeftPaneColumn.Width.Value,
             RightPaneWidth       = _isRightPaneCollapsed ? _savedRightPaneWidth : RightPaneColumn.Width.Value,
             IsRightPaneCollapsed = _isRightPaneCollapsed,
+            IsAutoSaveEnabled     = ViewModel.IsAutoSaveEnabled,
         });
         if (_findReplaceDialog != null)
         {

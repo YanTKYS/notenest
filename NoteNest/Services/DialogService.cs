@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using NoteNest.Dialogs;
 using NoteNest.ViewModels;
+using NoteNest.Models;
 
 namespace NoteNest.Services;
 
@@ -33,6 +34,15 @@ public sealed class DialogService
             ? (FontFamily: dialog.SelectedFontFamily, FontSize: dialog.SelectedFontSize)
             : null;
     }
+
+    public ExportOptions? ShowExportOptions()
+    {
+        var dialog = new ExportDialog { Owner = _owner };
+        return dialog.ShowDialog() == true ? dialog.Options : null;
+    }
+
+    public void ShowProjectInfo(string information) =>
+        new ProjectInfoDialog(information) { Owner = _owner }.ShowDialog();
 
     public FindReplaceDialog CreateFindReplace(TextBox editor) =>
         new(editor) { Owner = _owner };
