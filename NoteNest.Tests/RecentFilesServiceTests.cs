@@ -57,4 +57,15 @@ public class RecentFilesServiceTests : IDisposable
     {
         Assert.Empty(_svc.Load());
     }
+
+    [Fact]
+    public void Clear_RemovesAllRecentFiles()
+    {
+        _svc.Add("path/a");
+        _svc.Add("path/b");
+
+        _svc.Clear();
+
+        Assert.Empty(_svc.Load());
+    }
 }

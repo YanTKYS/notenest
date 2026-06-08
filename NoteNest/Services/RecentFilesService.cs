@@ -41,6 +41,15 @@ public class RecentFilesService
         catch { }
     }
 
+    public void Clear()
+    {
+        try
+        {
+            if (File.Exists(_dataPath)) File.Delete(_dataPath);
+        }
+        catch { }
+    }
+
     public void Remove(string filePath)
     {
         var list = Load();
