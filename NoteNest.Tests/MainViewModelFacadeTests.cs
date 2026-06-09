@@ -49,16 +49,21 @@ public class MainViewModelFacadeTests
     }
 
     [Fact]
-    public void ClearingEditorRefreshesMarkersFromNoteWorkspaceOwner()
+    public void ClearingEditorRefreshesMarkersFromRemainingNoteWorkspaceNotes()
     {
         var main = new MainViewModel();
         var note = main.Notes.AddNote(main.Notes.AddNotebook("NB"), "Note")!;
         note.Content = "[TODO] marker";
         main.SelectNote(note);
+        Assert.Contains(main.MarkerPanel.Markers, marker => marker.SourceNote == note);
 
         main.DeleteNote(note);
 
-        Assert.Empty(main.MarkerPanel.Markers);
+        Assert.DoesNotContain(main.MarkerPanel.Markers, marker => marker.SourceNote == note);
+        var extractor = new MarkerExtractorService();
+        Assert.Equal(
+            main.Notes.AllNotes.Sum(remaining => extractor.Extract(remaining.Content, remaining.Title).Count),
+            main.MarkerPanel.MarkerCount);
     }
 
     [Fact]
