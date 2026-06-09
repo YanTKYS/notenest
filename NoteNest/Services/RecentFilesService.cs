@@ -29,27 +29,35 @@ public class RecentFilesService
 
     public IReadOnlyList<string> Add(string filePath)
     {
-        var list = Load();
-        list.Remove(filePath);
-        list.Insert(0, filePath);
-        if (list.Count > MaxItems) list = list.Take(MaxItems).ToList();
+        var persisted = Load();
+        var updated = persisted.ToList();
+        updated.Remove(filePath);
+        updated.Insert(0, filePath);
+        if (updated.Count > MaxItems) updated = updated.Take(MaxItems).ToList();
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(_dataPath)!);
-            File.WriteAllText(_dataPath, JsonSerializer.Serialize(list));
+            File.WriteAllText(_dataPath, JsonSerializer.Serialize(updated));
+            return updated;
         }
-        catch { }
-        return list;
+        catch
+        {
+            return persisted;
+        }
     }
 
     public IReadOnlyList<string> ClearAndGetUpdatedList()
     {
+        var persisted = Load();
         try
         {
             if (File.Exists(_dataPath)) File.Delete(_dataPath);
+            return [];
         }
-        catch { }
-        return [];
+        catch
+        {
+            return persisted;
+        }
     }
 
     public void Remove(string filePath)

@@ -73,12 +73,28 @@ public class ProjectLifecycleServiceTests : IDisposable
         Assert.Empty(new RecentFilesService(Path.Combine(_directory, "recent.json")).Load());
     }
 
+    [Fact]
+    public void SaveDoesNotShowRecentFileWhenRecentHistoryPersistenceFails()
+    {
+        Directory.CreateDirectory(_directory);
+        var invalidRecentDataPath = Path.Combine(_directory, "recent-path-is-directory");
+        Directory.CreateDirectory(invalidRecentDataPath);
+        var context = CreateContext(new RecentFilesService(invalidRecentDataPath));
+        context.Lifecycle.CreateNew();
+        var projectPath = Path.Combine(_directory, "saved.notenest");
+
+        context.Lifecycle.Save(projectPath);
+
+        Assert.True(File.Exists(projectPath));
+        Assert.Empty(context.Session.RecentFiles);
+    }
+
     public void Dispose()
     {
         if (Directory.Exists(_directory)) Directory.Delete(_directory, true);
     }
 
-    private Context CreateContext()
+    private Context CreateContext(RecentFilesService? recentFiles = null)
     {
         Directory.CreateDirectory(_directory);
         var session = new ProjectSessionViewModel();
@@ -88,7 +104,7 @@ public class ProjectLifecycleServiceTests : IDisposable
         var editor = new EditorStateViewModel();
         var lifecycle = new ProjectLifecycleService(
             session, notes, tasks, markers, editor,
-            recentFiles: new RecentFilesService(Path.Combine(_directory, "recent.json")));
+            recentFiles: recentFiles ?? new RecentFilesService(Path.Combine(_directory, "recent.json")));
         return new Context(session, notes, markers, editor, lifecycle);
     }
 
