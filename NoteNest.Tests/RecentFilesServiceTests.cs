@@ -70,6 +70,23 @@ public class RecentFilesServiceTests : IDisposable
 
         Assert.Empty(updated);
         Assert.Empty(service.Load());
+        AssertNoTemporaryFiles("data-path-is-directory");
+    }
+
+    [Fact]
+    public void Add_ReplaceFailure_PreservesPersistedListAndRemovesTemporaryFile()
+    {
+        if (!OperatingSystem.IsWindows()) return;
+
+        _svc.Add("path/persisted");
+        var dataPath = Path.Combine(_dir, "recent-files.json");
+        using var locked = new FileStream(dataPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        var updated = _svc.Add("path/not-persisted");
+
+        Assert.Equal(new[] { "path/persisted" }, updated);
+        Assert.Equal(updated, _svc.Load());
+        AssertNoTemporaryFiles("recent-files.json");
     }
 
     [Fact]
@@ -112,6 +129,7 @@ public class RecentFilesServiceTests : IDisposable
 
         Assert.Equal(new[] { "path/b", "path/a" }, updated);
         Assert.Equal(updated, _svc.Load());
+        AssertNoTemporaryFiles("recent-files.json");
     }
 
     [Fact]
@@ -125,4 +143,7 @@ public class RecentFilesServiceTests : IDisposable
         Assert.Empty(updated);
         Assert.Empty(_svc.Load());
     }
+
+    private void AssertNoTemporaryFiles(string dataFileName)
+        => Assert.Empty(Directory.GetFiles(_dir, $"{dataFileName}.*.tmp"));
 }

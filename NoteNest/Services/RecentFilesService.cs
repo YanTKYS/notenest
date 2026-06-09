@@ -36,8 +36,7 @@ public class RecentFilesService
         if (updated.Count > MaxItems) updated = updated.Take(MaxItems).ToList();
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(_dataPath)!);
-            File.WriteAllText(_dataPath, JsonSerializer.Serialize(updated));
+            WriteAtomically(updated);
             return updated;
         }
         catch
@@ -68,13 +67,41 @@ public class RecentFilesService
 
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(_dataPath)!);
-            File.WriteAllText(_dataPath, JsonSerializer.Serialize(updated));
+            WriteAtomically(updated);
             return updated;
         }
         catch
         {
             return persisted;
+        }
+    }
+
+    private void WriteAtomically(IReadOnlyList<string> files)
+    {
+        var directory = Path.GetDirectoryName(_dataPath)!;
+        Directory.CreateDirectory(directory);
+        var temporaryPath = Path.Combine(
+            directory, $"{Path.GetFileName(_dataPath)}.{Path.GetRandomFileName()}.tmp");
+
+        try
+        {
+            File.WriteAllText(temporaryPath, JsonSerializer.Serialize(files));
+            if (File.Exists(_dataPath))
+                File.Replace(temporaryPath, _dataPath, destinationBackupFileName: null);
+            else
+                File.Move(temporaryPath, _dataPath);
+        }
+        finally
+        {
+            try
+            {
+                if (File.Exists(temporaryPath))
+                    File.Delete(temporaryPath);
+            }
+            catch
+            {
+                // The persisted file remains authoritative even if temporary cleanup fails.
+            }
         }
     }
 }
