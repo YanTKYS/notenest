@@ -60,15 +60,21 @@ public class RecentFilesService
         }
     }
 
-    public void Remove(string filePath)
+    public IReadOnlyList<string> RemoveAndGetUpdatedList(string filePath)
     {
-        var list = Load();
-        if (!list.Remove(filePath)) return;
+        var persisted = Load();
+        var updated = persisted.ToList();
+        if (!updated.Remove(filePath)) return persisted;
+
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(_dataPath)!);
-            File.WriteAllText(_dataPath, JsonSerializer.Serialize(list));
+            File.WriteAllText(_dataPath, JsonSerializer.Serialize(updated));
+            return updated;
         }
-        catch { }
+        catch
+        {
+            return persisted;
+        }
     }
 }

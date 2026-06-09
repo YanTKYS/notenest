@@ -87,6 +87,34 @@ public class RecentFilesServiceTests : IDisposable
     }
 
     [Fact]
+    public void Remove_ExistingPath_ReturnsAndPersistsUpdatedList()
+    {
+        _svc.Add("path/a");
+        _svc.Add("path/b");
+
+        var updated = _svc.RemoveAndGetUpdatedList("path/b");
+
+        Assert.Equal(new[] { "path/a" }, updated);
+        Assert.Equal(updated, _svc.Load());
+    }
+
+    [Fact]
+    public void Remove_WriteFailure_ReturnsPersistedList()
+    {
+        if (!OperatingSystem.IsWindows()) return;
+
+        _svc.Add("path/a");
+        _svc.Add("path/b");
+        var dataPath = Path.Combine(_dir, "recent-files.json");
+        using var locked = new FileStream(dataPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        var updated = _svc.RemoveAndGetUpdatedList("path/b");
+
+        Assert.Equal(new[] { "path/b", "path/a" }, updated);
+        Assert.Equal(updated, _svc.Load());
+    }
+
+    [Fact]
     public void Clear_RemovesAllRecentFiles()
     {
         _svc.Add("path/a");
