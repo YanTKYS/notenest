@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using NoteNest.Models;
+using NoteNest.Services;
 
 namespace NoteNest;
 
