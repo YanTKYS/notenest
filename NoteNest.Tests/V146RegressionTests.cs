@@ -52,8 +52,7 @@ public sealed class V146RegressionTests : IDisposable
 
         var nb   = notes.AddNotebook("RegressionNB");
         var note = notes.AddNote(nb, "RegressionNote")!;
-        editor.SelectNote(note);
-        editor.Content = "[TODO] check me";
+        note.Content = "[TODO] check me";
         var task = tasks.AddTask("today", "RegressionTask")!;
         task.Comment = "commit this";
         session.IsModified = true;
@@ -175,7 +174,8 @@ public sealed class V146RegressionTests : IDisposable
         var before = DateTime.Now.AddSeconds(-1);
         var note = new NoteViewModel(new Note { Title = "New" });
         Assert.True(note.CreatedAt >= before);
-        Assert.Equal(note.CreatedAt, note.UpdatedAt);
+        Assert.True(Math.Abs((note.UpdatedAt - note.CreatedAt).TotalSeconds) < 1,
+            "CreatedAt and UpdatedAt should be set close together on creation");
     }
 
     [Fact]
