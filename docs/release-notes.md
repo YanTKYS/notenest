@@ -1,5 +1,39 @@
 # リリースノート
 
+## v1.5.4 — NoteNestWorkspaceView 実切り出し前の移行計画
+
+**リリース日：** 2026-06-13
+
+### NestSuite対応準備（N4 移行計画確定）
+
+v1.5.5 での `NoteNestWorkspaceView` 実切り出しに備え、切り出し範囲・手順・注意点を整理した。
+実切り出しは v1.5.5 で行う。
+
+**確定した切り出し範囲：**
+- WorkspaceView へ移す：`MainWindow.xaml` の 5 列グリッド（左ペイン・GridSplitter×2・エディタ・右ペイン）、`NoteEvents.cs`・`TaskEvents.cs`・`EditorEvents.cs`・`DragDrop.cs`・`ContextMenuEvents.cs`
+- AppShell に残す：`Window`・`Menu`・`StatusBar`・`InputBindings`、`WindowEvents.cs`・`ProjectEvents.cs`・`ExportEvents.cs`・`DialogEvents.cs`・`ShortcutEvents.cs`
+
+**DataContext 方針：** `NoteNestWorkspaceView` は `MainWindow` の DataContext（`MainViewModel`）を継承する。改名・分割は行わない。
+
+**DialogService / Owner 方針：** ダイアログ起動は AppShell 側に残す。WorkspaceView コードビハインドから `DialogService` を直接呼ばない。`Window.GetWindow(this)` の追加使用を避ける。
+
+**v1.5.5 実施手順（11 ステップ）：** UserControl 作成 → XAML 移動 → イベントハンドラ移動 → ContextMenuEvents 整理 → 境界テスト拡張 → 回帰確認。詳細は `docs/nestsuite-preparation.md`「v1.5.5 実切り出し前の移行計画」を参照。
+
+**回帰確認チェックリスト：** 起動/ファイル操作（8 項目）・ノート操作（8 項目）・エディタ操作（7 項目）・タスク/マーカー操作（9 項目）・UI/設定（8 項目）・自動テスト（2 項目）を文書化。
+
+### ドキュメント
+
+- `docs/nestsuite-preparation.md`：「v1.5.5 実切り出し前の移行計画」セクションを追加（切り出し範囲・イベント移動候補・DataContext 方針・DialogService 注意点・手順案・回帰確認チェックリスト）
+- `docs/design-decisions.md`：§27 を追加（移行計画設計判断）
+- `docs/backlog.md`：N4 を「実切り出し（v1.5.5）」として更新
+
+### バージョン
+
+- アプリケーションバージョン：`1.5.4`
+- 保存スキーマバージョン：`1.4.1`（変更なし）
+
+---
+
 ## v1.5.3 — NoteNestWorkspaceView 構想の設計
 
 **リリース日：** 2026-06-13
