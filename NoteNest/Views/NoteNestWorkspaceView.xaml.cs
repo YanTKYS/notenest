@@ -1,6 +1,5 @@
 using System.Windows;
 using System.Windows.Controls;
-using NoteNest.Services;
 using NoteNest.ViewModels;
 
 namespace NoteNest.Views;
@@ -9,8 +8,9 @@ public partial class NoteNestWorkspaceView : UserControl
 {
     private MainViewModel ViewModel => (MainViewModel)DataContext;
 
-    private DialogService? _dialogs;
-    private DialogService Dialogs => _dialogs ??= new DialogService(Window.GetWindow(this)!);
+    public IWorkspaceDialogHost? DialogHost { get; set; }
+    private IWorkspaceDialogHost Host =>
+        DialogHost ?? throw new InvalidOperationException("DialogHost が設定されていません。");
 
     private bool _suppressTreeSelectionChanged;
     private readonly DragDropState _dragDrop = new();
@@ -117,13 +117,13 @@ public partial class NoteNestWorkspaceView : UserControl
     }
 
     public void OpenFindReplace(string lastSearch, string lastReplace, double? left, double? top)
-        => Dialogs.ShowFindReplace(EditorBox, lastSearch, lastReplace, left, top);
+        => Host.ShowFindReplace(EditorBox, lastSearch, lastReplace, left, top);
 
     public (string LastSearchText, string LastReplaceText, double? Left, double? Top) GetFindReplaceState(
         string fallbackSearch, string fallbackReplace, double? fallbackLeft, double? fallbackTop)
-        => Dialogs.GetFindReplaceState(fallbackSearch, fallbackReplace, fallbackLeft, fallbackTop);
+        => Host.GetFindReplaceState(fallbackSearch, fallbackReplace, fallbackLeft, fallbackTop);
 
-    public void CloseFindReplace() => Dialogs.CloseFindReplace();
+    public void CloseFindReplace() => Host.CloseFindReplace();
 
     // ── Private helpers ────────────────────────────────────────────────────
 
@@ -141,8 +141,8 @@ public partial class NoteNestWorkspaceView : UserControl
     private string? FindNotebookTitleOf(NoteViewModel note) =>
         ViewModel.FindNotebookOf(note)?.Title;
 
-    private void ShowError(string message, string title = "エラー") => Dialogs.ShowError(message, title);
-    private void ShowInfo(string message, string title = "情報") => Dialogs.ShowInfo(message, title);
+    private void ShowError(string message, string title = "エラー") => Host.ShowError(message, title);
+    private void ShowInfo(string message, string title = "情報") => Host.ShowInfo(message, title);
     private bool Confirm(string message, string title = "確認",
-        MessageBoxImage icon = MessageBoxImage.Warning) => Dialogs.Confirm(message, title, icon);
+        MessageBoxImage icon = MessageBoxImage.Warning) => Host.Confirm(message, title, icon);
 }

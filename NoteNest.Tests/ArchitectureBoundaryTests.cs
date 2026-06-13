@@ -57,7 +57,7 @@ public class ArchitectureBoundaryTests
         "System.Windows.Forms.FolderBrowserDialog",
     ];
 
-    // ソースファイル内で禁止するコールサイトパターン（v1.5.2 追加）
+    // ソースファイル内で禁止するコールサイトパターン（v1.5.2 追加、v1.5.5 追加）
     private static readonly string[] ForbiddenCallSitePatterns =
     [
         "MessageBox.Show",
@@ -71,6 +71,9 @@ public class ArchitectureBoundaryTests
         "new TutorialWindow",
         "typeof(MainWindow)",
         "new MainWindow",
+        // v1.5.5: WorkspaceView should not own DialogService or resolve its host window directly
+        "DialogService",
+        "Window.GetWindow(",
     ];
 
     // AppShell 側として除外する Services ファイル名（ソースチェック対象外）

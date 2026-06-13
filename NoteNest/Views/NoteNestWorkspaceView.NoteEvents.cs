@@ -32,7 +32,7 @@ public partial class NoteNestWorkspaceView
 
     internal void AddNotebook()
     {
-        var title = Dialogs.ShowInput("ノートブック追加", "ノートブック名を入力してください:");
+        var title = Host.ShowInput("ノートブック追加", "ノートブック名を入力してください:");
         if (!string.IsNullOrWhiteSpace(title))
             ViewModel.AddNotebookWithTitle(title.Trim());
     }
@@ -56,7 +56,7 @@ public partial class NoteNestWorkspaceView
 
     private void AddNoteToNotebookViaDialog(NotebookViewModel nb)
     {
-        var input = Dialogs.ShowInput("ノート追加", "ノート名を入力してください:");
+        var input = Host.ShowInput("ノート追加", "ノート名を入力してください:");
         if (string.IsNullOrWhiteSpace(input)) return;
         var title = input.Trim();
         if (!ViewModel.AddNoteToNotebook(nb, title))
@@ -67,7 +67,7 @@ public partial class NoteNestWorkspaceView
     {
         var nb = GetContextMenuDataContext<NotebookViewModel>(sender);
         if (nb == null) return;
-        var title = Dialogs.ShowInput("名前変更", "新しいノートブック名:", nb.Title);
+        var title = Host.ShowInput("名前変更", "新しいノートブック名:", nb.Title);
         if (!string.IsNullOrWhiteSpace(title))
             ViewModel.RenameNotebook(nb, title.Trim());
     }
@@ -117,7 +117,7 @@ public partial class NoteNestWorkspaceView
     private void RenameNoteWithDialog(NoteViewModel? note)
     {
         if (note == null) return;
-        var input = Dialogs.ShowInput("名前変更", "新しいノート名:", note.Title);
+        var input = Host.ShowInput("名前変更", "新しいノート名:", note.Title);
         if (string.IsNullOrWhiteSpace(input)) return;
         var newTitle = input.Trim();
         if (!ViewModel.RenameNote(note, newTitle))
