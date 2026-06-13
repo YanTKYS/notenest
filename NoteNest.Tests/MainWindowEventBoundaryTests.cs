@@ -1,8 +1,13 @@
 using System.Reflection;
+using NoteNest.Views;
 using Xunit;
 
 namespace NoteNest.Tests;
 
+/// <summary>
+/// v1.5.5: 共有ヘルパーの検索先を MainWindow → NoteNestWorkspaceView へ更新。
+/// DragDrop・ContextMenu ヘルパーは WorkspaceView のコードビハインドに移動済み。
+/// </summary>
 public class MainWindowEventBoundaryTests
 {
     private static readonly BindingFlags PrivateInstance = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -22,14 +27,16 @@ public class MainWindowEventBoundaryTests
     [Fact]
     public void ContextMenuResolutionUsesExplicitlyNamedSharedHelper()
     {
-        Assert.NotNull(typeof(NoteNest.MainWindow).GetMethod("GetContextMenuDataContext", PrivateStatic));
-        Assert.Null(typeof(NoteNest.MainWindow).GetMethod("GetDataContext", PrivateStatic));
+        // v1.5.5: helper moved to NoteNestWorkspaceView
+        Assert.NotNull(typeof(NoteNestWorkspaceView).GetMethod("GetContextMenuDataContext", PrivateStatic));
+        Assert.Null(typeof(NoteNestWorkspaceView).GetMethod("GetDataContext", PrivateStatic));
     }
 
     [Fact]
     public void DragDropUsesSharedThresholdAndEffectHelpers()
     {
-        Assert.NotNull(typeof(NoteNest.MainWindow).GetMethod("HasExceededDragThreshold", PrivateStatic));
-        Assert.NotNull(typeof(NoteNest.MainWindow).GetMethod("SetDragOverEffect", PrivateStatic));
+        // v1.5.5: helpers moved to NoteNestWorkspaceView
+        Assert.NotNull(typeof(NoteNestWorkspaceView).GetMethod("HasExceededDragThreshold", PrivateStatic));
+        Assert.NotNull(typeof(NoteNestWorkspaceView).GetMethod("SetDragOverEffect", PrivateStatic));
     }
 }
