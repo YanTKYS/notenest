@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using NoteNest.Services;
 using NoteNest.ViewModels;
 
 namespace NoteNest.Views;
