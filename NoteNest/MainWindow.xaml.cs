@@ -3,10 +3,11 @@ using System.Windows.Controls;
 using NoteNest.Models;
 using NoteNest.Services;
 using NoteNest.ViewModels;
+using NoteNest.Views;
 
 namespace NoteNest;
 
-public partial class MainWindow : Window
+public partial class MainWindow : Window, IWorkspaceDialogHost
 {
     private MainViewModel ViewModel => (MainViewModel)DataContext;
     private readonly UiSettingsService _uiSettingsService = new();
@@ -48,6 +49,8 @@ public partial class MainWindow : Window
         _lastNormalWidth  = Width;
         _lastNormalHeight = Height;
         if (_uiSettings.IsWindowMaximized) WindowState = WindowState.Maximized;
+
+        WorkspaceView.DialogHost = this;
 
         // Restore pane widths and right pane collapse state
         if (_uiSettings.LeftPaneWidth > 0)

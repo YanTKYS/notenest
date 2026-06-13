@@ -2,7 +2,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using NoteNest.Services;
 using NoteNest.ViewModels;
 
 namespace NoteNest.Views;
@@ -40,7 +39,7 @@ public partial class NoteNestWorkspaceView
             .SelectMany(nb => nb.Notes.Select(n => (NotebookTitle: nb.Title, Note: n)))
             .ToList();
         if (items.Count == 0) { ShowInfo("リンクできるノートがありません。"); return; }
-        var note = Dialogs.PickNote(items);
+        var note = Host.PickNote(items);
         if (note == null) return;
         InsertTextAtCaret($"[[{note.Title}]]");
     }

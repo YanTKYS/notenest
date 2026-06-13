@@ -31,7 +31,7 @@ public partial class NoteNestWorkspaceView
     {
         var task = GetContextMenuDataContext<TaskViewModel>(sender);
         if (task == null) return;
-        var title = Dialogs.ShowInput("タスク名変更", "新しいタスク名:", task.Title);
+        var title = Host.ShowInput("タスク名変更", "新しいタスク名:", task.Title);
         if (!string.IsNullOrWhiteSpace(title))
             ViewModel.RenameTask(task, title.Trim());
     }
@@ -81,7 +81,7 @@ public partial class NoteNestWorkspaceView
     {
         var task = GetContextMenuDataContext<TaskViewModel>(sender);
         if (task == null) return;
-        var input = Dialogs.ShowInput("関連ノートを設定", "ノート名を入力してください:");
+        var input = Host.ShowInput("関連ノートを設定", "ノート名を入力してください:");
         if (string.IsNullOrWhiteSpace(input)) return;
         var noteTitle = input.Trim();
         var note = ViewModel.FindNoteByTitle(noteTitle);
