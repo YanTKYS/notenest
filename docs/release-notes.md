@@ -39,14 +39,14 @@ NestSuite のツールメニューを追加した。
 
 #### 4. NestSuiteShellWindow コードビハインド更新（`NoteNest/NestSuite/NestSuiteShellWindow.xaml.cs`）
 
-- `LoadInitialFile(string path)` — 公開メソッド追加。ウィンドウ表示後に `ViewModel.OpenFileAtStartup(path)` を呼ぶ
+- `LoadInitialFile(string path)` — 公開メソッド追加。`.notenest` 拡張子確認・ファイル存在確認を行い、不正時はエラーダイアログを表示して中止。検証通過後のみ `ViewModel.OpenFileAtStartup(path)` を呼ぶ。`MainWindow.OpenStartupFile()` と同等の動作で起動経路による挙動差をなくす。
 - `MenuToolNoteNest_Click` — ツールメニューの NoteNest チェックを維持するハンドラ追加
 - クラスコメントを v1.6.3 内容に更新
 
 #### 5. StartupArgParser 更新（`NoteNest/StartupArgParser.cs`）
 
-- `GetFilePath(string[] args)` — '-' で始まらない最初の引数をファイルパスとして返す。`args.FirstOrDefault(a => !a.StartsWith('-'))` で実装
-- 引数仕様ドキュメントを v1.6.3 に更新（`--nestsuite + ファイルパス` を v1.6.3 対応として記載）
+- `GetFilePath(string[] args)` — '-' で始まらない最初の引数をファイルパス候補として返す。未対応拡張子（例：`.json`）も候補として返し、拡張子・存在確認は `LoadInitialFile()` が担当する責務分離を維持する
+- 引数仕様ドキュメントを v1.6.3 に更新（`--nestsuite + .notenest パス` を v1.6.3 対応として記載）
 
 #### 6. App.xaml.cs 更新（`NoteNest/App.xaml.cs`）
 
@@ -54,13 +54,14 @@ NestSuite モード起動時にファイルパスを取得し、`shell.LoadIniti
 
 #### 7. テスト追加
 
-**StartupArgParserTests.cs**（5 件追加）：
+**StartupArgParserTests.cs**（6 件追加）：
 
 - `GetFilePath_WithFilePath_ReturnsPath`
 - `GetFilePath_WithNestSuitePlusFilePath_ReturnsPath`
 - `GetFilePath_WithFilePathBeforeFlag_ReturnsPath`
 - `GetFilePath_WithOnlyFlag_ReturnsNull`
 - `GetFilePath_WithNoArgs_ReturnsNull`
+- `GetFilePath_WithUnsupportedExtension_ReturnsPath` — 未対応拡張子もパス候補として返すことを確認（検証は `LoadInitialFile()` が担当）
 
 **NestSuiteShellTests.cs**（2 件追加）：
 
