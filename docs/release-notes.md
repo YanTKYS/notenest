@@ -49,6 +49,27 @@ v1.7.3 から：サイドバークリック → `EnsureTabForToolId(toolId)` →
 
 同一ツールのタブが既に存在する場合は新規作成せず既存タブに移動する。将来的には同一ツールの複数タブ（NoteNest で A.notenest と B.notenest を同時に開く）をタブストリップで区別できるようにする。
 
+### タブと Workspace 状態の同期（コードレビュー対応）
+
+初期実装ではタブモデルが実際の Workspace 状態と同期されていなかった。以下の修正を追加した：
+
+**ファイルパス同期**（`MainViewModel.PropertyChanged` 購読）
+
+- `CurrentFilePath` が変化したとき（ファイルを開く・保存する・新規作成する）、NoteNest タブの `DisplayName` と `FilePath` を自動更新する
+- `--nestsuite + ファイルパス` 起動時・ファイルメニュー操作時の両方をカバーする
+- `CurrentFilePath = null`（新規プロジェクト）では「無題.notenest」へ戻す
+
+**未保存状態同期**（`MainViewModel.IsModified` + `ChatNestWorkspaceViewModel.HasUnsavedChanges` 購読）
+
+- `IsModified` 変化時に NoteNest タブの `IsModified` フラグを更新する
+- `HasUnsavedChanges` 変化時に ChatNest タブの `IsModified` フラグを更新する
+- タブストリップの `ItemTemplate` で `IsModified = true` のとき ` *` をタブ名の後ろに表示する
+
+**`ReplaceTab` ヘルパー**
+
+- `_tabs[index] = newTab`（ObservableCollection Replace）と `_selectedTab` 更新・`TabStrip.SelectedItem` 再設定を 1 メソッドにまとめた
+- `_isActivatingTab` ガードにより `TabStrip_SelectionChanged` との再帰を防ぐ
+
 ### 変更しなかったもの
 
 - NoteNest 単体版の通常起動フロー

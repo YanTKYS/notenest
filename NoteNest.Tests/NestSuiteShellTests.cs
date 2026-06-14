@@ -11,7 +11,7 @@ namespace NoteNest.Tests;
 /// <summary>
 /// v1.7.0〜v1.7.3: NestSuite 統合母体の型境界・ツール定義モデル・タブ管理・レジストリ・契約を確認するテスト。
 /// ChatNest を 2 つ目の Workspace（統合検証段階）として追加したことを反映する（v1.7.0）。
-/// v1.7.1 は回帰確認・小修正版。v1.7.3 ではファイル単位タブストリップとタブ管理メソッドを追加。
+/// v1.7.1 は回帰確認・小修正版。v1.7.3 ではファイル単位タブストリップとタブ管理メソッドを追加（Workspace 状態との同期含む）。
 /// UI を実際に起動しない、リフレクションベースの静的確認。
 /// </summary>
 public class NestSuiteShellTests
@@ -296,6 +296,29 @@ public class NestSuiteShellTests
                 null,
                 [typeof(NestSuiteDocumentTab)],
                 null);
+        Assert.NotNull(method);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasReplaceTabMethod()
+    {
+        // v1.7.3 fix: ReplaceTab がタブ置換ヘルパーとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("ReplaceTab",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
+                null,
+                [typeof(NestSuiteDocumentTab), typeof(NestSuiteDocumentTab)],
+                null);
+        Assert.NotNull(method);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasSyncNoteNestTabToViewModelMethod()
+    {
+        // v1.7.3 fix: SyncNoteNestTabToViewModel がタブとViewModel状態の同期メソッドとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("SyncNoteNestTabToViewModel",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
         Assert.NotNull(method);
     }
 }

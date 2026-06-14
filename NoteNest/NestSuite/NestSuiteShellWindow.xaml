@@ -162,7 +162,12 @@
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding DisplayName}" FontSize="12"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding DisplayName}" FontSize="12"/>
+                                    <TextBlock Text=" *" FontSize="12"
+                                               Foreground="{DynamicResource UnsavedBrush}"
+                                               Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}"/>
+                                </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>

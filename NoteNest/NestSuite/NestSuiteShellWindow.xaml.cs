@@ -105,6 +105,10 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         };
 
         vm.SyncTreeSelectionCallback = note => WorkspaceView.SyncTreeSelection(note);
+
+        // v1.7.3: タブモデルを Workspace の実際の状態（ファイルパス・未保存）と同期する
+        vm.PropertyChanged += OnNoteNestViewModelPropertyChanged;
+        _chatNestViewModel.PropertyChanged += OnChatNestPropertyChanged;
     }
 
     protected override void OnClosing(CancelEventArgs e)
@@ -241,6 +245,63 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         if (_isActivatingTab) return;
         if (TabStrip.SelectedItem is NestSuiteDocumentTab tab)
             ActivateTab(tab);
+    }
+
+    /// <summary>
+    /// oldTab をコレクション内で newTab に置き換え、選択中だった場合は _selectedTab と TabStrip 選択状態も更新する。
+    /// _isActivatingTab ガードにより TabStrip_SelectionChanged との再帰を防ぐ。
+    /// </summary>
+    private void ReplaceTab(NestSuiteDocumentTab oldTab, NestSuiteDocumentTab newTab)
+    {
+        var index = _tabs.IndexOf(oldTab);
+        if (index < 0) return;
+        _tabs[index] = newTab;
+        if (_selectedTab?.Id == oldTab.Id)
+        {
+            _selectedTab = newTab;
+            _isActivatingTab = true;
+            try { TabStrip.SelectedItem = newTab; }
+            finally { _isActivatingTab = false; }
+        }
+    }
+
+    /// <summary>
+    /// MainViewModel の CurrentFilePath・IsModified を NoteNest タブモデルに反映する。
+    /// ファイルを開く・保存する・新規作成するたびに呼ばれ、タブ名と未保存マーカーを最新化する。
+    /// </summary>
+    private void SyncNoteNestTabToViewModel()
+    {
+        var tab = _tabs.FirstOrDefault(t => t.WorkspaceKind == NestSuiteWorkspaceKind.NoteNest);
+        if (tab == null) return;
+        var vm = ViewModel;
+        NestSuiteDocumentTab updatedTab;
+        if (vm.CurrentFilePath is string path && NestSuiteTabFactory.TryGetKind(path, out _))
+            updatedTab = NestSuiteTabFactory.FromFilePath(path) with { Id = tab.Id, IsModified = vm.IsModified };
+        else
+            updatedTab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.NoteNest) with { Id = tab.Id, IsModified = vm.IsModified };
+        ReplaceTab(tab, updatedTab);
+    }
+
+    /// <summary>
+    /// ChatNest の HasUnsavedChanges を ChatNest タブモデルの IsModified に反映する。
+    /// </summary>
+    private void SyncChatNestTab()
+    {
+        var tab = _tabs.FirstOrDefault(t => t.WorkspaceKind == NestSuiteWorkspaceKind.ChatNest);
+        if (tab == null) return;
+        ReplaceTab(tab, tab with { IsModified = _chatNestViewModel.HasUnsavedChanges });
+    }
+
+    private void OnNoteNestViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(MainViewModel.CurrentFilePath) or nameof(MainViewModel.IsModified))
+            SyncNoteNestTabToViewModel();
+    }
+
+    private void OnChatNestPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ChatNestWorkspaceViewModel.HasUnsavedChanges))
+            SyncChatNestTab();
     }
 
     // ── v1.6.3: 起動時ファイル読み込み ──────────────────────────────────
