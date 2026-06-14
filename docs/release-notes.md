@@ -1,5 +1,76 @@
 # リリースノート
 
+## v1.7.0 — NestSuite ChatNest 統合検証
+
+**リリース日：** 2026-06-14
+
+### 概要
+
+NestSuite に **2 つ目の Workspace として ChatNest** を載せられるかを検証した。NoteNest と ChatNest を NestSuite 上で切り替えられるようにし、ChatNest 選択時に `ChatNestWorkspaceView` を表示する。ChatNest は発言者（自分／反論／補足／結論）を切り替えながらメッセージを投稿・削除できる思考整理チャットで、参照ソース ChatNest v0.4.1（`reference/external/chatnest-v0.4.1/`）の **Workspace 部分を中心に** NoteNest 側へ取り込んだ。ChatNest の AppShell（`App.xaml`・`MainWindow`・起動処理・単体メニュー・保存ダイアログ）は移植していない。IdeaNest は未統合のまま維持する。
+
+これは ChatNest の完全統合ではなく、**複数 Workspace を NestSuite に載せられるかの統合検証**である。最終的な NestSuite タブはツール単位ではなく**ファイル／作業単位**を想定しており、v1.7.0 ではファイル単位タブの本格実装・ChatNest ファイル（`.chatnest`）の保存／読込は行わない（次段階の課題）。
+
+### 取り込んだ ChatNest 関連ファイル（`NoteNest/NestSuite/ChatNest/`）
+
+参照ソースの Workspace 部分を、NestSuite 配下の自己完結モジュールとして取り込んだ。
+
+- `Message.cs` — `Speaker` enum（自分／反論／補足／結論）＋ `Message` モデル
+- `ChatNestWorkspaceViewModel.cs` — メッセージ一覧・入力・発言者切替・投稿・削除
+- `ChatNestRelayCommand.cs` — `RaiseCanExecuteChanged` を持つ ChatNest 専用 RelayCommand（`RelayCommand<T>` 含む）
+- `SpeakerConverters.cs` — 発言者ごとの背景色・アクセント色・配置 Converter（実使用 3 種のみ）
+- `RadioConverter.cs` — 発言者ラジオボタン双方向バインド Converter
+- `ChatNestWorkspaceView.xaml` / `.xaml.cs` — メッセージ一覧・入力欄・発言者切替 UI、自動スクロール、Ctrl/Shift+Enter 投稿・Ctrl/Shift+←→ 発言者切替
+
+スタイル（`PrimaryButton`・`MiniDeleteButton`・`SpeakerToggle`）は参照ソース `App.xaml` 全体を移植せず、Workspace で使う分のみ `ChatNestWorkspaceView` の `UserControl.Resources` に取り込んだ。
+
+### NestSuite 側の変更
+
+- **`NestSuiteToolRegistry.cs`** — `ChatNestDef` を `IsIntegrated: true` / `StatusText: "統合検証"` に変更（NoteNest 統合済み・ChatNest 統合検証・IdeaNest 未統合）
+- **`NestSuiteShellWindow.xaml`** — Workspace 領域に `ChatNestWorkspaceView`（`x:Name="ChatWorkspaceView"`）を追加。サイドバー・メニューの ChatNest 表示を「未統合」→「検証」へ変更
+- **`NestSuiteShellWindow.xaml.cs`** — `SelectTool()` を NoteNest / ChatNest / 未統合プレースホルダーの 3 状態切替に一般化（`tool.IsIntegrated` で Workspace かプレースホルダーかを判定）。ChatNest 用に独立した `ChatNestWorkspaceViewModel` を生成して `ChatWorkspaceView.DataContext` に設定（`MainViewModel` とは別 DataContext）
+
+### MessageBox 暫定許容
+
+ChatNest の発言削除確認は参照ソースの挙動を維持し `MessageBox` を直接使用する。ChatNest モジュールは `ArchitectureBoundaryTests` の走査対象外（`NestSuite/` 配下）に置くことで境界テストへ影響しない。`IWorkspaceDialogHost` 相当への委譲は次段階の課題として記録した（design-decisions.md §35）。
+
+### テスト追加・更新
+
+- **`ChatNestWorkspaceViewModelTests.cs`（新規・8 件）** — 投稿でメッセージ追加・空白入力で投稿不可・前後トリム・発言者切替（前後・循環）・`WorkspaceModified` 発火・`Clear`・`LoadMessages`。MessageBox を伴う削除は対象外
+- **`NestSuiteShellTests.cs`** — `NestSuiteShellWindow_HasChatWorkspaceViewField` 追加、`NestSuiteToolRegistry_IdeaNest_RemainsOnlyUnintegratedTool` 追加。ChatNest 統合状態テストを `IsNotIntegrated` → `IsIntegrated` へ更新
+- **`ApplicationVersionTests.cs`** — バージョン `1.6.4` → `1.7.0`
+
+### 変更しなかったもの
+
+- NoteNest 単体版の既定起動フロー（引数なし → `StartDialog` → `MainWindow`、`.notenest` 指定 → `MainWindow`）
+- NoteNest 単体版 `MainWindow`・`MainViewModel`・`NoteNestWorkspaceView`
+- `.notenest` 保存スキーマ（`1.4.1` のまま）・NoteNest 保存形式
+- NestSuite 内 NoteNest のファイル操作（v1.6.3 で追加。NoteNest 選択時に維持）
+- IdeaNest の統合（未統合のまま）
+- 既定起動の NestSuite 化（行わない）
+
+### ファイル単位タブ設計に関する記録
+
+- 最終的な NestSuite タブは `[NoteNest: A.notenest] [ChatNest: 会議メモ.chatnest] …` のような**ファイル／作業単位**を想定する（ツール単位タブは最終形にしない）
+- v1.7.0 のツール切替は、複数 Workspace を載せられるかの検証であり、ファイル単位タブの本格実装ではない
+- ChatNest 側に DataContext 単位の Workspace 差し替えが可能であることを確認した（ファイル単位タブ化を妨げない構造）
+
+### 次に進むべき事項
+
+- ChatNest ファイル（`.chatnest`）保存／読込を NestSuite 側でどう扱うか（AppShell 委譲か NestSuite 共通機構か）
+- 発言削除確認の `MessageBox` を `IWorkspaceDialogHost` 相当へ寄せるか
+- ファイル単位タブへ進む前の最小タブ設計（タブ＝ツール×ファイルの識別子設計）
+- IdeaNest 統合へ進む前の準備
+
+### ドキュメント
+
+- `docs/design-decisions.md`：§35「v1.7.0 NestSuite ChatNest 統合検証の設計判断」追加
+- `docs/nestsuite-preparation.md`：進捗表に v1.7.0 行を追加、N11 完了を記載
+- `docs/backlog.md`：N11 完了記録を追加
+- `docs/test-scenarios.md`：§43「v1.7.0 NestSuite ChatNest 統合検証」追加
+- `README.md`：制限テーブルのバージョン見出しを v1.7.0 に更新、NestSuite ChatNest 検証を追記
+
+---
+
 ## v1.6.4 — NestSuite ツール切替モデル整理
 
 **リリース日：** 2026-06-14
