@@ -94,7 +94,7 @@ public class NestSuiteShellTests
     [Fact]
     public void NestSuiteToolRegistry_AllTools_ContainsThreeEntries()
     {
-        Assert.Equal(3, NestSuiteToolRegistry.AllTools.Length);
+        Assert.Equal(3, NestSuiteToolRegistry.AllTools.Count);
     }
 
     [Fact]
