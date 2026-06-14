@@ -239,4 +239,18 @@ public class NestSuiteDocumentTabTests
         Assert.Equal(".chatnest", NestSuiteTabFactory.GetExtension(NestSuiteWorkspaceKind.ChatNest));
         Assert.Equal(".ideanest", NestSuiteTabFactory.GetExtension(NestSuiteWorkspaceKind.IdeaNest));
     }
+
+    [Theory]
+    [InlineData(NestSuiteWorkspaceKind.NoteNest)]
+    [InlineData(NestSuiteWorkspaceKind.ChatNest)]
+    [InlineData(NestSuiteWorkspaceKind.IdeaNest)]
+    public void ExtensionMapping_RoundTrips(NestSuiteWorkspaceKind kind)
+    {
+        // GetExtension → TryGetKind の往復で元の kind に戻ることを確認
+        // （ExtensionByKind と KindByExtension が整合していることの保証）
+        var extension = NestSuiteTabFactory.GetExtension(kind);
+
+        Assert.True(NestSuiteTabFactory.TryGetKind($"file{extension}", out var resolved));
+        Assert.Equal(kind, resolved);
+    }
 }
