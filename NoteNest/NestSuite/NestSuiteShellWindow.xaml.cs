@@ -23,8 +23,8 @@ namespace NoteNest.NestSuite;
 /// 依存しない方針は MainWindow と同様に維持する。</para>
 ///
 /// <para><b>起動方法</b><br/>
-/// v1.6.0 では App.xaml.cs の起動フローは変更しない。本クラスは開発・テスト用途として
-/// 追加する。将来のバージョンで NestSuite 側の起動導線を検討する。</para>
+/// v1.6.1 以降は、開発・検証用途として <c>--nestsuite</c> 引数から起動できる。
+/// 既定起動では従来どおり NoteNest 単体版 MainWindow を使用する。</para>
 /// </summary>
 public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 {
