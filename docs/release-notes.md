@@ -28,9 +28,8 @@
 
 NestSuite に登録された内蔵ツールの一覧と統合状態を管理する静的クラスを新設。
 
-- `AllTools` — NoteNest・IdeaNest・ChatNest の 3 ツール（先頭が最初の内蔵ツール）
-- `IntegratedTools` — v1.6.2 時点で統合済みのツール（NoteNest のみ）
-- `IsIntegrated(toolId)` — 指定ツールの統合状態を返す（`StringComparer.Ordinal`）
+- `AllTools` — `IReadOnlyList<string>` として NoteNest・IdeaNest・ChatNest の 3 ツールを返す（先頭が最初の内蔵ツール）。`Array.AsReadOnly()` でラップし、キャストによる外部変更を防止
+- `IsIntegrated(toolId)` — 非公開の `HashSet<string>` を参照し、指定ツールの統合状態を返す
 
 #### 3. NestSuiteShellWindow メニューハンドラ（`NoteNest/NestSuite/NestSuiteShellWindow.xaml.cs`）
 

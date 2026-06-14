@@ -10,8 +10,8 @@ public static class NestSuiteToolRegistry
     public const string IdeaNestToolId = "IdeaNest";
     public const string ChatNestToolId  = "ChatNest";
 
-    private static readonly string[] AllToolValues =
-        [NoteNestToolId, IdeaNestToolId, ChatNestToolId];
+    private static readonly IReadOnlyList<string> AllToolValues =
+        Array.AsReadOnly(new[] { NoteNestToolId, IdeaNestToolId, ChatNestToolId });
 
     private static readonly HashSet<string> IntegratedToolIds =
         new(StringComparer.Ordinal) { NoteNestToolId };

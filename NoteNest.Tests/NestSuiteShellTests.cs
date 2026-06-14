@@ -98,6 +98,14 @@ public class NestSuiteShellTests
     }
 
     [Fact]
+    public void NestSuiteToolRegistry_AllTools_IsNotMutableArray()
+    {
+        // Array.AsReadOnly() でラップされており、配列へのキャストによる変更を防いでいることを確認
+        Assert.False(NestSuiteToolRegistry.AllTools is string[]);
+        Assert.False(NestSuiteToolRegistry.AllTools is IList<string> { IsReadOnly: false });
+    }
+
+    [Fact]
     public void NestSuiteToolRegistry_NoteNest_IsFirstBuiltInTool()
     {
         Assert.Equal(NestSuiteToolRegistry.NoteNestToolId, NestSuiteToolRegistry.AllTools[0]);
