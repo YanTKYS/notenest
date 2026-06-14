@@ -46,7 +46,11 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ツール選択領域（v1.6.2: NoteNest = 統合済み、IdeaNest / ChatNest = 未統合） -->
+            <!--
+                ツール状態表示領域（v1.6.2）。
+                NoteNest = 統合済み（ハイライト表示）、IdeaNest / ChatNest = 未統合（半透明）。
+                ツール切替インタラクションは v1.6.4 以降で実装予定。
+            -->
             <Border Grid.Column="0"
                     Background="{DynamicResource SidebarBg}"
                     BorderBrush="{DynamicResource PaneBorder}"
@@ -55,10 +59,10 @@
                     <TextBlock Text="ツール" FontSize="10" FontWeight="SemiBold"
                                Foreground="{DynamicResource MutedFg}"
                                Margin="10,0,10,6"/>
-                    <!-- NoteNest: 統合済み・選択中 -->
+                    <!-- NoteNest: 統合済み・表示中 -->
                     <Border Background="{DynamicResource SelectedNoteBg}"
                             CornerRadius="4" Margin="6,1" Padding="8,5">
-                        <TextBlock x:Name="NoteNestToolButton"
+                        <TextBlock x:Name="NoteNestToolLabel"
                                    Text="NoteNest" FontSize="12"
                                    Foreground="{DynamicResource PrimaryFg}"/>
                     </Border>
