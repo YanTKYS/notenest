@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using NoteNest.Services;
 using NoteNest.ViewModels;
 using NoteNest.Views;
@@ -9,15 +10,15 @@ using NoteNest.Views;
 namespace NoteNest.NestSuite;
 
 /// <summary>
-/// v1.6.3 NestSuite 統合母体の最小構成（NoteNest ファイル操作対応）。
+/// v1.6.4 NestSuite 統合母体（ツール切替モデル対応）。
 /// ツール選択領域・Workspace 領域・メニュー（ファイル操作・ツール選択）・ステータスバーを備え、
-/// NoteNestWorkspaceView を最初の内蔵ツール Workspace としてホストする WPF Window。
+/// 選択中ツールに応じて Workspace 表示を切り替える WPF Window。
 ///
-/// <para><b>v1.6.3 の位置づけ</b><br/>
-/// NestSuite 内の NoteNest を最低限操作できるよう、ファイルメニューに新規・開く・保存を追加した。
-/// ツールメニューで NoteNest の選択状態を表示する（切替機能は v1.6.4 以降）。
-/// ステータスバーはプロジェクト名・未保存インジケーターを動的表示する。
-/// IdeaNest / ChatNest の実統合は本バージョン対象外。NoteNest 単体版 MainWindow は維持する。</para>
+/// <para><b>v1.6.4 の位置づけ</b><br/>
+/// NoteNest を統合済みツールとして初期選択し、<c>NoteNestWorkspaceView</c> を表示する。
+/// IdeaNest / ChatNest は未統合ツールとして選択可能で、選択時は未統合プレースホルダーを表示する。
+/// ツール切替状態は <see cref="SelectTool"/> で一元管理する。
+/// NoteNest 単体版 MainWindow は引き続き維持する。</para>
 ///
 /// <para><b>IWorkspaceDialogHost 方針（WPF 前提）</b><br/>
 /// NestSuite も WPF ベースの想定のため、TextBox や MessageBoxImage を含む
@@ -94,6 +95,59 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         base.OnClosed(e);
     }
 
+    // ── v1.6.4: ツール切替モデル ─────────────────────────────────────────
+
+    /// <summary>NestSuite 起動時のデフォルト選択ツール ID。</summary>
+    public const string DefaultToolId = NestSuiteToolRegistry.NoteNestToolId;
+
+    private string _selectedToolId = NestSuiteToolRegistry.NoteNestToolId;
+
+    /// <summary>現在選択中のツール ID。</summary>
+    public string SelectedToolId => _selectedToolId;
+
+    /// <summary>
+    /// 指定ツールを選択し、Workspace 表示・サイドバーハイライト・メニューを同期する。
+    /// </summary>
+    private void SelectTool(string toolId)
+    {
+        _selectedToolId = toolId;
+        bool isNoteNest = toolId == NestSuiteToolRegistry.NoteNestToolId;
+        var tool = NestSuiteToolRegistry.ToolDefinitions.First(t => t.Id == toolId);
+
+        // Workspace 表示切替
+        WorkspaceView.Visibility = isNoteNest ? Visibility.Visible : Visibility.Collapsed;
+        UnintegratedPlaceholder.Visibility = isNoteNest ? Visibility.Collapsed : Visibility.Visible;
+        if (!isNoteNest)
+        {
+            PlaceholderTitle.Text = tool.DisplayName;
+            PlaceholderMessage.Text =
+                $"{tool.DisplayName} はまだ統合されていません。\nv1.7.0 以降で統合検証予定です。";
+        }
+
+        // サイドバー選択ハイライト更新
+        UpdateSidebarHighlight(NoteNestToolBorder, NestSuiteToolRegistry.NoteNestToolId, toolId);
+        UpdateSidebarHighlight(IdeaNestToolBorder, NestSuiteToolRegistry.IdeaNestToolId, toolId);
+        UpdateSidebarHighlight(ChatNestToolBorder, NestSuiteToolRegistry.ChatNestToolId, toolId);
+
+        // ツールメニューのチェック状態更新
+        ToolMenuNoteNest.IsChecked = isNoteNest;
+        ToolMenuIdeaNest.IsChecked = toolId == NestSuiteToolRegistry.IdeaNestToolId;
+        ToolMenuChatNest.IsChecked = toolId == NestSuiteToolRegistry.ChatNestToolId;
+
+        // ステータスバー更新
+        NestSuiteModeSuffix.Text = isNoteNest
+            ? $"  /  {tool.DisplayName}"
+            : $"  /  {tool.DisplayName} — {tool.StatusText}";
+    }
+
+    private static void UpdateSidebarHighlight(Border border, string borderToolId, string selectedToolId)
+    {
+        if (borderToolId == selectedToolId)
+            border.SetResourceReference(Border.BackgroundProperty, "SelectedNoteBg");
+        else
+            border.ClearValue(Border.BackgroundProperty);
+    }
+
     // ── v1.6.3: 起動時ファイル読み込み ──────────────────────────────────
 
     /// <summary>
@@ -122,11 +176,25 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     private void MenuExit_Click(object sender, RoutedEventArgs e) => Close();
 
+    // ── ツール選択ハンドラ（サイドバー・ツールメニュー共通） ────────────
+
+    private void NoteNestTool_MouseDown(object sender, MouseButtonEventArgs e)
+        => SelectTool(NestSuiteToolRegistry.NoteNestToolId);
+
+    private void IdeaNestTool_MouseDown(object sender, MouseButtonEventArgs e)
+        => SelectTool(NestSuiteToolRegistry.IdeaNestToolId);
+
+    private void ChatNestTool_MouseDown(object sender, MouseButtonEventArgs e)
+        => SelectTool(NestSuiteToolRegistry.ChatNestToolId);
+
     private void MenuToolNoteNest_Click(object sender, RoutedEventArgs e)
-    {
-        // NoteNest は統合済み唯一のツール。選択を維持する（チェックを外させない）。
-        if (sender is MenuItem mi) mi.IsChecked = true;
-    }
+        => SelectTool(NestSuiteToolRegistry.NoteNestToolId);
+
+    private void MenuToolIdeaNest_Click(object sender, RoutedEventArgs e)
+        => SelectTool(NestSuiteToolRegistry.IdeaNestToolId);
+
+    private void MenuToolChatNest_Click(object sender, RoutedEventArgs e)
+        => SelectTool(NestSuiteToolRegistry.ChatNestToolId);
 
     private void MenuAbout_Click(object sender, RoutedEventArgs e)
         => _dialogs.ShowInfo(

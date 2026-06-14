@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using NoteNest.NestSuite;
 using NoteNest.Views;
 using Xunit;
@@ -7,7 +8,7 @@ using Xunit;
 namespace NoteNest.Tests;
 
 /// <summary>
-/// v1.6.3: NestSuite 統合母体の型境界・ツールレジストリ・契約・ファイル操作メソッドを確認するテスト。
+/// v1.6.4: NestSuite 統合母体の型境界・ツール定義モデル・ツール切替・レジストリ・契約を確認するテスト。
 /// UI を実際に起動しない、リフレクションベースの静的確認。
 /// </summary>
 public class NestSuiteShellTests
@@ -77,16 +78,44 @@ public class NestSuiteShellTests
         Assert.NotNull(method);
     }
 
-    // ── v1.6.2 ツール選択領域の存在確認 ─────────────────────────────────
+    // ── ツール選択領域・プレースホルダーの存在確認 ──────────────────────
 
     [Fact]
     public void NestSuiteShellWindow_HasToolSelectorPanel()
     {
-        // XAML x:Name="ToolSelectorPanel" によるツール選択領域フィールドの存在確認
         var field = typeof(NestSuiteShellWindow)
             .GetFields(AllInstance)
             .FirstOrDefault(f => f.Name == "ToolSelectorPanel");
         Assert.NotNull(field);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasUnintegratedPlaceholderField()
+    {
+        // XAML x:Name="UnintegratedPlaceholder" による未統合プレースホルダーフィールドの存在確認
+        var field = typeof(NestSuiteShellWindow)
+            .GetFields(AllInstance)
+            .FirstOrDefault(f => f.Name == "UnintegratedPlaceholder");
+        Assert.NotNull(field);
+        Assert.Equal(typeof(Border), field!.FieldType);
+    }
+
+    // ── v1.6.4: ツール切替モデルの確認 ──────────────────────────────────
+
+    [Fact]
+    public void NestSuiteShellWindow_DefaultToolId_IsNoteNest()
+    {
+        Assert.Equal(NestSuiteToolRegistry.NoteNestToolId, NestSuiteShellWindow.DefaultToolId);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasSelectedToolIdProperty()
+    {
+        var prop = typeof(NestSuiteShellWindow)
+            .GetProperty("SelectedToolId",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+        Assert.NotNull(prop);
+        Assert.Equal(typeof(string), prop!.PropertyType);
     }
 
     // ── v1.6.3 LoadInitialFile メソッドの存在確認 ────────────────────────
@@ -151,5 +180,44 @@ public class NestSuiteShellTests
     public void NestSuiteToolRegistry_ChatNest_IsNotIntegrated()
     {
         Assert.False(NestSuiteToolRegistry.IsIntegrated(NestSuiteToolRegistry.ChatNestToolId));
+    }
+
+    // ── v1.6.4 NestSuiteTool 定義確認 ────────────────────────────────────
+
+    [Fact]
+    public void NestSuiteToolRegistry_ToolDefinitions_ContainsThreeEntries()
+    {
+        Assert.Equal(3, NestSuiteToolRegistry.ToolDefinitions.Count);
+    }
+
+    [Fact]
+    public void NestSuiteToolRegistry_ToolDefinitions_IsNotMutableArray()
+    {
+        Assert.False(NestSuiteToolRegistry.ToolDefinitions is NestSuiteTool[]);
+        Assert.False(NestSuiteToolRegistry.ToolDefinitions is IList<NestSuiteTool> { IsReadOnly: false });
+    }
+
+    [Fact]
+    public void NestSuiteToolRegistry_ToolDefinitions_FirstIsNoteNest()
+    {
+        Assert.Equal(NestSuiteToolRegistry.NoteNestToolId, NestSuiteToolRegistry.ToolDefinitions[0].Id);
+    }
+
+    [Fact]
+    public void NestSuiteToolRegistry_NoteNestDef_IsIntegrated()
+    {
+        Assert.True(NestSuiteToolRegistry.NoteNestDef.IsIntegrated);
+    }
+
+    [Fact]
+    public void NestSuiteToolRegistry_IdeaNestDef_IsNotIntegrated()
+    {
+        Assert.False(NestSuiteToolRegistry.IdeaNestDef.IsIntegrated);
+    }
+
+    [Fact]
+    public void NestSuiteToolRegistry_ChatNestDef_IsNotIntegrated()
+    {
+        Assert.False(NestSuiteToolRegistry.ChatNestDef.IsIntegrated);
     }
 }

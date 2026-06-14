@@ -7,7 +7,7 @@
         MinHeight="500" MinWidth="800"
         WindowStartupLocation="CenterScreen">
     <DockPanel>
-        <!-- v1.6.3 NestSuite メニュー（ファイル操作・ツール選択・ヘルプ） -->
+        <!-- v1.6.4 NestSuite メニュー（ファイル操作・ツール選択・ヘルプ） -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="ファイル(_F)">
                 <MenuItem Header="新規プロジェクト(_N)" Command="{Binding NewProjectCommand}"/>
@@ -19,13 +19,18 @@
                 <MenuItem Header="終了(_X)" Click="MenuExit_Click"/>
             </MenuItem>
             <MenuItem Header="ツール(_T)">
-                <!-- NoteNest: 統合済み・常に選択中。v1.6.4 以降でツール切替を実装予定 -->
-                <MenuItem Header="NoteNest" IsCheckable="True" IsChecked="True"
+                <!-- v1.6.4: ツール切替対応。未統合ツールも選択可（プレースホルダー表示） -->
+                <MenuItem x:Name="ToolMenuNoteNest" Header="NoteNest"
+                          IsCheckable="True" IsChecked="True"
                           Click="MenuToolNoteNest_Click"/>
-                <MenuItem Header="IdeaNest" IsEnabled="False"
-                          ToolTip="未統合（将来対応予定）"/>
-                <MenuItem Header="ChatNest" IsEnabled="False"
-                          ToolTip="未統合（将来対応予定）"/>
+                <MenuItem x:Name="ToolMenuIdeaNest" Header="IdeaNest"
+                          IsCheckable="True"
+                          ToolTip="未統合（将来対応予定）"
+                          Click="MenuToolIdeaNest_Click"/>
+                <MenuItem x:Name="ToolMenuChatNest" Header="ChatNest"
+                          IsCheckable="True"
+                          ToolTip="未統合（将来対応予定）"
+                          Click="MenuToolChatNest_Click"/>
             </MenuItem>
             <MenuItem Header="ヘルプ(_H)">
                 <MenuItem Header="NestSuite について" Click="MenuAbout_Click"/>
@@ -42,7 +47,7 @@
                        Foreground="{DynamicResource PrimaryFg}"/>
         </Border>
 
-        <!-- NestSuite ステータスバー（v1.6.3: プロジェクト名・未保存インジケーター動的表示） -->
+        <!-- NestSuite ステータスバー（プロジェクト名・未保存・選択ツール動的表示） -->
         <Border DockPanel.Dock="Bottom" Height="22"
                 Background="{DynamicResource StatusBarBg}"
                 BorderBrush="{DynamicResource PaneBorder}"
@@ -53,7 +58,8 @@
                 <TextBlock Text="{Binding UnsavedIndicatorText}"
                            FontSize="11" Foreground="{DynamicResource UnsavedBrush}"
                            Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}"/>
-                <TextBlock Text="  /  NestSuite mode"
+                <TextBlock x:Name="NestSuiteModeSuffix"
+                           Text="  /  NoteNest"
                            FontSize="11" Foreground="{DynamicResource MutedFg}"/>
             </StackPanel>
         </Border>
@@ -67,11 +73,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!--
-                ツール状態表示領域（v1.6.2）。
-                NoteNest = 統合済み（ハイライト表示）、IdeaNest / ChatNest = 未統合（半透明）。
-                ツール切替インタラクションは v1.6.4 以降で実装予定。
-            -->
+            <!-- ツール選択領域（v1.6.4: 選択可能・ツール切替対応） -->
             <Border Grid.Column="0"
                     Background="{DynamicResource SidebarBg}"
                     BorderBrush="{DynamicResource PaneBorder}"
@@ -80,30 +82,66 @@
                     <TextBlock Text="ツール" FontSize="10" FontWeight="SemiBold"
                                Foreground="{DynamicResource MutedFg}"
                                Margin="10,0,10,6"/>
-                    <!-- NoteNest: 統合済み・表示中 -->
-                    <Border Background="{DynamicResource SelectedNoteBg}"
-                            CornerRadius="4" Margin="6,1" Padding="8,5">
+                    <!-- NoteNest: 統合済み・初期選択 -->
+                    <Border x:Name="NoteNestToolBorder"
+                            Background="{DynamicResource SelectedNoteBg}"
+                            CornerRadius="4" Margin="6,1" Padding="8,5"
+                            Cursor="Hand"
+                            MouseLeftButtonDown="NoteNestTool_MouseDown">
                         <TextBlock x:Name="NoteNestToolLabel"
                                    Text="NoteNest" FontSize="12"
                                    Foreground="{DynamicResource PrimaryFg}"/>
                     </Border>
-                    <!-- IdeaNest: 未統合（将来対応予定） -->
-                    <Border Margin="6,1" Padding="8,5" Opacity="0.45"
-                            ToolTip="未統合（将来対応予定）">
-                        <TextBlock Text="IdeaNest" FontSize="12"
-                                   Foreground="{DynamicResource SubtleFg}"/>
+                    <!-- IdeaNest: 未統合・選択可（プレースホルダー表示） -->
+                    <Border x:Name="IdeaNestToolBorder"
+                            CornerRadius="4" Margin="6,1" Padding="8,5"
+                            Cursor="Hand"
+                            ToolTip="未統合（将来対応予定）"
+                            MouseLeftButtonDown="IdeaNestTool_MouseDown">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="IdeaNest" FontSize="12"
+                                       Foreground="{DynamicResource SubtleFg}"/>
+                            <TextBlock Text=" 未統合" FontSize="9"
+                                       Foreground="{DynamicResource MutedFg}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
                     </Border>
-                    <!-- ChatNest: 未統合（将来対応予定） -->
-                    <Border Margin="6,1" Padding="8,5" Opacity="0.45"
-                            ToolTip="未統合（将来対応予定）">
-                        <TextBlock Text="ChatNest" FontSize="12"
-                                   Foreground="{DynamicResource SubtleFg}"/>
+                    <!-- ChatNest: 未統合・選択可（プレースホルダー表示） -->
+                    <Border x:Name="ChatNestToolBorder"
+                            CornerRadius="4" Margin="6,1" Padding="8,5"
+                            Cursor="Hand"
+                            ToolTip="未統合（将来対応予定）"
+                            MouseLeftButtonDown="ChatNestTool_MouseDown">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="ChatNest" FontSize="12"
+                                       Foreground="{DynamicResource SubtleFg}"/>
+                            <TextBlock Text=" 未統合" FontSize="9"
+                                       Foreground="{DynamicResource MutedFg}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
                     </Border>
                 </StackPanel>
             </Border>
 
-            <!-- Workspace 領域: v1.6.2 では NoteNestWorkspaceView を配置 -->
-            <views:NoteNestWorkspaceView x:Name="WorkspaceView" Grid.Column="1"/>
+            <!-- Workspace 領域: 選択ツールに応じて NoteNestWorkspaceView またはプレースホルダーを表示 -->
+            <Grid Grid.Column="1">
+                <views:NoteNestWorkspaceView x:Name="WorkspaceView"/>
+                <!-- 未統合ツール選択時のプレースホルダー -->
+                <Border x:Name="UnintegratedPlaceholder" Visibility="Collapsed"
+                        Background="{DynamicResource SidebarBg}">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Margin="24">
+                        <TextBlock x:Name="PlaceholderTitle"
+                                   FontSize="18" FontWeight="Bold"
+                                   TextAlignment="Center"
+                                   Foreground="{DynamicResource MutedFg}"
+                                   Margin="0,0,0,16"/>
+                        <TextBlock x:Name="PlaceholderMessage"
+                                   FontSize="13" TextAlignment="Center"
+                                   Foreground="{DynamicResource SubtleFg}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Grid>
     </DockPanel>
 </Window>

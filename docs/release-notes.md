@@ -1,5 +1,89 @@
 # リリースノート
 
+## v1.6.4 — NestSuite ツール切替モデル整理
+
+**リリース日：** 2026-06-14
+
+### 概要
+
+NestSuite 内で「どのツールを選択しているか」「選択中ツールに応じて Workspace に何を表示するか」を扱う最小モデルを整理した。NoteNest は統合済みツールとして初期選択され、`NoteNestWorkspaceView` を表示する。IdeaNest / ChatNest は未統合ツールとして選択可能になり、選択時は未統合プレースホルダーを表示する。これにより、v1.7.0 での IdeaNest または ChatNest の統合検証へ進める状態になった。**v1.6.4 をもって v1.6.x の開発を終了する。**
+
+### 追加・変更内容
+
+#### 1. NestSuiteTool 定義モデル（`NoteNest/NestSuite/NestSuiteTool.cs`）
+
+ツールを表す不変レコードを新設した。
+
+- `Id` / `DisplayName` / `Description` / `IsIntegrated` / `StatusText` を保持する `sealed record`
+
+#### 2. NestSuiteToolRegistry 拡張（`NoteNest/NestSuite/NestSuiteToolRegistry.cs`）
+
+`NestSuiteTool` 定義を `NestSuiteToolRegistry` に追加した。既存 API（`AllTools`・`IsIntegrated()`）は変更なし。
+
+- `NoteNestDef` / `IdeaNestDef` / `ChatNestDef` — 各ツール定義の静的フィールド
+- `ToolDefinitions` — 全ツール定義の `IReadOnlyList<NestSuiteTool>`（`Array.AsReadOnly()` でラップ）
+
+#### 3. ツール切替ロジック（`NoteNest/NestSuite/NestSuiteShellWindow.xaml.cs`）
+
+- `DefaultToolId` 定数 — 起動時デフォルト選択ツール ID（`NoteNestToolId`）
+- `SelectedToolId` プロパティ — 現在選択中ツール ID を返す
+- `SelectTool(string toolId)` — サイドバーハイライト・ツールメニューチェック・Workspace 表示・ステータスバーを一括更新
+- `UpdateSidebarHighlight()` — `SetResourceReference`/`ClearValue` でテーマ追従ハイライト切替
+- ツール選択ハンドラ追加：`NoteNestTool_MouseDown`・`IdeaNestTool_MouseDown`・`ChatNestTool_MouseDown`・`MenuToolIdeaNest_Click`・`MenuToolChatNest_Click`
+- `MenuToolNoteNest_Click` 更新：チェック維持ロジック → `SelectTool()` 呼び出しに変更
+
+#### 4. XAML 更新（`NoteNest/NestSuite/NestSuiteShellWindow.xaml`）
+
+- **サイドバー**：IdeaNest / ChatNest の `Opacity="0.45"` を削除。`CornerRadius`・`Cursor="Hand"` を付与し選択可能に。「未統合」バッジテキストを追加
+- **ツールメニュー**：IdeaNest / ChatNest を `IsEnabled="False"` → `IsCheckable="True"` + クリックハンドラに変更
+- **Workspace 領域**：`NoteNestWorkspaceView` を `Grid` でラップし、`UnintegratedPlaceholder`（`Border`+`PlaceholderTitle`+`PlaceholderMessage`）を重ねて配置
+- **ステータスバー**：末尾 TextBlock に `x:Name="NestSuiteModeSuffix"` を追加し、`SelectTool()` から動的更新
+
+#### 5. テスト追加（`NoteNest.Tests/NestSuiteShellTests.cs`）
+
+型境界・ツール定義・切替モデルのテストを追加（8 件）：
+
+- `NestSuiteShellWindow_HasUnintegratedPlaceholderField` — プレースホルダー Border フィールドの存在確認
+- `NestSuiteShellWindow_DefaultToolId_IsNoteNest` — デフォルト選択ツールが NoteNest であることを確認
+- `NestSuiteShellWindow_HasSelectedToolIdProperty` — `SelectedToolId` プロパティの存在・型確認
+- `NestSuiteToolRegistry_ToolDefinitions_ContainsThreeEntries`
+- `NestSuiteToolRegistry_ToolDefinitions_IsNotMutableArray`
+- `NestSuiteToolRegistry_ToolDefinitions_FirstIsNoteNest`
+- `NestSuiteToolRegistry_NoteNestDef_IsIntegrated`
+- `NestSuiteToolRegistry_IdeaNestDef_IsNotIntegrated`
+- `NestSuiteToolRegistry_ChatNestDef_IsNotIntegrated`
+
+### 変更しなかったもの
+
+- NoteNest 単体版の既定起動フロー（`StartDialog` → `MainWindow`）
+- `MainWindow`・`IWorkspaceDialogHost`・`MainViewModel`（改名・分割なし）
+- DataContext（引き続き `MainViewModel`）
+- `NoteNestWorkspaceViewModel` の新設なし
+- `.notenest` 保存スキーマ（`1.4.1` のまま）
+- IdeaNest / ChatNest の実統合（本バージョン対象外）
+- `NestSuiteToolRegistry.AllTools`・`IsIntegrated()` 等の既存 API
+- NoteNest ファイルメニュー（ツール切替時も有効のまま・v1.7.0 で整理）
+
+### v1.6.x 終点と v1.7.0 への移行
+
+v1.6.4 をもって v1.6.x の開発を終了する。以下の状態が確立された：
+
+- NestSuite 内で NoteNest を最低限操作できる（ファイル操作・v1.6.3）
+- ツール切替モデルがある（`SelectTool()`・プレースホルダー表示・v1.6.4）
+- IdeaNest / ChatNest のプレースホルダーが機能する（v1.6.4）
+
+次のステップ（v1.7.0）：IdeaNest または ChatNest の統合検証を開始する。
+
+### ドキュメント
+
+- `docs/design-decisions.md`：§33 ツールメニュー IsChecked 固定の補足更新、§34「v1.6.4 NestSuite ツール切替モデルの設計判断」追加
+- `docs/nestsuite-preparation.md`：進捗表に v1.6.4 行を追加、v1.6.x 候補を更新（v1.7.0 への移行を明示）
+- `docs/backlog.md`：N10 完了記録を追加、v1.6.x 終点と v1.7.0 移行方針を記載
+- `docs/release-notes.md`：本エントリを追加
+- `README.md`：制限テーブルのバージョン見出しを v1.6.4 に更新
+
+---
+
 ## v1.6.3 — NestSuite 内 NoteNest のファイル操作・メニュー整理
 
 **リリース日：** 2026-06-14
