@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using NoteNest.Services;
@@ -100,7 +101,22 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// App_Startup で <c>--nestsuite + ファイルパス</c> 指定時に呼び出す。
     /// ウィンドウ表示後に呼ぶことでエラーダイアログのオーナーが確立される。
     /// </summary>
-    public void LoadInitialFile(string path) => ViewModel.OpenFileAtStartup(path);
+    public void LoadInitialFile(string path)
+    {
+        if (!path.EndsWith(".notenest", StringComparison.OrdinalIgnoreCase))
+        {
+            _dialogs.ShowError(
+                $"NoteNest で開けるファイルではありません。\n.notenest ファイルを指定してください。\n\n{path}",
+                "ファイルを開けません");
+            return;
+        }
+        if (!File.Exists(path))
+        {
+            _dialogs.ShowError($"指定されたファイルが見つかりません。\n\n{path}", "ファイルを開けません");
+            return;
+        }
+        ViewModel.OpenFileAtStartup(path);
+    }
 
     // ── NestSuite メニューハンドラ ──────────────────────────────────────
 
