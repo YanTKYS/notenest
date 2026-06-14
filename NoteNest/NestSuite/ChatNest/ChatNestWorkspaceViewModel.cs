@@ -39,6 +39,7 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
         {
             _inputText = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(HasUnsavedChanges));
             _postCommand.RaiseCanExecuteChanged();
         }
     }
@@ -52,8 +53,15 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
     public bool IsDirty
     {
         get => _isDirty;
-        private set { _isDirty = value; OnPropertyChanged(); }
+        private set { _isDirty = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasUnsavedChanges)); }
     }
+
+    /// <summary>
+    /// 破棄確認の対象となる未保存状態。投稿・削除による <see cref="IsDirty"/> に加え、
+    /// 投稿前の入力欄テキスト（空白のみを除く）も対象に含める。ChatNest は保存手段を
+    /// 持たないため、終了時にこの値が真なら破棄確認を表示する想定。
+    /// </summary>
+    public bool HasUnsavedChanges => IsDirty || !string.IsNullOrWhiteSpace(InputText);
 
     public ICommand PostCommand => _postCommand;
     public ICommand DeleteMessageCommand { get; }

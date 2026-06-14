@@ -37,6 +37,7 @@ namespace NoteNest.NestSuite;
 public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 {
     private readonly DialogService _dialogs;
+    private readonly ChatNestWorkspaceViewModel _chatNestViewModel = new();
     private MainViewModel ViewModel => (MainViewModel)DataContext;
 
     public NestSuiteShellWindow()
@@ -68,8 +69,9 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         WorkspaceView.DialogHost = this;
 
         // v1.7.0: ChatNest 統合検証用 Workspace は独立した ViewModel を持つ
-        // （MainViewModel とは別の DataContext。NoteNest 保存形式とは無関係）
-        ChatWorkspaceView.DataContext = new ChatNestWorkspaceViewModel();
+        // （MainViewModel とは別の DataContext。NoteNest 保存形式とは無関係）。
+        // 終了時の破棄確認のためフィールドとして保持する。
+        ChatWorkspaceView.DataContext = _chatNestViewModel;
 
         vm.ShowInputDialog   = (title, prompt) => _dialogs.ShowInput(title, prompt);
         vm.ShowConfirmDialog = (title, message) => _dialogs.Confirm(message, title);
@@ -107,6 +109,19 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             e.Cancel = true;
             return;
         }
+
+        // v1.7.0: ChatNest は統合検証段階で保存手段を持たないため、未保存の内容
+        // （投稿済み・投稿前の入力欄を含む）がある場合は破棄確認を表示する。
+        // 「保存しますか？」ではなく「終了すると失われる」ことを確認する。
+        if (_chatNestViewModel.HasUnsavedChanges &&
+            !_dialogs.Confirm(
+                "ChatNest の内容は保存されません。\n終了すると入力した発言は失われます。終了しますか？",
+                "未保存の ChatNest", MessageBoxImage.Warning))
+        {
+            e.Cancel = true;
+            return;
+        }
+
         base.OnClosing(e);
     }
 

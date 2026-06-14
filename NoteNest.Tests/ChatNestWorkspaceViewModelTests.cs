@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NoteNest.NestSuite.ChatNest;
 using Xunit;
 
@@ -101,6 +102,68 @@ public class ChatNestWorkspaceViewModelTests
         Assert.Empty(vm.Messages);
         Assert.Equal(string.Empty, vm.InputText);
         Assert.False(vm.IsDirty);
+    }
+
+    [Fact]
+    public void HasUnsavedChanges_FreshViewModel_IsFalse()
+    {
+        var vm = new ChatNestWorkspaceViewModel();
+
+        Assert.False(vm.HasUnsavedChanges);
+    }
+
+    [Fact]
+    public void HasUnsavedChanges_AfterPost_IsTrue()
+    {
+        var vm = new ChatNestWorkspaceViewModel { InputText = "投稿する" };
+
+        vm.PostCommand.Execute(null);
+
+        // 投稿後は入力欄が空でも IsDirty により未保存扱いとなる
+        Assert.Equal(string.Empty, vm.InputText);
+        Assert.True(vm.HasUnsavedChanges);
+    }
+
+    [Fact]
+    public void HasUnsavedChanges_WithUnpostedInputOnly_IsTrue()
+    {
+        var vm = new ChatNestWorkspaceViewModel { InputText = "下書き中" };
+
+        // 投稿前でも入力欄に内容があれば未保存扱いとする
+        Assert.False(vm.IsDirty);
+        Assert.True(vm.HasUnsavedChanges);
+    }
+
+    [Fact]
+    public void HasUnsavedChanges_WithWhitespaceInputOnly_IsFalse()
+    {
+        var vm = new ChatNestWorkspaceViewModel { InputText = "   " };
+
+        Assert.False(vm.HasUnsavedChanges);
+    }
+
+    [Fact]
+    public void HasUnsavedChanges_RaisesPropertyChanged_WhenInputTextChanges()
+    {
+        var vm = new ChatNestWorkspaceViewModel();
+        var changed = new List<string?>();
+        vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+
+        vm.InputText = "入力";
+
+        Assert.Contains(nameof(ChatNestWorkspaceViewModel.HasUnsavedChanges), changed);
+    }
+
+    [Fact]
+    public void Clear_ResetsHasUnsavedChanges()
+    {
+        var vm = new ChatNestWorkspaceViewModel { InputText = "残す？" };
+        vm.PostCommand.Execute(null);
+        Assert.True(vm.HasUnsavedChanges);
+
+        vm.Clear();
+
+        Assert.False(vm.HasUnsavedChanges);
     }
 
     [Fact]

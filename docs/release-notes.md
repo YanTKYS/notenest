@@ -29,14 +29,22 @@ NestSuite に **2 つ目の Workspace として ChatNest** を載せられるか
 - **`NestSuiteShellWindow.xaml`** — Workspace 領域に `ChatNestWorkspaceView`（`x:Name="ChatWorkspaceView"`）を追加。サイドバー・メニューの ChatNest 表示を「未統合」→「検証」へ変更
 - **`NestSuiteShellWindow.xaml.cs`** — `SelectTool()` を NoteNest / ChatNest / 未統合プレースホルダーの 3 状態切替に一般化（`tool.IsIntegrated` で Workspace かプレースホルダーかを判定）。ChatNest 用に独立した `ChatNestWorkspaceViewModel` を生成して `ChatWorkspaceView.DataContext` に設定（`MainViewModel` とは別 DataContext）
 
+### 終了時の ChatNest 破棄確認
+
+ChatNest は統合検証段階で保存手段を持たないため、未保存の内容があるままウィンドウを閉じると無確認で失われていた（コードレビュー指摘）。終了時に破棄確認を追加した。
+
+- `ChatNestWorkspaceViewModel` をフィールド（`_chatNestViewModel`）として保持し、`OnClosing()` から参照（NoteNest の確認後に ChatNest を確認）
+- ダイアログは保存ではなく破棄確認に徹する（「終了すると失われます。終了しますか？」・YesNo・警告アイコン）
+- 未保存判定 `HasUnsavedChanges = IsDirty || !string.IsNullOrWhiteSpace(InputText)` を追加。投稿済みだけでなく**投稿前の入力欄テキスト**も破棄確認の対象に含める
+
 ### MessageBox 暫定許容
 
 ChatNest の発言削除確認は参照ソースの挙動を維持し `MessageBox` を直接使用する。ChatNest モジュールは `ArchitectureBoundaryTests` の走査対象外（`NestSuite/` 配下）に置くことで境界テストへ影響しない。`IWorkspaceDialogHost` 相当への委譲は次段階の課題として記録した（design-decisions.md §35）。
 
 ### テスト追加・更新
 
-- **`ChatNestWorkspaceViewModelTests.cs`（新規・8 件）** — 投稿でメッセージ追加・空白入力で投稿不可・前後トリム・発言者切替（前後・循環）・`WorkspaceModified` 発火・`Clear`・`LoadMessages`。MessageBox を伴う削除は対象外
-- **`NestSuiteShellTests.cs`** — `NestSuiteShellWindow_HasChatWorkspaceViewField` 追加、`NestSuiteToolRegistry_IdeaNest_RemainsOnlyUnintegratedTool` 追加。ChatNest 統合状態テストを `IsNotIntegrated` → `IsIntegrated` へ更新
+- **`ChatNestWorkspaceViewModelTests.cs`（新規）** — 投稿でメッセージ追加・空白入力で投稿不可・前後トリム・発言者切替（前後・循環）・`WorkspaceModified` 発火・`Clear`・`LoadMessages`。加えて `HasUnsavedChanges`（新規・空状態 false／投稿後 true／投稿前入力のみ true／空白のみ false／`PropertyChanged` 通知／`Clear` でリセット）を検証。MessageBox を伴う削除は対象外
+- **`NestSuiteShellTests.cs`** — `NestSuiteShellWindow_HasChatWorkspaceViewField` 追加、`NestSuiteShellWindow_HoldsChatNestViewModelField_ForCloseConfirmation` 追加、`NestSuiteToolRegistry_IdeaNest_RemainsOnlyUnintegratedTool` 追加。ChatNest 統合状態テストを `IsNotIntegrated` → `IsIntegrated` へ更新
 - **`ApplicationVersionTests.cs`** — バージョン `1.6.4` → `1.7.0`
 
 ### 変更しなかったもの
