@@ -137,6 +137,13 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
                 if (result == MessageBoxResult.Yes)
                 {
                     if (!TrySaveChatNestToPath(chatTab!.FilePath!)) { e.Cancel = true; return; }
+                    // MarkSaved() で IsDirty は解消されるが InputText が残っている場合
+                    // HasUnsavedChanges は依然 true になる。保存対象外の入力テキストを破棄確認する。
+                    if (_chatNestViewModel.HasUnsavedChanges &&
+                        !_dialogs.Confirm(
+                            "入力欄の未投稿テキストは .chatnest に保存されません。\n破棄して終了しますか？",
+                            "未投稿テキスト", MessageBoxImage.Warning))
+                    { e.Cancel = true; return; }
                 }
             }
             else
@@ -381,9 +388,14 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// <summary>
     /// .chatnest ファイルを開き、ChatNest Workspace にロードする。
     /// ChatNest タブがない場合は作成する。変更がある場合は破棄確認を行う。
+    /// ファイル選択ダイアログを先に表示し、選択後に破棄確認することで
+    /// キャンセル時に不要な破棄確認が出ないようにする。
     /// </summary>
     private void OpenChatNestFile()
     {
+        var path = _dialogs.SelectChatNestOpenPath();
+        if (path == null) return;
+
         var tab = _tabs.FirstOrDefault(t => t.WorkspaceKind == NestSuiteWorkspaceKind.ChatNest);
         if (tab != null && _chatNestViewModel.HasUnsavedChanges)
         {
@@ -392,9 +404,6 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
                 "未保存の変更", MessageBoxImage.Warning))
                 return;
         }
-
-        var path = _dialogs.SelectChatNestOpenPath();
-        if (path == null) return;
 
         try
         {
@@ -445,37 +454,71 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     }
 
     // ── v1.7.4: ファイルメニューハンドラ（タブ種別でディスパッチ） ─────────
+    // ツール種別を明示的に分岐することで、IdeaNest 選択中に非表示の NoteNest へ
+    // 操作が流れることを防ぐ。IdeaNest は未統合のため情報ダイアログを表示する。
 
     private void MenuNew_Click(object sender, RoutedEventArgs e)
     {
-        if (SelectedToolId == NestSuiteToolRegistry.ChatNestToolId)
-            NewChatNestSession();
-        else
-            ViewModel.NewProjectCommand.Execute(null);
+        switch (_selectedTab?.WorkspaceKind)
+        {
+            case NestSuiteWorkspaceKind.NoteNest:
+                ViewModel.NewProjectCommand.Execute(null);
+                break;
+            case NestSuiteWorkspaceKind.ChatNest:
+                NewChatNestSession();
+                break;
+            case NestSuiteWorkspaceKind.IdeaNest:
+                _dialogs.ShowInfo("IdeaNest のファイル操作はまだ利用できません。", "未統合");
+                break;
+        }
     }
 
     private void MenuOpen_Click(object sender, RoutedEventArgs e)
     {
-        if (SelectedToolId == NestSuiteToolRegistry.ChatNestToolId)
-            OpenChatNestFile();
-        else
-            ViewModel.OpenProjectCommand.Execute(null);
+        switch (_selectedTab?.WorkspaceKind)
+        {
+            case NestSuiteWorkspaceKind.NoteNest:
+                ViewModel.OpenProjectCommand.Execute(null);
+                break;
+            case NestSuiteWorkspaceKind.ChatNest:
+                OpenChatNestFile();
+                break;
+            case NestSuiteWorkspaceKind.IdeaNest:
+                _dialogs.ShowInfo("IdeaNest のファイル操作はまだ利用できません。", "未統合");
+                break;
+        }
     }
 
     private void MenuSave_Click(object sender, RoutedEventArgs e)
     {
-        if (SelectedToolId == NestSuiteToolRegistry.ChatNestToolId)
-            SaveChatNestFile();
-        else
-            ViewModel.SaveProjectCommand.Execute(null);
+        switch (_selectedTab?.WorkspaceKind)
+        {
+            case NestSuiteWorkspaceKind.NoteNest:
+                ViewModel.SaveProjectCommand.Execute(null);
+                break;
+            case NestSuiteWorkspaceKind.ChatNest:
+                SaveChatNestFile();
+                break;
+            case NestSuiteWorkspaceKind.IdeaNest:
+                _dialogs.ShowInfo("IdeaNest のファイル操作はまだ利用できません。", "未統合");
+                break;
+        }
     }
 
     private void MenuSaveAs_Click(object sender, RoutedEventArgs e)
     {
-        if (SelectedToolId == NestSuiteToolRegistry.ChatNestToolId)
-            SaveChatNestFileAs();
-        else
-            ViewModel.SaveAsProjectCommand.Execute(null);
+        switch (_selectedTab?.WorkspaceKind)
+        {
+            case NestSuiteWorkspaceKind.NoteNest:
+                ViewModel.SaveAsProjectCommand.Execute(null);
+                break;
+            case NestSuiteWorkspaceKind.ChatNest:
+                SaveChatNestFileAs();
+                break;
+            case NestSuiteWorkspaceKind.IdeaNest:
+                _dialogs.ShowInfo("IdeaNest のファイル操作はまだ利用できません。", "未統合");
+                break;
+        }
     }
 
     // ── v1.6.3: 起動時ファイル読み込み ──────────────────────────────────
