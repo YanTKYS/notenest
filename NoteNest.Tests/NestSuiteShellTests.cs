@@ -113,6 +113,17 @@ public class NestSuiteShellTests
         Assert.Equal(typeof(ChatNestWorkspaceView), field!.FieldType);
     }
 
+    [Fact]
+    public void NestSuiteShellWindow_HoldsChatNestViewModelField_ForCloseConfirmation()
+    {
+        // v1.7.0: 終了時の破棄確認のため、ChatNest ViewModel をローカル変数ではなく
+        // フィールドとして保持していることを確認する（OnClosing から参照するため）。
+        var field = typeof(NestSuiteShellWindow)
+            .GetFields(AllInstance)
+            .FirstOrDefault(f => f.FieldType == typeof(ChatNestWorkspaceViewModel));
+        Assert.NotNull(field);
+    }
+
     // ── v1.6.4: ツール切替モデルの確認 ──────────────────────────────────
 
     [Fact]
