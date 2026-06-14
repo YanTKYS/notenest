@@ -1,5 +1,77 @@
 # リリースノート
 
+## v1.5.8 — v1.5.x 総合回帰確認・v1.6.0 ロードマップ整理
+
+**リリース日：** 2026-06-14
+
+### 概要
+
+v1.5.0〜v1.5.7 で実施した NestSuite 対応準備（境界棚卸し・依存チェック強化・NoteNestWorkspaceView 切り出し・境界修正・イベント整理）を総合的に回帰確認した。コードレベルの変更は最小限に留め、静的解析・XAML バインディング検証・イベントハンドラ対応確認を実施してすべてクリーンであることを確認した。また、v1.6.0 で取り組む NestSuite 最小 AppShell の骨格整理を計画としてドキュメント化した。
+
+### 回帰確認内容
+
+#### 1. ArchitectureBoundaryTests 全禁止パターン確認
+
+Views/ を含むすべての対象ファイルで、以下の禁止パターンがゼロであることを確認：
+
+- `MessageBox.Show` / `new OpenFileDialog` / `new SaveFileDialog` / `new MainWindow`
+- `Application.Current` / `Dispatcher.CurrentDispatcher` / `System.Windows.Window`
+- `DialogService` / `Window.GetWindow(` — v1.5.5〜v1.5.6 で追加
+
+**結果：** 全ファイルでクリーン。`ThemeService.cs` の `Application.Current` は AppShell 側サービスとして除外済み。
+
+#### 2. XAML バインディング検証
+
+- `AncestorType=Window`：`NoteNestWorkspaceView.xaml` 内に残存なし（v1.5.6 で修正済み）
+- `BoolToVis` コンバーター：`App.xaml` アプリケーションレベルリソースに一元化済み
+- `DialogHost` プロパティ：`MainWindow` コンストラクタで `WorkspaceView.DialogHost = this` をセット済み
+
+#### 3. XAML イベントハンドラ対応確認
+
+- `MainWindow.xaml` の Click ハンドラ 14 件 + Window イベント 2 件：すべてコードビハインドに定義済み
+- `NoteNestWorkspaceView.xaml` の各種イベント 43 件（Click・MouseMove・Drop 等）：すべてコードビハインドに定義済み
+- `AllowDrop="True"` は属性プロパティであり、イベントハンドラではないことを確認
+
+### v1.6.0 に向けた整理
+
+#### v1.6.0 で作るもの（計画）
+
+| 項目 | 概要 |
+|------|------|
+| N5: NestSuite 最小 AppShell 骨格 | NoteNestWorkspaceView をホストする WPF Window の最小構成。メニュー・ステータスバー・ウィンドウ設定なしの骨格のみ。NoteNest 単体版は MainWindow として継続維持 |
+| N6: MainViewModel の Workspace Facade 分離 | DataContext 整理の第一歩として、Workspace 固有プロパティを NoteNestWorkspaceViewModel（仮）へ引き出す。NestSuite 統合時の DataContext 差し替えを容易にする |
+
+#### v1.6.0 ではまだ作らないもの
+
+- NestSuite の完全 AppShell（他ツール統合・マルチタブ等）
+- IWorkspaceDialogHost の DI 化・全面抽象化
+- MainViewModel の全面分割
+
+#### NoteNest 単体版として残す AppShell
+
+- `MainWindow`（WPF Window、メニュー・ステータスバー・InputBindings）
+- `App.xaml.cs`・`StartDialog`・`RecentFilesService`・`UiSettingsService`・`ThemeService`
+- `MainWindow.DialogEvents.cs`（`IWorkspaceDialogHost` 実装）
+
+#### IWorkspaceDialogHost の WPF 前提について
+
+NestSuite も WPF ベースの計画であるため、`IWorkspaceDialogHost` のメソッドシグネチャに `TextBox`・`MessageBoxImage`（WPF 型）を含む現形状を維持する。非 WPF への抽象化は現時点で不要。詳細は `docs/design-decisions.md` §29 を参照。
+
+### ドキュメント
+
+- `docs/design-decisions.md`：§29「v1.5.8 IWorkspaceDialogHost WPF 前提と v1.6.0 方向性」追加
+- `docs/nestsuite-preparation.md`：v1.5.x 進捗表に v1.5.8 行を追加、v1.6.0 計画セクションを追加
+- `docs/backlog.md`：N5・N6 を追加
+- `docs/release-notes.md`：本エントリを追加
+- `README.md`：制限テーブルのバージョン見出しを v1.5.8 に更新
+
+### バージョン
+
+- アプリケーションバージョン：`1.5.8`
+- 保存スキーマバージョン：`1.4.1`（変更なし）
+
+---
+
 ## v1.5.7 — AppShell / Workspace 間イベント整理の小仕上げ
 
 **リリース日：** 2026-06-14
