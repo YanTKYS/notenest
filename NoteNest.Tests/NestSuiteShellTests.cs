@@ -9,9 +9,9 @@ using Xunit;
 namespace NoteNest.Tests;
 
 /// <summary>
-/// v1.7.0〜v1.7.1: NestSuite 統合母体の型境界・ツール定義モデル・ツール切替・レジストリ・契約を確認するテスト。
+/// v1.7.0〜v1.7.3: NestSuite 統合母体の型境界・ツール定義モデル・タブ管理・レジストリ・契約を確認するテスト。
 /// ChatNest を 2 つ目の Workspace（統合検証段階）として追加したことを反映する（v1.7.0）。
-/// v1.7.1 は回帰確認・小修正版であり、このテストファイルへの新規追加はない。
+/// v1.7.1 は回帰確認・小修正版。v1.7.3 ではファイル単位タブストリップとタブ管理メソッドを追加。
 /// UI を実際に起動しない、リフレクションベースの静的確認。
 /// </summary>
 public class NestSuiteShellTests
@@ -258,5 +258,44 @@ public class NestSuiteShellTests
             .Select(t => t.Id)
             .ToList();
         Assert.Equal(new[] { NestSuiteToolRegistry.IdeaNestToolId }, unintegrated);
+    }
+
+    // ── v1.7.3: ファイル単位タブ UI 最小骨格の確認 ──────────────────────
+
+    [Fact]
+    public void NestSuiteShellWindow_HasTabStripField()
+    {
+        // v1.7.3: XAML x:Name="TabStrip" による ListBox フィールドの存在・型確認
+        var field = typeof(NestSuiteShellWindow)
+            .GetFields(AllInstance)
+            .FirstOrDefault(f => f.Name == "TabStrip");
+        Assert.NotNull(field);
+        Assert.Equal(typeof(ListBox), field!.FieldType);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasTabsCollectionField()
+    {
+        // v1.7.3: _tabs フィールド（ObservableCollection<NestSuiteDocumentTab>）の存在・型確認
+        var field = typeof(NestSuiteShellWindow)
+            .GetFields(AllInstance)
+            .FirstOrDefault(f => f.Name == "_tabs");
+        Assert.NotNull(field);
+        Assert.Equal(
+            typeof(System.Collections.ObjectModel.ObservableCollection<NestSuiteDocumentTab>),
+            field!.FieldType);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasActivateTabMethod()
+    {
+        // v1.7.3: ActivateTab がタブ切替の中心メソッドとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("ActivateTab",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
+                null,
+                [typeof(NestSuiteDocumentTab)],
+                null);
+        Assert.NotNull(method);
     }
 }

@@ -1,5 +1,71 @@
 # リリースノート
 
+## v1.7.3 — NestSuite ファイル単位タブ UI の最小骨格
+
+**リリース日：** 2026-06-14
+
+### 概要
+
+v1.7.2 で設計したファイル単位タブモデル（`NestSuiteDocumentTab`）を UI に反映する最小実装を行った。
+タブストリップ（`ListBox`）を `NestSuiteShellWindow` に追加し、起動時に NoteNest 無題タブを 1 枚作成する。
+サイドバーはツール切替からタブランチャーに役割を変え、クリックで対応タブを作成またはフォーカスする。
+
+`.chatnest` 保存・複数 NoteNest タブの同時開示・IdeaNest 統合は v1.7.3 では行わない。
+
+### 変更したファイル
+
+#### `NoteNest/NestSuite/NestSuiteShellWindow.xaml`
+
+- Column 1 Grid に `RowDefinitions` を追加（Row 0 = 32px タブストリップ、Row 1 = Workspace コンテンツ）
+- Row 0 に `<ListBox x:Name="TabStrip">` を追加。水平 `StackPanel`・`ItemTemplate`（DisplayName 表示）・`SelectionChanged` イベントを設定
+- Row 1 に既存の WorkspaceView・ChatWorkspaceView・UnintegratedPlaceholder を移動
+- サイドバーコメントをタブランチャーの役割を反映した内容に更新
+
+#### `NoteNest/NestSuite/NestSuiteShellWindow.xaml.cs`
+
+- `using System.Collections.ObjectModel;` を追加
+- フィールド追加：`_tabs`（`ObservableCollection<NestSuiteDocumentTab>`）・`_selectedTab`・`_isActivatingTab`
+- `_selectedToolId` フィールドを削除し、`SelectedToolId` を computed property（`_selectedTab?.ToolId ?? DefaultToolId`）に変更
+- `SelectTool(string toolId)` を削除し、2 つのメソッドに置き換え：
+  - `ActivateTab(NestSuiteDocumentTab tab)` — タブをアクティブ化し Workspace・サイドバー・メニュー・ステータスバーを同期
+  - `EnsureTabForToolId(string toolId)` — 既存タブをフォーカス、なければ無題タブを新規作成してアクティブ化
+- `TabStrip_SelectionChanged` ハンドラを追加（`_isActivatingTab` ガードで `ActivateTab` との再帰を防止）
+- コンストラクタに `TabStrip.ItemsSource = _tabs`・初期 NoteNest タブ作成・`ActivateTab` 呼び出しを追加
+- `ToolBorder_MouseDown` / `MenuTool_Click` を `EnsureTabForToolId` に変更
+
+### 追加したテスト（`NestSuiteShellTests.cs`）
+
+3 件追加（合計 27 件）：
+
+- `NestSuiteShellWindow_HasTabStripField` — `TabStrip`（ListBox）フィールドの存在・型確認
+- `NestSuiteShellWindow_HasTabsCollectionField` — `_tabs`（ObservableCollection<NestSuiteDocumentTab>）フィールドの存在・型確認
+- `NestSuiteShellWindow_HasActivateTabMethod` — `ActivateTab(NestSuiteDocumentTab)` メソッドの存在確認
+
+### サイドバーの役割変更（タブランチャー化）
+
+v1.7.2 まで：サイドバークリック → `SelectTool(toolId)` → Workspace 切替（ツール単位・1 ツール 1 Workspace）
+
+v1.7.3 から：サイドバークリック → `EnsureTabForToolId(toolId)` → タブを作成またはフォーカス → `ActivateTab(tab)` → Workspace 切替
+
+同一ツールのタブが既に存在する場合は新規作成せず既存タブに移動する。将来的には同一ツールの複数タブ（NoteNest で A.notenest と B.notenest を同時に開く）をタブストリップで区別できるようにする。
+
+### 変更しなかったもの
+
+- NoteNest 単体版の通常起動フロー
+- `.notenest` 保存スキーマ（`1.4.1` のまま）
+- `NestSuiteDocumentTab` モデルクラス（v1.7.2 のまま）
+- ChatNest 参照ソース（`reference/external/chatnest-v0.4.1/` は直接編集しない）
+
+### v1.7.4 以降の候補
+
+| バージョン候補 | 内容 |
+|--------------|------|
+| v1.7.4 | ChatNest の `.chatnest` 保存／読込（NestSuite 側対応） |
+| v1.7.5 | NoteNest タブを複数開く（同一ツール複数タブの UI 整備） |
+| v1.8.0 | IdeaNest 統合検証 |
+
+---
+
 ## v1.7.2 — NestSuite ファイル単位タブの最小設計
 
 **リリース日：** 2026-06-14
