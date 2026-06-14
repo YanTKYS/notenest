@@ -1,5 +1,85 @@
 # リリースノート
 
+## v1.7.4 — ChatNest `.chatnest` 保存／読込
+
+**リリース日：** 2026-06-14
+
+### 概要
+
+NestSuite の ChatNest タブに `.chatnest` ファイルの保存・読込を追加した。
+ChatNest v0.4.1 と同じ JSON 形式（`version: "0.4.1"`, `messages` 配列）を使用し、
+tmp+replace パターンにより書き込み中断でもファイルが壊れない。
+ファイルメニューのコマンドバインディングを Click ハンドラに変更し、選択中タブのツール種別に応じて
+NoteNest 操作と ChatNest 操作を自動でディスパッチする。
+
+### 変更したファイル
+
+#### 新規: `NoteNest/NestSuite/ChatNest/ChatNestFileService.cs`
+
+- `.chatnest` ファイルの `Save(path, messages)` / `Load(path)` を提供する静的サービス
+- `Save`: `ChatSessionData`（`version`, `messages`）を JSON シリアライズし、tmp+replace パターンで書き込む
+- `Load`: JSON を読み込み `Message` リストを返す。`"要約"` → `"結論"` 互換マッピング・未知の発言者はスキップ
+- `FileExtension = ".chatnest"`, `FileVersionString = "0.4.1"` を定数として公開
+
+#### `NoteNest/Services/DialogService.cs`
+
+- `SelectChatNestOpenPath()` を追加（`.chatnest` フィルタ付き `OpenFileDialog`）
+- `SelectChatNestSavePath(defaultFileName)` を追加（`.chatnest` フィルタ付き `SaveFileDialog`）
+
+#### `NoteNest/NestSuite/NestSuiteShellWindow.xaml`
+
+- ファイルメニューのコマンドバインディングを Click ハンドラに変更
+  - `Command="{Binding NewProjectCommand}"` → `Click="MenuNew_Click"` 等、4 項目変更
+  - メニュー見出しを「新規プロジェクト」→「新規」、「プロジェクトを開く」→「開く」に変更（ツール共通化に合わせて）
+
+#### `NoteNest/NestSuite/NestSuiteShellWindow.xaml.cs`
+
+- `SetChatNestTabPath(path)` — 保存後にタブモデルをファイルパスで更新
+- `TrySaveChatNestToPath(path)` — 指定パスへ保存し、失敗時はエラーダイアログを表示して false を返す
+- `SaveChatNestFile()` — 上書き保存（パスなければ名前を付けて保存へ委譲）
+- `SaveChatNestFileAs()` — 名前を付けて保存（ダイアログでパスを選択）
+- `OpenChatNestFile()` — ファイルを開く（変更があれば破棄確認）
+- `NewChatNestSession()` — 新規セッション（変更があれば破棄確認）
+- `MenuNew_Click`, `MenuOpen_Click`, `MenuSave_Click`, `MenuSaveAs_Click` — 選択ツール ID でディスパッチ
+- `OnClosing` 更新: ChatNest にファイルパスがある場合は「保存しますか？（Yes/No/Cancel）」を表示
+
+#### 新規: `NoteNest.Tests/ChatNestFileServiceTests.cs`
+
+18 件のテストを追加：
+- `FileExtension_IsExpected` / `FileVersionString_IsExpected` — 定数確認
+- `Save_*` 5 件 — ファイル生成・tmp ファイルなし・JSON フィールド・上書き
+- `Load_*` 7 件 — 空リスト・件数・Id・Speaker・Text・CreatedAt・"要約"互換
+- `Load_SkipsUnknownSpeaker` — 未知発言者のスキップ
+- `Load_ThrowsInvalidDataException_*` / `Load_ThrowsException_WhenFileNotFound` — エラー系
+
+### ディスパッチ方式
+
+選択中タブが ChatNest の場合は ChatNest 操作、それ以外（NoteNest・IdeaNest）は `MainViewModel` のコマンドへ委譲する。IdeaNest タブが選択されているときにファイルメニューを操作しても NoteNest の `ViewModel` コマンドが呼ばれるが、IdeaNest は現時点でプレースホルダーのため実害はない。
+
+### 終了確認の変更
+
+| 状態 | v1.7.3 | v1.7.4 |
+|------|--------|--------|
+| ChatNest：変更なし | 確認なし | 確認なし（変わらず） |
+| ChatNest：変更あり・パスなし | 「失われます。終了しますか？」 | 「失われます。終了しますか？」（変わらず） |
+| ChatNest：変更あり・パスあり | 「失われます。終了しますか？」 | 「保存しますか？ Yes/No/Cancel」 |
+
+### 変更しなかったもの
+
+- NoteNest 単体版の通常起動フロー
+- `.notenest` 保存スキーマ（`1.4.1` のまま）
+- `ChatNestWorkspaceViewModel`（`MarkSaved`, `LoadMessages`, `Clear` を既存のまま利用）
+- ChatNest 参照ソース（`reference/external/chatnest-v0.4.1/` は直接編集しない）
+
+### v1.7.5 以降の候補
+
+| バージョン候補 | 内容 |
+|--------------|------|
+| v1.7.5 | NoteNest タブを複数開く（同一ツール複数タブの UI 整備） |
+| v1.8.0 | IdeaNest 統合検証 |
+
+---
+
 ## v1.7.3 — NestSuite ファイル単位タブ UI の最小骨格
 
 **リリース日：** 2026-06-14
