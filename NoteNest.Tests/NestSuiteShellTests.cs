@@ -2,13 +2,15 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using NoteNest.NestSuite;
+using NoteNest.NestSuite.ChatNest;
 using NoteNest.Views;
 using Xunit;
 
 namespace NoteNest.Tests;
 
 /// <summary>
-/// v1.6.4: NestSuite 統合母体の型境界・ツール定義モデル・ツール切替・レジストリ・契約を確認するテスト。
+/// v1.7.0: NestSuite 統合母体の型境界・ツール定義モデル・ツール切替・レジストリ・契約を確認するテスト。
+/// ChatNest を 2 つ目の Workspace（統合検証段階）として追加したことを反映する。
 /// UI を実際に起動しない、リフレクションベースの静的確認。
 /// </summary>
 public class NestSuiteShellTests
@@ -100,6 +102,17 @@ public class NestSuiteShellTests
         Assert.Equal(typeof(Border), field!.FieldType);
     }
 
+    [Fact]
+    public void NestSuiteShellWindow_HasChatWorkspaceViewField()
+    {
+        // v1.7.0: XAML x:Name="ChatWorkspaceView" による ChatNest Workspace フィールドの存在・型確認
+        var field = typeof(NestSuiteShellWindow)
+            .GetFields(AllInstance)
+            .FirstOrDefault(f => f.Name == "ChatWorkspaceView");
+        Assert.NotNull(field);
+        Assert.Equal(typeof(ChatNestWorkspaceView), field!.FieldType);
+    }
+
     // ── v1.6.4: ツール切替モデルの確認 ──────────────────────────────────
 
     [Fact]
@@ -177,9 +190,10 @@ public class NestSuiteShellTests
     }
 
     [Fact]
-    public void NestSuiteToolRegistry_ChatNest_IsNotIntegrated()
+    public void NestSuiteToolRegistry_ChatNest_IsIntegrated()
     {
-        Assert.False(NestSuiteToolRegistry.IsIntegrated(NestSuiteToolRegistry.ChatNestToolId));
+        // v1.7.0: ChatNest を統合検証段階として IsIntegrated=true に変更
+        Assert.True(NestSuiteToolRegistry.IsIntegrated(NestSuiteToolRegistry.ChatNestToolId));
     }
 
     // ── v1.6.4 NestSuiteTool 定義確認 ────────────────────────────────────
@@ -216,8 +230,21 @@ public class NestSuiteShellTests
     }
 
     [Fact]
-    public void NestSuiteToolRegistry_ChatNestDef_IsNotIntegrated()
+    public void NestSuiteToolRegistry_ChatNestDef_IsIntegrated()
     {
-        Assert.False(NestSuiteToolRegistry.ChatNestDef.IsIntegrated);
+        // v1.7.0: ChatNest 統合検証段階。StatusText で検証段階であることを示す
+        Assert.True(NestSuiteToolRegistry.ChatNestDef.IsIntegrated);
+        Assert.Equal("統合検証", NestSuiteToolRegistry.ChatNestDef.StatusText);
+    }
+
+    [Fact]
+    public void NestSuiteToolRegistry_IdeaNest_RemainsOnlyUnintegratedTool()
+    {
+        // v1.7.0: 未統合は IdeaNest のみ。NoteNest・ChatNest は統合済み
+        var unintegrated = NestSuiteToolRegistry.ToolDefinitions
+            .Where(t => !t.IsIntegrated)
+            .Select(t => t.Id)
+            .ToList();
+        Assert.Equal(new[] { NestSuiteToolRegistry.IdeaNestToolId }, unintegrated);
     }
 }

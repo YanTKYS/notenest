@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using NoteNest.NestSuite.ChatNest;
 using NoteNest.Services;
 using NoteNest.ViewModels;
 using NoteNest.Views;
@@ -10,14 +11,17 @@ using NoteNest.Views;
 namespace NoteNest.NestSuite;
 
 /// <summary>
-/// v1.6.4 NestSuite 統合母体（ツール切替モデル対応）。
+/// NestSuite 統合母体（ツール切替モデル対応）。
 /// ツール選択領域・Workspace 領域・メニュー（ファイル操作・ツール選択）・ステータスバーを備え、
 /// 選択中ツールに応じて Workspace 表示を切り替える WPF Window。
 ///
-/// <para><b>v1.6.4 の位置づけ</b><br/>
+/// <para><b>v1.7.0 の位置づけ（ChatNest 統合検証）</b><br/>
 /// NoteNest を統合済みツールとして初期選択し、<c>NoteNestWorkspaceView</c> を表示する。
-/// IdeaNest / ChatNest は未統合ツールとして選択可能で、選択時は未統合プレースホルダーを表示する。
-/// ツール切替状態は <see cref="SelectTool"/> で一元管理する。
+/// ChatNest を 2 つ目の Workspace（統合検証段階）として追加し、選択時は
+/// <c>ChatNestWorkspaceView</c> を表示する。IdeaNest は未統合のままで、選択時は
+/// 未統合プレースホルダーを表示する。ツール切替状態は <see cref="SelectTool"/> で一元管理する。
+/// 最終的な NestSuite タブはツール単位ではなくファイル／作業単位を想定しており、v1.7.0 では
+/// ファイル単位タブの本格実装は行わない（複数 Workspace を載せられるかの検証に留める）。
 /// NoteNest 単体版 MainWindow は引き続き維持する。</para>
 ///
 /// <para><b>IWorkspaceDialogHost 方針（WPF 前提）</b><br/>
@@ -62,6 +66,10 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         DataContext = vm;
 
         WorkspaceView.DialogHost = this;
+
+        // v1.7.0: ChatNest 統合検証用 Workspace は独立した ViewModel を持つ
+        // （MainViewModel とは別の DataContext。NoteNest 保存形式とは無関係）
+        ChatWorkspaceView.DataContext = new ChatNestWorkspaceViewModel();
 
         vm.ShowInputDialog   = (title, prompt) => _dialogs.ShowInput(title, prompt);
         vm.ShowConfirmDialog = (title, message) => _dialogs.Confirm(message, title);
@@ -123,21 +131,26 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     /// <summary>
     /// 指定ツールを選択し、Workspace 表示・サイドバーハイライト・メニューを同期する。
+    /// v1.7.0: NoteNest / ChatNest / 未統合プレースホルダーの 3 状態を切り替える。
     /// </summary>
     private void SelectTool(string toolId)
     {
         _selectedToolId = toolId;
-        bool isNoteNest = toolId == NestSuiteToolRegistry.NoteNestToolId;
         var tool = NestSuiteToolRegistry.ToolDefinitions.First(t => t.Id == toolId);
 
-        // Workspace 表示切替
+        bool isNoteNest = toolId == NestSuiteToolRegistry.NoteNestToolId;
+        bool isChatNest = toolId == NestSuiteToolRegistry.ChatNestToolId;
+
+        // Workspace 表示切替（選択ツールに対応する Workspace のみ表示。
+        // 未統合ツールは Workspace を持たずプレースホルダーを表示する）
         WorkspaceView.Visibility = isNoteNest ? Visibility.Visible : Visibility.Collapsed;
-        UnintegratedPlaceholder.Visibility = isNoteNest ? Visibility.Collapsed : Visibility.Visible;
-        if (!isNoteNest)
+        ChatWorkspaceView.Visibility = isChatNest ? Visibility.Visible : Visibility.Collapsed;
+        UnintegratedPlaceholder.Visibility = tool.IsIntegrated ? Visibility.Collapsed : Visibility.Visible;
+        if (!tool.IsIntegrated)
         {
             PlaceholderTitle.Text = tool.DisplayName;
             PlaceholderMessage.Text =
-                $"{tool.DisplayName} はまだ統合されていません。\nv1.7.0 以降で統合検証予定です。";
+                $"{tool.DisplayName} はまだ統合されていません。\nv1.8.0 以降で統合検証予定です。";
         }
 
         // サイドバー選択ハイライト更新
@@ -148,7 +161,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         foreach (var (id, item) in _toolMenuItems)
             item.IsChecked = id == toolId;
 
-        // ステータスバー更新
+        // ステータスバー更新（NoteNest は名前のみ、他は状態テキストを併記）
         NestSuiteModeSuffix.Text = isNoteNest
             ? $"  /  {tool.DisplayName}"
             : $"  /  {tool.DisplayName} — {tool.StatusText}";

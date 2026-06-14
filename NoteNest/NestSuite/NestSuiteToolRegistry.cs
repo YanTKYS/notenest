@@ -3,7 +3,7 @@ namespace NoteNest.NestSuite;
 /// <summary>
 /// NestSuite に登録された内蔵ツールの定義・一覧・統合状態を管理する。
 /// <see cref="ToolDefinitions"/> を唯一の情報源とし、他の API はここから導出する。
-/// NoteNest のみ統合済み。IdeaNest・ChatNest は将来統合予定。
+/// v1.7.0: NoteNest 統合済み・ChatNest 統合検証段階（IsIntegrated=true）・IdeaNest 未統合。
 /// </summary>
 public static class NestSuiteToolRegistry
 {
@@ -20,8 +20,8 @@ public static class NestSuiteToolRegistry
         IsIntegrated: false, StatusText: "未統合");
 
     public static readonly NestSuiteTool ChatNestDef = new(
-        ChatNestToolId, "ChatNest", "チャットツール（将来統合予定）",
-        IsIntegrated: false, StatusText: "未統合");
+        ChatNestToolId, "ChatNest", "発言者切替つき思考整理チャット",
+        IsIntegrated: true, StatusText: "統合検証");
 
     /// <summary>全ツール定義一覧（統合済み・未統合を含む）。先頭が最初の統合済みツール。</summary>
     public static IReadOnlyList<NestSuiteTool> ToolDefinitions { get; } =
