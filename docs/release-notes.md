@@ -1,5 +1,43 @@
 # リリースノート
 
+## v1.5.7 — AppShell / Workspace 間イベント整理の小仕上げ
+
+**リリース日：** 2026-06-14
+
+### 概要
+
+v1.5.5〜v1.5.6 での `NoteNestWorkspaceView` 切り出しと境界修正を踏まえ、AppShell と Workspace の間のイベント配置・委譲経路を再確認した。コードレベルの移動は不要と判断。`IWorkspaceDialogHost` の役割をコメント・ドキュメントで明文化し、v1.5.8 の総合回帰確認に備える。
+
+### 変更内容
+
+#### 1. IWorkspaceDialogHost へのコメント追加
+
+`NoteNest/Views/IWorkspaceDialogHost.cs` に XML doc comment を追加。
+
+- インターフェースの XML doc：過渡的な橋渡しの役割・設計制約（`DialogService` 非保持・`Window.GetWindow` 非使用）・v1.6.0 以降の再評価方針を明記
+- 各メソッドへの日本語 doc comment：用途を一行で明示
+
+#### 2. イベント配置の確認記録（コード変更なし）
+
+v1.5.7 時点のイベント配置を `docs/design-decisions.md` §28 に記録。
+
+- AppShell 側（MainWindow 系 partial）：Window lifecycle、起動、ファイル操作、エクスポート、ダイアログ、ショートカット
+- Workspace 側（NoteNestWorkspaceView 系）：左ペイン・エディタ・右ペイン内のすべての UI イベント
+- 委譲経路（MainWindow.NoteEvents → WorkspaceView.AddNotebook/AddNote 等）は適切と確認
+
+### ドキュメント
+
+- `docs/design-decisions.md`：§28「v1.5.7 AppShell / Workspace 間イベント境界の再確認」追加（イベント配置表・IWorkspaceDialogHost 役割整理）
+- `docs/nestsuite-preparation.md`：v1.5.x 進捗表に v1.5.6・v1.5.7 行を追加
+- `docs/release-notes.md`：本エントリを追加
+
+### バージョン
+
+- アプリケーションバージョン：`1.5.7`
+- 保存スキーマバージョン：`1.4.1`（変更なし）
+
+---
+
 ## v1.5.6 — NoteNestWorkspaceView 切り出し後の回帰確認・小修正
 
 **リリース日：** 2026-06-13
