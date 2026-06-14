@@ -76,6 +76,19 @@ public sealed class DialogService
     public string? SelectProjectSavePath(string defaultFileName) =>
         SelectSaveFilePath("NoteNest プロジェクト (*.notenest)|*.notenest", ".notenest", defaultFileName);
 
+    public string? SelectChatNestOpenPath()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = "ChatNest ファイル (*.chatnest)|*.chatnest|すべてのファイル (*.*)|*.*",
+            DefaultExt = ".chatnest"
+        };
+        return dialog.ShowDialog(_owner) == true ? dialog.FileName : null;
+    }
+
+    public string? SelectChatNestSavePath(string defaultFileName) =>
+        SelectSaveFilePath("ChatNest ファイル (*.chatnest)|*.chatnest", ".chatnest", defaultFileName);
+
     public void ShowProjectInfo(string information) =>
         new ProjectInfoDialog(information) { Owner = _owner }.ShowDialog();
 
