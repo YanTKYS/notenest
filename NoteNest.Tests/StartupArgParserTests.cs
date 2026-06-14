@@ -88,4 +88,11 @@ public class StartupArgParserTests
     {
         Assert.Null(StartupArgParser.GetFilePath([]));
     }
+
+    [Fact]
+    public void GetFilePath_WithUnsupportedExtension_ReturnsNull()
+    {
+        // .notenest 以外の拡張子はファイルパスとして認識しない（将来オプション引数の値と区別）
+        Assert.Null(StartupArgParser.GetFilePath(["--nestsuite", "project.json"]));
+    }
 }

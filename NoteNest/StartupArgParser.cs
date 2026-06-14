@@ -8,7 +8,7 @@ namespace NoteNest;
 ///   <item>引数なし     → NoteNest 単体版通常起動（StartDialog 表示）</item>
 ///   <item>ファイルパス → NoteNest 単体版でそのファイルを開く</item>
 ///   <item>--nestsuite  → 開発・検証用 NestSuiteShellWindow を起動</item>
-///   <item>--nestsuite + ファイルパス → v1.6.3 以降対応。NestSuite モードでそのファイルを開く</item>
+///   <item>--nestsuite + .notenest パス → v1.6.3 以降対応。NestSuite モードでそのファイルを開く</item>
 /// </list>
 /// </summary>
 public static class StartupArgParser
@@ -21,9 +21,11 @@ public static class StartupArgParser
         args.Contains("--nestsuite", StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// 引数リストからファイルパスを返す。
-    /// '-' で始まらない最初の引数をファイルパスとみなす。見つからない場合は null。
+    /// 引数リストから .notenest ファイルパスを返す。
+    /// .notenest 拡張子を持つ最初の引数を返す。見つからない場合は null。
+    /// 拡張子チェックにより、将来の追加オプション引数の値をパスと誤認しない。
+    /// ファイルの存在確認は呼び出し側で行う。
     /// </summary>
     public static string? GetFilePath(string[] args) =>
-        args.FirstOrDefault(a => !a.StartsWith('-'));
+        args.FirstOrDefault(a => a.EndsWith(".notenest", StringComparison.OrdinalIgnoreCase));
 }
