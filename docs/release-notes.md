@@ -9,7 +9,7 @@
 NestSuite の最終タブを**ツール単位**ではなく**ファイル／作業単位**に定めるための最小設計を行った。
 新機能 UI の追加はなく、設計用モデルクラスの導入・設計文書の整備・テスト追加に留める。
 
-**目指す形：** `[NoteNest: A.notenest] [ChatNest: 会議メモ.chatnest] [NoteNest: B.notenest]`  
+**目指す形：** `[NoteNest: A.notenest] [ChatNest: 会議メモ.chatnest] [NoteNest: B.notenest]`
 **避ける形：** `[NoteNest] [ChatNest] [IdeaNest]`
 
 現在の `NestSuiteShellWindow` のツール選択 UI（サイドバー・ツールメニュー）は暫定的な Workspace 切替であり、
