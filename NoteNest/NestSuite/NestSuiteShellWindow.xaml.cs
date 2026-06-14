@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
@@ -11,18 +12,16 @@ using NoteNest.Views;
 namespace NoteNest.NestSuite;
 
 /// <summary>
-/// NestSuite 統合母体（ツール切替モデル対応）。
-/// ツール選択領域・Workspace 領域・メニュー（ファイル操作・ツール選択）・ステータスバーを備え、
-/// 選択中ツールに応じて Workspace 表示を切り替える WPF Window。
+/// NestSuite 統合母体（ファイル単位タブモデル対応）。
+/// ツール選択領域（タブランチャー）・タブストリップ・Workspace 領域・メニュー（ファイル操作・ツール選択）・
+/// ステータスバーを備え、選択タブに対応する Workspace を表示する WPF Window。
 ///
-/// <para><b>v1.7.0 の位置づけ（ChatNest 統合検証）</b><br/>
-/// NoteNest を統合済みツールとして初期選択し、<c>NoteNestWorkspaceView</c> を表示する。
-/// ChatNest を 2 つ目の Workspace（統合検証段階）として追加し、選択時は
-/// <c>ChatNestWorkspaceView</c> を表示する。IdeaNest は未統合のままで、選択時は
-/// 未統合プレースホルダーを表示する。ツール切替状態は <see cref="SelectTool"/> で一元管理する。
-/// 最終的な NestSuite タブはツール単位ではなくファイル／作業単位を想定しており、v1.7.0 では
-/// ファイル単位タブの本格実装は行わない（複数 Workspace を載せられるかの検証に留める）。
-/// NoteNest 単体版 MainWindow は引き続き維持する。</para>
+/// <para><b>v1.7.3 の位置づけ（ファイル単位タブ UI 最小骨格）</b><br/>
+/// v1.7.2 で設計したファイル単位タブモデル（<see cref="NestSuiteDocumentTab"/>）を UI に反映する。
+/// 起動時に NoteNest の無題タブを 1 枚作成し、タブストリップ（<see cref="ListBox"/>）に表示する。
+/// サイドバーはツール切替から「タブランチャー」に役割を変え、クリックで対応タブを作成またはフォーカスする。
+/// タブ切替に応じた Workspace 表示は <see cref="ActivateTab"/> で一元管理する。
+/// .chatnest 保存・複数 NoteNest タブ・IdeaNest 統合は次段階。</para>
 ///
 /// <para><b>IWorkspaceDialogHost 方針（WPF 前提）</b><br/>
 /// NestSuite も WPF ベースの想定のため、TextBox や MessageBoxImage を含む
@@ -62,6 +61,12 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             { NestSuiteToolRegistry.IdeaNestToolId, ToolMenuIdeaNest },
             { NestSuiteToolRegistry.ChatNestToolId, ToolMenuChatNest },
         };
+
+        // v1.7.3: タブストリップをバインドし、初期 NoteNest タブを作成・アクティブ化する
+        TabStrip.ItemsSource = _tabs;
+        var initialTab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.NoteNest);
+        _tabs.Add(initialTab);
+        ActivateTab(initialTab);
 
         var vm = new MainViewModel();
         DataContext = vm;
@@ -131,55 +136,96 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         base.OnClosed(e);
     }
 
-    // ── v1.6.4: ツール切替モデル ─────────────────────────────────────────
+    // ── v1.7.3: ファイル単位タブ管理 ─────────────────────────────────────
 
     /// <summary>NestSuite 起動時のデフォルト選択ツール ID。</summary>
     public const string DefaultToolId = NestSuiteToolRegistry.NoteNestToolId;
 
-    private string _selectedToolId = NestSuiteToolRegistry.NoteNestToolId;
+    private readonly ObservableCollection<NestSuiteDocumentTab> _tabs = new();
+    private NestSuiteDocumentTab? _selectedTab;
+    private bool _isActivatingTab;
 
-    /// <summary>現在選択中のツール ID。</summary>
-    public string SelectedToolId => _selectedToolId;
+    /// <summary>現在選択中のタブのツール ID。タブ未選択時は <see cref="DefaultToolId"/>。</summary>
+    public string SelectedToolId => _selectedTab?.ToolId ?? DefaultToolId;
 
     private Dictionary<string, Border> _sidebarBorders = null!;
     private Dictionary<string, MenuItem> _toolMenuItems = null!;
 
     /// <summary>
-    /// 指定ツールを選択し、Workspace 表示・サイドバーハイライト・メニューを同期する。
-    /// v1.7.0: NoteNest / ChatNest / 未統合プレースホルダーの 3 状態を切り替える。
+    /// 指定タブをアクティブ化し、Workspace 表示・サイドバーハイライト・メニュー・ステータスバーを同期する。
+    /// v1.7.3: SelectTool を置き換え、タブモデルを通じてツール切替を一元管理する。
+    /// <see cref="_isActivatingTab"/> ガードにより TabStrip の SelectionChanged との再帰を防ぐ。
     /// </summary>
-    private void SelectTool(string toolId)
+    private void ActivateTab(NestSuiteDocumentTab tab)
     {
-        _selectedToolId = toolId;
-        var tool = NestSuiteToolRegistry.ToolDefinitions.First(t => t.Id == toolId);
-
-        bool isNoteNest = toolId == NestSuiteToolRegistry.NoteNestToolId;
-        bool isChatNest = toolId == NestSuiteToolRegistry.ChatNestToolId;
-
-        // Workspace 表示切替（選択ツールに対応する Workspace のみ表示。
-        // 未統合ツールは Workspace を持たずプレースホルダーを表示する）
-        WorkspaceView.Visibility = isNoteNest ? Visibility.Visible : Visibility.Collapsed;
-        ChatWorkspaceView.Visibility = isChatNest ? Visibility.Visible : Visibility.Collapsed;
-        UnintegratedPlaceholder.Visibility = tool.IsIntegrated ? Visibility.Collapsed : Visibility.Visible;
-        if (!tool.IsIntegrated)
+        if (_isActivatingTab) return;
+        _isActivatingTab = true;
+        try
         {
-            PlaceholderTitle.Text = tool.DisplayName;
-            PlaceholderMessage.Text =
-                $"{tool.DisplayName} はまだ統合されていません。\nv1.8.0 以降で統合検証予定です。";
+            _selectedTab = tab;
+            TabStrip.SelectedItem = tab;
+
+            var toolId = tab.ToolId;
+            var tool = NestSuiteToolRegistry.ToolDefinitions.First(t => t.Id == toolId);
+
+            bool isNoteNest = toolId == NestSuiteToolRegistry.NoteNestToolId;
+            bool isChatNest = toolId == NestSuiteToolRegistry.ChatNestToolId;
+
+            // Workspace 表示切替（選択タブに対応する Workspace のみ表示）
+            WorkspaceView.Visibility = isNoteNest ? Visibility.Visible : Visibility.Collapsed;
+            ChatWorkspaceView.Visibility = isChatNest ? Visibility.Visible : Visibility.Collapsed;
+            UnintegratedPlaceholder.Visibility = tool.IsIntegrated ? Visibility.Collapsed : Visibility.Visible;
+            if (!tool.IsIntegrated)
+            {
+                PlaceholderTitle.Text = tool.DisplayName;
+                PlaceholderMessage.Text =
+                    $"{tool.DisplayName} はまだ統合されていません。\nv1.8.0 以降で統合検証予定です。";
+            }
+
+            // サイドバー選択ハイライト更新
+            foreach (var (id, border) in _sidebarBorders)
+                UpdateSidebarHighlight(border, id, toolId);
+
+            // ツールメニューのチェック状態更新
+            foreach (var (id, item) in _toolMenuItems)
+                item.IsChecked = id == toolId;
+
+            // ステータスバー更新（NoteNest は名前のみ、他は状態テキストを併記）
+            NestSuiteModeSuffix.Text = isNoteNest
+                ? $"  /  {tool.DisplayName}"
+                : $"  /  {tool.DisplayName} — {tool.StatusText}";
+        }
+        finally
+        {
+            _isActivatingTab = false;
+        }
+    }
+
+    /// <summary>
+    /// 指定ツール ID に対応するタブを開く。既存タブがあればそれをアクティブ化し、
+    /// なければ無題タブを新規作成してアクティブ化する。
+    /// v1.7.3: サイドバー・ツールメニューのクリックから呼ばれるタブランチャーエントリポイント。
+    /// </summary>
+    private void EnsureTabForToolId(string toolId)
+    {
+        var existing = _tabs.FirstOrDefault(t => t.ToolId == toolId);
+        if (existing != null)
+        {
+            ActivateTab(existing);
+            return;
         }
 
-        // サイドバー選択ハイライト更新
-        foreach (var (id, border) in _sidebarBorders)
-            UpdateSidebarHighlight(border, id, toolId);
+        var kind = toolId switch
+        {
+            NestSuiteToolRegistry.NoteNestToolId => NestSuiteWorkspaceKind.NoteNest,
+            NestSuiteToolRegistry.ChatNestToolId => NestSuiteWorkspaceKind.ChatNest,
+            NestSuiteToolRegistry.IdeaNestToolId => NestSuiteWorkspaceKind.IdeaNest,
+            _ => throw new ArgumentException($"未知のツール ID: {toolId}", nameof(toolId))
+        };
 
-        // ツールメニューのチェック状態更新
-        foreach (var (id, item) in _toolMenuItems)
-            item.IsChecked = id == toolId;
-
-        // ステータスバー更新（NoteNest は名前のみ、他は状態テキストを併記）
-        NestSuiteModeSuffix.Text = isNoteNest
-            ? $"  /  {tool.DisplayName}"
-            : $"  /  {tool.DisplayName} — {tool.StatusText}";
+        var tab = NestSuiteTabFactory.CreateUntitled(kind);
+        _tabs.Add(tab);
+        ActivateTab(tab);
     }
 
     private static void UpdateSidebarHighlight(Border border, string borderToolId, string selectedToolId)
@@ -188,6 +234,13 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             border.SetResourceReference(Border.BackgroundProperty, "SelectedNoteBg");
         else
             border.ClearValue(Border.BackgroundProperty);
+    }
+
+    private void TabStrip_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isActivatingTab) return;
+        if (TabStrip.SelectedItem is NestSuiteDocumentTab tab)
+            ActivateTab(tab);
     }
 
     // ── v1.6.3: 起動時ファイル読み込み ──────────────────────────────────
@@ -220,11 +273,12 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     // ── ツール選択ハンドラ（サイドバー・ツールメニュー共通） ────────────
 
+    // v1.7.3: サイドバーとメニューはタブランチャーとして機能する
     private void ToolBorder_MouseDown(object sender, MouseButtonEventArgs e)
-        => SelectTool((string)((FrameworkElement)sender).Tag);
+        => EnsureTabForToolId((string)((FrameworkElement)sender).Tag);
 
     private void MenuTool_Click(object sender, RoutedEventArgs e)
-        => SelectTool((string)((FrameworkElement)sender).Tag);
+        => EnsureTabForToolId((string)((FrameworkElement)sender).Tag);
 
     private void MenuAbout_Click(object sender, RoutedEventArgs e)
         => _dialogs.ShowInfo(

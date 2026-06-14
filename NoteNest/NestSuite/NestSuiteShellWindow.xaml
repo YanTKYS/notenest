@@ -20,7 +20,7 @@
                 <MenuItem Header="終了(_X)" Click="MenuExit_Click"/>
             </MenuItem>
             <MenuItem Header="ツール(_T)">
-                <!-- v1.6.4: ツール切替対応。未統合ツールも選択可（プレースホルダー表示） -->
+                <!-- v1.7.3: ツール選択はタブランチャーとして機能する。既存タブがあれば移動、なければ新規作成 -->
                 <MenuItem x:Name="ToolMenuNoteNest" Header="NoteNest"
                           Tag="NoteNest"
                           IsCheckable="True" IsChecked="True"
@@ -68,16 +68,16 @@
             </StackPanel>
         </Border>
 
-        <!-- メインエリア: ツール選択領域 + Workspace 領域 -->
+        <!-- メインエリア: ツール選択領域（タブランチャー）+ Workspace 領域 -->
         <Grid>
             <Grid.ColumnDefinitions>
-                <!-- ツール選択: 固定幅 -->
+                <!-- ツール選択（タブランチャー）: 固定幅 -->
                 <ColumnDefinition Width="120"/>
                 <!-- Workspace 領域: 残り幅 -->
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ツール選択領域（v1.6.4: 選択可能・ツール切替対応） -->
+            <!-- ツール選択領域（v1.7.3: タブランチャー。クリックで対応タブを作成または既存タブへ移動） -->
             <Border Grid.Column="0"
                     Background="{DynamicResource SidebarBg}"
                     BorderBrush="{DynamicResource PaneBorder}"
@@ -86,10 +86,9 @@
                     <TextBlock Text="ツール" FontSize="10" FontWeight="SemiBold"
                                Foreground="{DynamicResource MutedFg}"
                                Margin="10,0,10,6"/>
-                    <!-- NoteNest: 統合済み・初期選択 -->
+                    <!-- NoteNest: 統合済み。クリックで NoteNest タブを開く -->
                     <Border x:Name="NoteNestToolBorder"
                             Tag="NoteNest"
-                            Background="{DynamicResource SelectedNoteBg}"
                             CornerRadius="4" Margin="6,1" Padding="8,5"
                             Cursor="Hand"
                             MouseLeftButtonDown="ToolBorder_MouseDown">
@@ -97,7 +96,7 @@
                                    Text="NoteNest" FontSize="12"
                                    Foreground="{DynamicResource PrimaryFg}"/>
                     </Border>
-                    <!-- IdeaNest: 未統合・選択可（プレースホルダー表示） -->
+                    <!-- IdeaNest: 未統合。クリックでプレースホルダータブを開く -->
                     <Border x:Name="IdeaNestToolBorder"
                             Tag="IdeaNest"
                             CornerRadius="4" Margin="6,1" Padding="8,5"
@@ -112,7 +111,7 @@
                                        VerticalAlignment="Center"/>
                         </StackPanel>
                     </Border>
-                    <!-- ChatNest: v1.7.0 統合検証・選択可（Workspace 表示） -->
+                    <!-- ChatNest: v1.7.0 統合検証。クリックで ChatNest タブを開く -->
                     <Border x:Name="ChatNestToolBorder"
                             Tag="ChatNest"
                             CornerRadius="4" Margin="6,1" Padding="8,5"
@@ -130,26 +129,66 @@
                 </StackPanel>
             </Border>
 
-            <!-- Workspace 領域: 選択ツールに応じて各 Workspace またはプレースホルダーを表示 -->
+            <!-- Workspace 領域: タブストリップ（v1.7.3）+ 選択タブの Workspace -->
             <Grid Grid.Column="1">
-                <views:NoteNestWorkspaceView x:Name="WorkspaceView"/>
-                <!-- v1.7.0: ChatNest 統合検証用 Workspace（ChatNest 選択時に表示） -->
-                <chatnest:ChatNestWorkspaceView x:Name="ChatWorkspaceView" Visibility="Collapsed"/>
-                <!-- 未統合ツール選択時のプレースホルダー -->
-                <Border x:Name="UnintegratedPlaceholder" Visibility="Collapsed"
-                        Background="{DynamicResource SidebarBg}">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
-                                Margin="24">
-                        <TextBlock x:Name="PlaceholderTitle"
-                                   FontSize="18" FontWeight="Bold"
-                                   TextAlignment="Center"
-                                   Foreground="{DynamicResource MutedFg}"
-                                   Margin="0,0,0,16"/>
-                        <TextBlock x:Name="PlaceholderMessage"
-                                   FontSize="13" TextAlignment="Center"
-                                   Foreground="{DynamicResource SubtleFg}"/>
-                    </StackPanel>
+                <Grid.RowDefinitions>
+                    <!-- v1.7.3: ファイル単位タブストリップ -->
+                    <RowDefinition Height="32"/>
+                    <!-- Workspace コンテンツ -->
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- v1.7.3: ファイル単位タブストリップ（最小骨格）。ItemsSource は NestSuiteDocumentTab のコレクション -->
+                <Border Grid.Row="0"
+                        BorderBrush="{DynamicResource PaneBorder}"
+                        BorderThickness="0,0,0,1">
+                    <ListBox x:Name="TabStrip"
+                             BorderThickness="0"
+                             Background="{DynamicResource GroupHeaderBg}"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                             SelectionChanged="TabStrip_SelectionChanged">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="12,0"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                <Setter Property="Height" Value="32"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DisplayName}" FontSize="12"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </Border>
+
+                <!-- Workspace コンテンツ（選択タブに対応する Workspace を表示） -->
+                <Grid Grid.Row="1">
+                    <views:NoteNestWorkspaceView x:Name="WorkspaceView"/>
+                    <!-- v1.7.0: ChatNest 統合検証用 Workspace（ChatNest タブ選択時に表示） -->
+                    <chatnest:ChatNestWorkspaceView x:Name="ChatWorkspaceView" Visibility="Collapsed"/>
+                    <!-- 未統合ツールタブ選択時のプレースホルダー -->
+                    <Border x:Name="UnintegratedPlaceholder" Visibility="Collapsed"
+                            Background="{DynamicResource SidebarBg}">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Margin="24">
+                            <TextBlock x:Name="PlaceholderTitle"
+                                       FontSize="18" FontWeight="Bold"
+                                       TextAlignment="Center"
+                                       Foreground="{DynamicResource MutedFg}"
+                                       Margin="0,0,0,16"/>
+                            <TextBlock x:Name="PlaceholderMessage"
+                                       FontSize="13" TextAlignment="Center"
+                                       Foreground="{DynamicResource SubtleFg}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
             </Grid>
         </Grid>
     </DockPanel>
