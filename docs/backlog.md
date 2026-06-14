@@ -61,8 +61,6 @@
 NestSuiteへの将来的な統合に向けた準備作業。すぐに実装するものではなく、v1.5.x以降の候補として記載する。
 設計の背景は [`docs/nestsuite-preparation.md`](nestsuite-preparation.md) を参照。
 
-| No | 項目 | 概要 | 優先度 |
-|----|------|------|--------|
 ※ N1「AppShell / Workspace 境界の棚卸し」は v1.5.1 で `ArchitectureBoundaryTests.cs` の追加とドキュメント整備により完了。
 ※ N2「Workspace側のAppShell依存チェック強化」は v1.5.2 でソース文字列チェック・Model型・Window継承チェックを追加して完了。
   IL解析や Roslyn Analyzer の本格導入は現状では見送り（残課題として design-decisions.md §25 に記録）。
