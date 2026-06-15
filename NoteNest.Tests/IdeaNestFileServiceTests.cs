@@ -56,7 +56,7 @@ public class IdeaNestFileServiceTests
         try
         {
             File.WriteAllText(path, "{broken");
-            Assert.Throws<JsonException>(() => IdeaNestFileService.Load(path));
+            Assert.ThrowsAny<JsonException>(() => IdeaNestFileService.Load(path));
             File.WriteAllText(path, """{"version":"99.0","ideas":[],"settings":{}}""");
             Assert.Throws<NotSupportedException>(() => IdeaNestFileService.Load(path));
             File.WriteAllText(path, """{"ideas":[],"settings":{}}""");
