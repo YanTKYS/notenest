@@ -27,6 +27,14 @@ public class IdeaNestFileServiceTests
         Assert.Equal("1.1.4", IdeaNestFileService.SchemaVersion);
     }
 
+    [Fact]
+    public void NewWorkspace_UsesCurrentSchemaVersion()
+    {
+        // Workspace.Version default must stay in sync with IdeaNestFileService.SchemaVersion.
+        // This catches the case where one is updated without the other.
+        Assert.Equal(IdeaNestFileService.SchemaVersion, new Workspace().Version);
+    }
+
     // ── Idea モデルの [JsonPropertyName] 属性確認 ───────────────────────
 
     [Theory]
