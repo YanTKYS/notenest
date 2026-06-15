@@ -254,6 +254,33 @@ public class NestSuiteDocumentTabTests
         Assert.Equal(kind, resolved);
     }
 
+    [Theory]
+    [InlineData("FILE.NOTENEST", NestSuiteWorkspaceKind.NoteNest)]
+    [InlineData("FILE.CHATNEST", NestSuiteWorkspaceKind.ChatNest)]
+    [InlineData("FILE.IDEANEST", NestSuiteWorkspaceKind.IdeaNest)]
+    public void TryGetKind_IsCaseInsensitive_ForAllIntegratedTools(
+        string filePath,
+        NestSuiteWorkspaceKind expected)
+    {
+        Assert.True(NestSuiteTabFactory.TryGetKind(filePath, out var actual));
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [InlineData("file.notenest", NestSuiteWorkspaceKind.NoteNest)]
+    [InlineData("file.chatnest", NestSuiteWorkspaceKind.ChatNest)]
+    [InlineData("file.ideanest", NestSuiteWorkspaceKind.IdeaNest)]
+    public void TryGetKind_DoesNotMisclassifyIntegratedExtensions(
+        string filePath,
+        NestSuiteWorkspaceKind expected)
+    {
+        Assert.True(NestSuiteTabFactory.TryGetKind(filePath, out var actual));
+        Assert.Equal(expected, actual);
+        Assert.All(
+            Enum.GetValues<NestSuiteWorkspaceKind>().Where(kind => kind != expected),
+            other => Assert.NotEqual(other, actual));
+    }
+
     // ── v1.7.5: .notenest / .chatnest 拡張子の混同防止確認 ─────────────
 
     [Fact]

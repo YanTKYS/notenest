@@ -319,7 +319,9 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         if (tab == null) return;
         var vm = ViewModel;
         NestSuiteDocumentTab updatedTab;
-        if (vm.CurrentFilePath is string path && NestSuiteTabFactory.TryGetKind(path, out _))
+        if (vm.CurrentFilePath is string path &&
+            NestSuiteTabFactory.TryGetKind(path, out var kind) &&
+            kind == NestSuiteWorkspaceKind.NoteNest)
             updatedTab = NestSuiteTabFactory.FromFilePath(path) with { Id = tab.Id, IsModified = vm.IsModified };
         else
             updatedTab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.NoteNest) with { Id = tab.Id, IsModified = vm.IsModified };
@@ -697,7 +699,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     // ── v1.7.4: ファイルメニューハンドラ（タブ種別でディスパッチ） ─────────
     // ツール種別を明示的に分岐することで、IdeaNest 選択中に非表示の NoteNest へ
-    // 操作が流れることを防ぐ。IdeaNest は未統合のため情報ダイアログを表示する。
+    // 操作が流れることを防ぐ。3 ツールすべてを選択中タブの WorkspaceKind で分岐する。
 
     private void MenuNew_Click(object sender, RoutedEventArgs e)
     {

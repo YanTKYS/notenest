@@ -14,7 +14,7 @@ namespace NoteNest.NestSuite;
 /// <para><b>拡張子とタブの関係</b><br/>
 /// <list type="bullet">
 ///   <item><term>.notenest</term><description>NoteNest タブ（既存保存形式 v1.4.1 を維持）</description></item>
-///   <item><term>.chatnest</term><description>ChatNest タブ（v1.7.2 では保存／読込は未実装）</description></item>
+///   <item><term>.chatnest</term><description>ChatNest タブ</description></item>
 ///   <item><term>.ideanest</term><description>IdeaNest タブ</description></item>
 /// </list>
 /// </para>

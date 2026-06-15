@@ -2055,3 +2055,23 @@ NestSuite のタブモデル（v1.7.2 で導入した設計用クラス）の動
 2. `IdeaNestWorkspaceViewModelTests` でカード・タグ・日時・順序の復元、保存対象、一時検索状態の除外、読込後・保存後の未保存状態解除を確認する（自動）。
 3. `StartupArgParserTests` と `NestSuiteShellTests` で `--nestsuite sample.ideanest` の起動時読込経路を確認する（自動）。
 4. NoteNest スキーマ `1.4.1` と ChatNest 保存／読込が維持されることを全体テストで確認する（自動）。
+
+
+## §55 v1.8.5 3ツール統合後の実機回帰確認
+
+### シナリオA: NoteNest
+1. `--nestsuite` で起動し、NoteNestタブでノートを作成・保存する。
+2. タブを閉じて `.notenest` を開き、内容と未保存表示を確認する。
+
+### シナリオB: ChatNest
+1. ChatNestタブを作成し、メッセージを投稿して `.chatnest` として保存する。
+2. タブを閉じて再度開き、メッセージと未保存表示を確認する。
+
+### シナリオC: IdeaNest
+1. IdeaNestタブを作成し、タグ付きカードを追加して `.ideanest` として保存する。
+2. タブを閉じて再度開き、カード・タグ・順序と未保存表示を確認する。
+
+### シナリオD: 起動時読込
+1. `--nestsuite sample.notenest`、`--nestsuite sample.chatnest`、`--nestsuite sample.ideanest` を個別に実行する。
+2. 各ファイルが正しいWorkspaceKindのタブとして開き、FilePath・表示名・未保存状態が正しいことを確認する。
+3. ファイル不存在・未対応拡張子でアプリが継続することを確認する。
