@@ -69,7 +69,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         // v1.8.6: ファイル指定なし起動のみ初期 NoteNest タブを作成する。
         // ファイル指定ありの場合は LoadInitialFile 内で適切なタブが作成される。
         TabStrip.ItemsSource = _tabs;
-        if (string.IsNullOrEmpty(initialFilePath))
+        if (NestSuiteStartupTabPolicy.ShouldCreateInitialTab(initialFilePath))
         {
             var initialTab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.NoteNest);
             _tabs.Add(initialTab);
@@ -832,7 +832,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// </summary>
     private void EnsureDefaultTab()
     {
-        if (_tabs.Count == 0)
+        if (NestSuiteStartupTabPolicy.ShouldEnsureFallbackTab(_tabs.Count))
         {
             var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.NoteNest);
             _tabs.Add(tab);
