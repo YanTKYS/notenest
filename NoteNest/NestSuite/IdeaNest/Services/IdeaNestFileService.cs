@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using NoteNest.NestSuite.IdeaNest.Models;
 
 namespace NoteNest.NestSuite.IdeaNest.Services;
