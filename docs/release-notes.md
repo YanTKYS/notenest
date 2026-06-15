@@ -1,3 +1,13 @@
+## v1.8.4 — `.ideanest` 保存／読込・起動時読込の回帰確認と小修正
+
+- `.ideanest` の保存／読込、カード・タグ・並び順・作成／更新日時の復元、保存／読込後の未保存状態を回帰確認した。
+- `--nestsuite sample.ideanest` は `LoadInitialFile` から共通の `TryLoadIdeaNestFile` を利用し、IdeaNest タブとして読み込む。
+- IdeaNest WorkspaceViewModel の保存対象生成、読込後・保存後の未保存状態、永続設定と一時検索状態の分離を確認するテストを追加した。
+- `Workspace.Version` の既定値で必須フィールド欠落が見えなくなる不整合を修正し、読込元 JSON に `version` が実在することを検証するようにした。
+- IdeaNest の統合状態に合わせてコードコメントを修正した。NoteNest 保存形式・スキーマ 1.4.1 と ChatNest `.chatnest` 保存／読込は変更していない。
+- 同一ツール複数ファイル、タブごとの WorkspaceViewModel 独立化、タブ復元、複数ファイル同時オープンは将来改善として維持する。
+- 次候補: v1.8.5 は3ツール統合後の実機回帰確認、v1.9.0以降は同一ツール複数ファイル対応とタブ別 ViewModel の設計整理。
+
 ## v1.8.3 — IdeaNest `.ideanest` 保存／読込の最小対応
 
 - NestSuite の IdeaNest タブで新規作成・開く・保存・名前を付けて保存を実装。保存／読込成功後はファイル名・パス・未保存状態を同期する。

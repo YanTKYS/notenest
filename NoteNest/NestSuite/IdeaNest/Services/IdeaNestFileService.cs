@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.Json;
 using NoteNest.NestSuite.IdeaNest.Models;
 
 namespace NoteNest.NestSuite.IdeaNest.Services;
@@ -26,9 +27,13 @@ public static class IdeaNestFileService
         if (!File.Exists(path))
             throw new FileNotFoundException("IdeaNest ファイルが見つかりません。", path);
 
-        var workspace = IdeaNestWorkspaceService.Load(path);
-        if (string.IsNullOrWhiteSpace(workspace.Version))
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        if (!document.RootElement.TryGetProperty("version", out var versionElement) ||
+            versionElement.ValueKind != JsonValueKind.String ||
+            string.IsNullOrWhiteSpace(versionElement.GetString()))
             throw new InvalidDataException("必須フィールド version がありません。");
+
+        var workspace = IdeaNestWorkspaceService.Load(path);
         if (!string.Equals(workspace.Version, SchemaVersion, StringComparison.Ordinal))
             throw new NotSupportedException($"未対応の IdeaNest バージョンです: {workspace.Version}");
         return workspace;

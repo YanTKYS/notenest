@@ -2047,3 +2047,11 @@ NestSuite のタブモデル（v1.7.2 で導入した設計用クラス）の動
 3. `NestSuiteShellTests` が全件パスすることを確認する（自動）
 4. `ChatNestFileServiceTests` が全件パスすることを確認する（自動）
 5. `ArchitectureBoundaryTests` が全件パスすることを確認する（自動）
+
+
+## §54 v1.8.4 IdeaNest 保存／読込回帰確認
+
+1. `IdeaNestFileServiceTests` で `.ideanest` の保存／読込、カード順、タグ、スキーマバージョン、異常ファイル拒否、tmp 後始末を確認する（自動）。
+2. `IdeaNestWorkspaceViewModelTests` でカード・タグ・日時・順序の復元、保存対象、一時検索状態の除外、読込後・保存後の未保存状態解除を確認する（自動）。
+3. `StartupArgParserTests` と `NestSuiteShellTests` で `--nestsuite sample.ideanest` の起動時読込経路を確認する（自動）。
+4. NoteNest スキーマ `1.4.1` と ChatNest 保存／読込が維持されることを全体テストで確認する（自動）。
