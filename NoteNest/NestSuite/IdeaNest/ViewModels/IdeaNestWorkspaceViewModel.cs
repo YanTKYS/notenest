@@ -330,12 +330,9 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
         _cardOps.ToggleArchive(card);
     }
 
-    public event EventHandler? DirtyRequested;
-
     public void MarkDirty()
     {
         HasChanges = true;
-        DirtyRequested?.Invoke(this, EventArgs.Empty);
     }
 
     public void SetOwnerResolver(Func<Window?> resolver) => _ui.SetOwnerResolver(resolver);
