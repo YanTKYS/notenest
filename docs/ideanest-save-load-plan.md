@@ -195,7 +195,7 @@ public string? SelectIdeaNestSavePath(string defaultFileName)
 | ファイルが見つからない（`FileNotFoundException`） | `_dialogs.ShowError(...)` でメッセージ表示、操作を中断（アプリ継続） |
 | JSON が壊れている（`JsonException`） | 同上 |
 | 書き込み失敗（`IOException` 等） | `_dialogs.ShowError(...)` でメッセージ表示、操作を中断。元ファイルは tmp+replace により安全 |
-| tmp ファイルが残った場合 | `IdeaNestWorkspaceService.Save` 内で replace 前にエラーが発生した場合、`.ideanest.tmp` が残る可能性がある。次回起動時に自動削除はしない（将来の課題） |
+| tmp ファイルの後始末 | `IdeaNestWorkspaceService.Save` の `finally` で、成功・失敗にかかわらず残存する `.ideanest.tmp` を削除する |
 
 エラーダイアログは `_dialogs.ShowError(message, title)` を使用し、`MessageBox.Show` を直接呼ばない。
 
@@ -212,36 +212,37 @@ public string? SelectIdeaNestSavePath(string defaultFileName)
 
 ---
 
-## 9. 起動時ファイル指定（v1.8.4 以降の計画）
+## 9. 起動時ファイル指定
 
-`LoadInitialFile` の IdeaNest ケースは v1.8.1 時点で「未対応」エラーを表示している。
-v1.8.3 で保存・読込が実装された後、v1.8.4 で以下の変更を行う。
+v1.8.3 で対応済み。`LoadInitialFile` の IdeaNest ケースは、通常のファイルダイアログ経由と
+同じ共通読込処理 `TryLoadIdeaNestFile(path)` へ接続する。
 
 ```
 case NestSuiteWorkspaceKind.IdeaNest:
-    LoadInitialIdeaNestFile(path);  // v1.8.4 で追加
+    TryLoadIdeaNestFile(path);
     break;
 ```
 
-`LoadInitialIdeaNestFile` は `IdeaNestWorkspaceService.Load(path)` を呼んで
-`_ideaNestViewModel.LoadFromWorkspace(workspace)` し、タブを `FromFilePath(path)` で更新する。
+`TryLoadIdeaNestFile` は `IdeaNestFileService.Load(path)`、ViewModel への反映、
+IdeaNest タブの作成または更新、対象タブのアクティブ化、読込エラー表示を一元化する。
+これにより、ファイルダイアログ経由と起動時指定で読込動作に差が生じないようにする。
 
 ---
 
-## 10. v1.8.3 実装チェックリスト（このドキュメント更新予定）
+## 10. v1.8.3 実装・v1.8.4 回帰確認チェックリスト
 
-- [ ] `DialogService.SelectIdeaNestOpenPath()` 追加
-- [ ] `DialogService.SelectIdeaNestSavePath(string)` 追加
-- [ ] `IdeaNestFileService.OpenWithDialog(...)` 実装
-- [ ] `IdeaNestFileService.SaveWithDialog(...)` 実装
-- [ ] `IdeaNestFileService.SaveAsWithDialog(...)` 実装
-- [ ] `NestSuiteShellWindow.SaveIdeaNestFile(NestSuiteDocumentTab)` 追加
-- [ ] `NestSuiteShellWindow.SaveIdeaNestFileAs(NestSuiteDocumentTab)` 追加
-- [ ] `NestSuiteShellWindow.OpenIdeaNestFile(NestSuiteDocumentTab)` 追加
-- [ ] `NestSuiteShellWindow.NewIdeaNestSession(NestSuiteDocumentTab)` 追加
-- [ ] ファイルメニュー IdeaNest ケースを未対応ダイアログから実装に置き換え
-- [ ] `OnClosing` の IdeaNest 保存確認を「Yes/No/Cancel」に更新
-- [ ] テスト追加（保存・読込・エラー系）
+- [x] `DialogService.SelectIdeaNestOpenPath()` 追加
+- [x] `DialogService.SelectIdeaNestSavePath(string)` 追加
+- [x] NestSuite 経由の `.ideanest` Open 実装
+- [x] NestSuite 経由の `.ideanest` Save 実装
+- [x] NestSuite 経由の `.ideanest` Save As 実装
+- [x] `NestSuiteShellWindow.SaveIdeaNestFile()` 追加
+- [x] `NestSuiteShellWindow.SaveIdeaNestFileAs()` 追加
+- [x] `NestSuiteShellWindow.OpenIdeaNestFile()` 追加
+- [x] `NestSuiteShellWindow.NewIdeaNestWorkspace()` 追加
+- [x] ファイルメニュー IdeaNest ケースを未対応ダイアログから実装に置き換え
+- [x] テスト追加（保存・読込・必須 version・エラー・WorkspaceViewModel 未保存状態）
+- [ ] `OnClosing` の IdeaNest 保存確認を「Yes/No/Cancel」に更新（将来課題。v1.8.4 では既存の破棄確認を維持）
 
 ---
 
