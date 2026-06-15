@@ -5,7 +5,9 @@
 - フォールバック用の `EnsureDefaultTab()` プライベートメソッドを追加した。ファイル不存在・未対応拡張子・読込エラー時にのみ無題NoteNestタブを作成する。
 - `LoadInitialFile` の各失敗パスと `LoadInitialChatNestFile` のcatchブロックで `EnsureDefaultTab()` を呼ぶようにした。
 - `App.xaml.cs` でファイルパスをコンストラクタ呼び出し前に取得し、コンストラクタへ渡すよう変更した。
-- 6パターンの起動動作（ファイルなし・各拡張子成功・存在しない・未対応拡張子）を確認するテストを追加した。
+- `NestSuiteStartupTabPolicy` を新設し、初期タブ生成判断（`ShouldCreateInitialTab`）とフォールバック判断（`ShouldEnsureFallbackTab`）をWPF非依存の純粋ロジックに分離した。Shell はこのポリシーを使用する。
+- `NestSuiteStartupTabPolicy` の動作を確認する自動テスト5件を追加した（ファイル指定あり・なし・空文字列・タブ0枚・タブあり）。
+- 6パターンの起動動作（ファイルなし・各拡張子成功・存在しない・未対応拡張子）の実機確認はテストシナリオ §56 を参照。
 - NoteNest保存形式・スキーマ1.4.1、ChatNest・IdeaNest保存形式は変更していない。
 
 ## v1.8.5 — 3ツール統合後の回帰確認・小修正

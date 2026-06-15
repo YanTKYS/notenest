@@ -558,4 +558,46 @@ public class NestSuiteShellTests
         Assert.Equal(typeof(void), method!.ReturnType);
         Assert.Empty(method.GetParameters());
     }
+
+    // ── v1.8.6: NestSuiteStartupTabPolicy 動作テスト ────────────────────────
+    // WPF ウィンドウを生成せずに初期タブ生成判断の正しさを自動確認する。
+    // Shell がポリシーを使うことで、ポリシーへの変更は即座に回帰テストに反映される。
+
+    [Fact]
+    public void StartupTabPolicy_NullFilePath_ShouldCreateInitialTab()
+    {
+        // ファイル指定なし起動 → 無題NoteNestタブを作成する
+        Assert.True(NestSuiteStartupTabPolicy.ShouldCreateInitialTab(null));
+    }
+
+    [Fact]
+    public void StartupTabPolicy_EmptyFilePath_ShouldCreateInitialTab()
+    {
+        // 空文字列 → ファイル指定なしと同等に扱い、無題NoteNestタブを作成する
+        Assert.True(NestSuiteStartupTabPolicy.ShouldCreateInitialTab(""));
+    }
+
+    [Fact]
+    public void StartupTabPolicy_WithFilePath_ShouldNotCreateInitialTab()
+    {
+        // ファイル指定ありの場合は初期タブを作成しない
+        Assert.False(NestSuiteStartupTabPolicy.ShouldCreateInitialTab("sample.chatnest"));
+        Assert.False(NestSuiteStartupTabPolicy.ShouldCreateInitialTab("sample.ideanest"));
+        Assert.False(NestSuiteStartupTabPolicy.ShouldCreateInitialTab("sample.notenest"));
+    }
+
+    [Fact]
+    public void StartupTabPolicy_ZeroTabs_ShouldEnsureFallbackTab()
+    {
+        // 読込失敗後タブが0枚 → フォールバック無題NoteNestタブを作成する
+        Assert.True(NestSuiteStartupTabPolicy.ShouldEnsureFallbackTab(0));
+    }
+
+    [Fact]
+    public void StartupTabPolicy_HasTabs_ShouldNotEnsureFallbackTab()
+    {
+        // タブが1枚以上存在する場合は追加しない
+        Assert.False(NestSuiteStartupTabPolicy.ShouldEnsureFallbackTab(1));
+        Assert.False(NestSuiteStartupTabPolicy.ShouldEnsureFallbackTab(2));
+    }
 }
