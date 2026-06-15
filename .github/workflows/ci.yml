@@ -2,7 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - 'claude/**'
+      - 'claude*'
+      - 'codex/**'
+      - 'codex*'
+  workflow_dispatch:
 
 jobs:
   build:
