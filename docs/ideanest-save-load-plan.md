@@ -214,7 +214,7 @@ public string? SelectIdeaNestSavePath(string defaultFileName)
 
 ## 9. 起動時ファイル指定（v1.8.4 以降の計画）
 
-`LoadInitialFile` の IdeaNest ケースは v1.8.1 時点で「未対応」エラーを表示している。
+`LoadInitialFile` の IdeaNest ケースは v1.8.3 で共通読込処理 `TryLoadIdeaNestFile` へ接続した。
 v1.8.3 で保存・読込が実装された後、v1.8.4 で以下の変更を行う。
 
 ```
@@ -232,9 +232,9 @@ case NestSuiteWorkspaceKind.IdeaNest:
 
 - [ ] `DialogService.SelectIdeaNestOpenPath()` 追加
 - [ ] `DialogService.SelectIdeaNestSavePath(string)` 追加
-- [ ] `IdeaNestFileService.OpenWithDialog(...)` 実装
-- [ ] `IdeaNestFileService.SaveWithDialog(...)` 実装
-- [ ] `IdeaNestFileService.SaveAsWithDialog(...)` 実装
+- [x] NestSuite 経由の `.ideanest` Open 実装
+- [x] NestSuite 経由の `.ideanest` Save 実装
+- [x] NestSuite 経由の `.ideanest` Save As 実装
 - [ ] `NestSuiteShellWindow.SaveIdeaNestFile(NestSuiteDocumentTab)` 追加
 - [ ] `NestSuiteShellWindow.SaveIdeaNestFileAs(NestSuiteDocumentTab)` 追加
 - [ ] `NestSuiteShellWindow.OpenIdeaNestFile(NestSuiteDocumentTab)` 追加
