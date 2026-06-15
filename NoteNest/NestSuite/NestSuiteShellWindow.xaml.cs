@@ -66,9 +66,12 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             { NestSuiteToolRegistry.ChatNestToolId, ToolMenuChatNest },
         };
 
+        var vm = new MainViewModel();
+        DataContext = vm;
+
         // v1.8.6: ファイル指定なし起動のみ初期 NoteNest タブを作成する。
         // ファイル指定ありの場合は LoadInitialFile 内で適切なタブが作成される。
-        // v1.9.1: タブ作成と同時に Session も作成する。
+        // v1.9.1: タブ作成と同時に Session も作成する。DataContext (ViewModel) は必ずここより前に設定する。
         TabStrip.ItemsSource = _tabs;
         if (NestSuiteStartupTabPolicy.ShouldCreateInitialTab(initialFilePath))
         {
@@ -77,9 +80,6 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             _sessionManager.Add(CreateSessionForTab(initialTab));
             ActivateTab(initialTab);
         }
-
-        var vm = new MainViewModel();
-        DataContext = vm;
 
         WorkspaceView.DialogHost = this;
 
