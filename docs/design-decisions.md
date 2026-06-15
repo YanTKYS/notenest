@@ -1254,3 +1254,39 @@ v1.8.0 の `IdeaNestWorkspaceViewModel.MarkDirty()` は次の3経路で `SyncIde
 - `DirtyRequested` イベントの宣言・発火・購読をすべて削除
 - 末尾の明示的 `OnPropertyChanged` を削除
 - `SetField` が値変化時のみ通知する性質により、`HasChanges` が `true` のまま追加操作しても不要な同期が発生しない
+
+---
+
+## 44. v1.8.2 IdeaNest保存・読込方針の整理
+
+### `[JsonPropertyName]` 属性を v1.8.2 で追加した理由
+
+IdeaNest v1.1.4 の `.ideanest` ファイルはすべての JSON キーが camelCase（`"id"`, `"isPinned"`, `"createdAt"` 等）。
+`System.Text.Json` のデフォルト動作はプロパティ名をそのままキーにするため、`[JsonPropertyName]` なしで
+シリアライズすると PascalCase（`"Id"`, `"IsPinned"`, `"CreatedAt"`）が書き込まれる。
+
+この状態で IdeaNest v1.1.4 が書いたファイルを読み込んでも、フィールドが正しく対応付けられず
+すべてのプロパティがデフォルト値（空文字・false・0 等）になる互換性バグが発生する。
+
+`IdeaNestWorkspaceService` は v1.8.0 から `Save` / `Load` を実装していたが、
+`[JsonPropertyName]` が付いていなかったため実際のファイルとは互換性がなかった。
+v1.8.2 でモデル 3 クラスすべてに属性を付与して互換性を確立した。
+
+### `IdeaNestFileService` をスケルトンとして分離した理由
+
+`IdeaNestWorkspaceService`（既存）は JSON シリアライズ・atomic write・正規化を担う。
+UI 依存（ファイルダイアログ・タブ状態の接続）は別クラスに分離すべき。
+v1.8.3 でファイルダイアログを追加する際に混乱しないよう、v1.8.2 で
+`IdeaNestFileService` を定数のみのスケルトンとして用意した。
+
+UI ワイヤリングは v1.8.3 で実装するため、v1.8.2 では定数（`FileExtension` / `SchemaVersion`）のみ定義する。
+
+### `SchemaVersion = "1.1.4"` を採用した理由
+
+NestSuite NoteNest は `Project.CurrentSchemaVersion = "1.4.1"`（ツールバージョンとは独立したスキーマバージョン）を採用している。
+IdeaNest の `Workspace.version` フィールドは、参照ソース（IdeaNest v0.x 時代）では `"0.1.0"` という**ツールバージョン**が書かれていた。
+
+NestSuite として書き込む `version` 値は、互換対象の IdeaNest バージョン `"1.1.4"` とした。
+理由：IdeaNest 単体アプリが読み込んだときに「どのバージョンのフォーマットか」を識別できる値として、
+互換対象のツールバージョンを使うほうが NestSuite 固有のスキーマバージョン体系より分かりやすい。
+将来 `.ideanest` 形式を拡張した場合はその時点でバージョン値の見直しを行う。

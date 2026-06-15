@@ -1,5 +1,70 @@
 # リリースノート
 
+## v1.8.2 — IdeaNest保存・読込方針の整理
+
+**リリース日：** 2026-06-15
+
+### 概要
+
+v1.8.3 での `.ideanest` ファイル保存・読込実装に向けた設計・方針整理版。
+実際の UI ワイヤリング（ファイルダイアログ・タブ状態との接続）は v1.8.3 で行う。
+
+### 変更内容
+
+#### `[JsonPropertyName]` 属性を IdeaNest モデル 3 クラスに追加
+
+**問題：** `System.Text.Json` のデフォルト動作では PascalCase キー（`"Id"`, `"IsPinned"` 等）で
+シリアライズされるため、IdeaNest v1.1.4 が書いた camelCase 形式（`"id"`, `"isPinned"` 等）の
+`.ideanest` ファイルとの互換性がなかった。
+
+**修正：** `Idea.cs` / `Workspace.cs` / `WorkspaceSettings.cs` の全プロパティに
+`[JsonPropertyName("camelCase名")]` 属性を付与した。
+これにより NestSuite が書く `.ideanest` ファイルが IdeaNest v1.1.4 と互換になる。
+
+#### `IdeaNestFileService` スケルトン追加（`NoteNest/NestSuite/IdeaNest/Services/`）
+
+- `FileExtension = ".ideanest"` 定数を定義
+- `SchemaVersion = "1.1.4"` 定数を定義（IdeaNest v1.1.4 互換の version フィールド値）
+- UI ワイヤリング（ファイルダイアログ・VM 接続）は v1.8.3 で実装予定
+
+#### `docs/ideanest-save-load-plan.md` 新規作成
+
+`.ideanest` 保存・読込の設計方針を記録。以下を含む：
+- `.ideanest` JSON 形式の概要と camelCase 方針
+- 保存対象 vs 除外する状態（トランジェント状態は保存しない）
+- `IdeaNestFileService` と `IdeaNestWorkspaceService` の役割分担
+- `NestSuiteShellWindow` ファイルメニュー分岐計画
+- エラー処理方針（`_dialogs.ShowError` 経由）
+- 未保存状態の扱い
+- v1.8.3 実装チェックリスト
+
+### 追加したテスト（`IdeaNestFileServiceTests.cs` 新規・25 件）
+
+| テスト | 内容 |
+|--------|------|
+| `FileExtension_IsExpected` | `FileExtension = ".ideanest"` を確認 |
+| `SchemaVersion_IsExpected` | `SchemaVersion = "1.1.4"` を確認 |
+| `Idea_Property_HasJsonPropertyNameAttribute` | `Idea` 全 9 プロパティの camelCase キー名確認（Theory） |
+| `Workspace_Property_HasJsonPropertyNameAttribute` | `Workspace` 全 4 プロパティの camelCase キー名確認（Theory） |
+| `WorkspaceSettings_Property_HasJsonPropertyNameAttribute` | `WorkspaceSettings` 全 10 プロパティの camelCase キー名確認（Theory） |
+
+### 変更しなかったもの
+
+- `.ideanest` UI 保存・読込（v1.8.3 で対応予定）
+- `NestSuiteShellWindow` ファイルメニューの IdeaNest ケース（引き続き未対応ダイアログを表示）
+- `IdeaNestWorkspaceService`（既存の Save/Load ロジックはそのまま）
+- NoteNest 保存スキーマ（`1.4.1` のまま）
+
+### v1.8.3 以降の候補
+
+| バージョン候補 | 内容 |
+|--------------|------|
+| v1.8.3 | `.ideanest` 保存・読込の最小対応（ファイルダイアログ・タブ状態ワイヤリング） |
+| v1.8.4 | 起動時 `.ideanest` ファイル指定の最小対応 |
+| 将来 | 複数 IdeaNest タブ（N17）・MainViewModel Workspace Facade 分離（N6） |
+
+---
+
 ## v1.8.1 — IdeaNest統合後の回帰確認・小修正
 
 **リリース日：** 2026-06-15
