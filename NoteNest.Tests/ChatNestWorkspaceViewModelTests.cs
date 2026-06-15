@@ -183,4 +183,63 @@ public class ChatNestWorkspaceViewModelTests
         Assert.Equal("B", vm.Messages[1].Text);
         Assert.False(vm.IsDirty);
     }
+
+    // ── v1.7.5: 案A — 入力中テキストの保存後の扱い ─────────────────────
+
+    [Fact]
+    public void MarkSaved_WhenInputTextRemains_HasUnsavedChangesIsTrue()
+    {
+        // 案A: MarkSaved() は IsDirty のみ解消する。InputText が残っていれば HasUnsavedChanges = true のまま。
+        // → タブの IsModified・未保存マーカーが保存後も維持される。
+        var vm = new ChatNestWorkspaceViewModel { InputText = "投稿済み" };
+        vm.PostCommand.Execute(null); // IsDirty = true, InputText = ""
+        vm.InputText = "入力中テキスト";
+
+        vm.MarkSaved();
+
+        Assert.False(vm.IsDirty);
+        Assert.True(vm.HasUnsavedChanges);
+    }
+
+    [Fact]
+    public void MarkSaved_WhenInputTextEmpty_HasUnsavedChangesIsFalse()
+    {
+        // 投稿後に入力欄が空の状態で MarkSaved() を呼んだ場合は未保存状態が完全に解消される。
+        var vm = new ChatNestWorkspaceViewModel { InputText = "投稿する" };
+        vm.PostCommand.Execute(null); // IsDirty = true, InputText = ""
+
+        vm.MarkSaved();
+
+        Assert.False(vm.IsDirty);
+        Assert.False(vm.HasUnsavedChanges);
+    }
+
+    [Fact]
+    public void LoadMessages_SetsHasUnsavedChangesFalse()
+    {
+        // LoadMessages() は InputText もクリアするため、読込直後は HasUnsavedChanges = false。
+        var vm = new ChatNestWorkspaceViewModel { InputText = "入力中" };
+        vm.PostCommand.Execute(null); // IsDirty = true
+
+        vm.LoadMessages([new Message { Speaker = Speaker.自分, Text = "ロード" }]);
+
+        Assert.False(vm.IsDirty);
+        Assert.Equal(string.Empty, vm.InputText);
+        Assert.False(vm.HasUnsavedChanges);
+    }
+
+    [Fact]
+    public void LoadMessages_ThenPost_HasUnsavedChangesIsTrue()
+    {
+        // 読込後に追加投稿した場合は未保存状態に変わる。
+        var vm = new ChatNestWorkspaceViewModel();
+        vm.LoadMessages([new Message { Speaker = Speaker.補足, Text = "既存" }]);
+        Assert.False(vm.HasUnsavedChanges); // 読込直後はクリーン
+
+        vm.InputText = "新規追加";
+        vm.PostCommand.Execute(null);
+
+        Assert.True(vm.IsDirty);
+        Assert.True(vm.HasUnsavedChanges);
+    }
 }

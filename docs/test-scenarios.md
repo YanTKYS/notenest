@@ -1731,3 +1731,45 @@ NestSuite のタブモデル（v1.7.2 で導入した設計用クラス）の動
 1. `ChatNestFileServiceTests`（18 件）が全件パスすることを確認する（自動）
 2. `ApplicationVersionTests` でアプリケーションバージョンが `1.7.4` であることを確認する（自動）
 3. `NestSuiteShellTests` が全件パスすることを確認する（自動・回帰）
+
+---
+
+## §47 v1.7.5 回帰確認・小修正（ChatNest 保存後 InputText 扱い）
+
+### §47-1 案A: InputText 残存時は保存後も未保存状態が維持される
+
+1. `--nestsuite` で NestSuite を起動し、ChatNest タブを開く
+2. メッセージを投稿する
+3. 入力欄にテキストを入力するが、投稿しない
+4. ファイル > 名前を付けて保存 → `.chatnest` に保存する
+5. タブに ` *` が残ることを確認する（InputText が保存対象外のため）
+6. 入力欄のテキストを削除またはクリアする
+7. タブの ` *` が消えることを確認する
+
+### §47-2 案A: InputText なしで保存後は未保存表示が消える
+
+1. `--nestsuite` で NestSuite を起動し、ChatNest タブを開く
+2. メッセージを投稿する（入力欄は投稿後に自動クリアされる）
+3. ファイル > 名前を付けて保存 → `.chatnest` に保存する
+4. タブの ` *` が消えることを確認する
+
+### §47-3 拡張子別のファイル開き分け確認
+
+1. NoteNest タブ選択中にファイル > 開く → `.notenest` ダイアログが開くことを確認する
+2. ChatNest タブ選択中にファイル > 開く → `.chatnest` ダイアログが開くことを確認する
+3. IdeaNest タブ選択中にファイル > 開く → 「未統合」情報ダイアログが表示されることを確認する
+
+### §47-4 自動テスト（v1.7.5 追加分）
+
+1. `ChatNestWorkspaceViewModelTests`（4 件追加）が全件パスすることを確認する（自動）
+2. `NestSuiteDocumentTabTests`（3 件追加）が全件パスすることを確認する（自動）
+3. アプリケーションバージョンが `1.7.5` であることを確認する（自動）
+
+### §47-5 回帰確認（自動）
+
+1. `NestSuiteShellTests` が全件パスすることを確認する（自動）
+2. `ChatNestFileServiceTests` が全件パスすることを確認する（自動）
+3. `ArchitectureBoundaryTests` が全件パスすることを確認する（自動）
+4. `StartupArgParserTests` が全件パスすることを確認する（自動）
+5. `WorkspaceViewRegressionTests` が全件パスすることを確認する（自動）
+6. `ApplicationVersionTests` でスキーマバージョンが `1.4.1` のままであることを確認する（自動）

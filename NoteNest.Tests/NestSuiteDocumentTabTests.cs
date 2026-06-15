@@ -253,4 +253,35 @@ public class NestSuiteDocumentTabTests
         Assert.True(NestSuiteTabFactory.TryGetKind($"file{extension}", out var resolved));
         Assert.Equal(kind, resolved);
     }
+
+    // ── v1.7.5: .notenest / .chatnest 拡張子の混同防止確認 ─────────────
+
+    [Fact]
+    public void TabFactory_FromFilePath_NoteNestExtension_IsNotChatNestKind()
+    {
+        // .notenest ファイルは ChatNest タブとして誤って解釈されないことを確認する
+        var tab = NestSuiteTabFactory.FromFilePath(@"C:\work\project.notenest");
+
+        Assert.Equal(NestSuiteWorkspaceKind.NoteNest, tab.WorkspaceKind);
+        Assert.NotEqual(NestSuiteWorkspaceKind.ChatNest, tab.WorkspaceKind);
+    }
+
+    [Fact]
+    public void TabFactory_FromFilePath_ChatNestExtension_IsNotNoteNestKind()
+    {
+        // .chatnest ファイルは NoteNest タブとして誤って解釈されないことを確認する
+        var tab = NestSuiteTabFactory.FromFilePath(@"C:\notes\会議メモ.chatnest");
+
+        Assert.Equal(NestSuiteWorkspaceKind.ChatNest, tab.WorkspaceKind);
+        Assert.NotEqual(NestSuiteWorkspaceKind.NoteNest, tab.WorkspaceKind);
+    }
+
+    [Fact]
+    public void TabFactory_TryGetKind_ChatNestExtension_ReturnsCorrectKind()
+    {
+        var result = NestSuiteTabFactory.TryGetKind("session.chatnest", out var kind);
+
+        Assert.True(result);
+        Assert.Equal(NestSuiteWorkspaceKind.ChatNest, kind);
+    }
 }

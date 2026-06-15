@@ -1,5 +1,87 @@
 # リリースノート
 
+## v1.7.5 — ファイル単位タブ・ChatNest 保存の回帰確認・小修正
+
+**リリース日：** 2026-06-15
+
+### 概要
+
+v1.7.3〜v1.7.4 で追加したファイル単位タブ UI と ChatNest `.chatnest` 保存・読込の回帰確認を行い、
+見つかった不整合を修正した小修正版。
+
+**ChatNest 保存後の InputText 扱い（案A）** を明確化した。投稿済みメッセージのみを保存対象とし、
+入力中テキスト（InputText）が残っている場合は保存後も未保存状態（`IsModified = true`、タブの ` *`）を維持する。
+ユーザーが「保存したのに ` *` が消えない」と感じる場合は、入力欄が未投稿テキストを保持しているためである。
+
+### 修正した不整合
+
+#### `SetChatNestTabPath`（`NestSuiteShellWindow.xaml.cs`）
+
+**問題：** `SetChatNestTabPath` がタブの `IsModified` を `false` で固定していた。
+
+`TrySaveChatNestToPath` の実行順序：
+1. `ChatNestFileService.Save(...)` — Messages のみ保存
+2. `MarkSaved()` — `IsDirty = false`、`HasUnsavedChanges` 変更通知 → `SyncChatNestTab` が `IsModified = HasUnsavedChanges` に更新
+3. `SetChatNestTabPath(path)` — `IsModified = false`（固定）で上書き ← **バグ**
+
+`MarkSaved()` 後も InputText が残っていれば `HasUnsavedChanges = true` のまま。それを `SetChatNestTabPath` が `false` で上書きしていたため、InputText が消えないのに保存済み表示になっていた。
+
+**修正：** `IsModified = false` を `IsModified = _chatNestViewModel.HasUnsavedChanges` に変更。
+
+### 追加したテスト
+
+#### `ChatNestWorkspaceViewModelTests.cs` に 4 件追加（合計 19 件）
+
+- `MarkSaved_WhenInputTextRemains_HasUnsavedChangesIsTrue` — 案A の核心動作を確認
+- `MarkSaved_WhenInputTextEmpty_HasUnsavedChangesIsFalse` — 保存完了（入力欄空）の正常系
+- `LoadMessages_SetsHasUnsavedChangesFalse` — 読込直後の HasUnsavedChanges 確認
+- `LoadMessages_ThenPost_HasUnsavedChangesIsTrue` — 読込後に追加投稿した場合の未保存状態確認
+
+#### `NestSuiteDocumentTabTests.cs` に 3 件追加（合計 27 件）
+
+- `TabFactory_FromFilePath_NoteNestExtension_IsNotChatNestKind` — `.notenest` は ChatNest に誤解釈されない
+- `TabFactory_FromFilePath_ChatNestExtension_IsNotNoteNestKind` — `.chatnest` は NoteNest に誤解釈されない
+- `TabFactory_TryGetKind_ChatNestExtension_ReturnsCorrectKind` — `.chatnest` の拡張子判定確認
+
+### 回帰確認結果（コード確認）
+
+| 項目 | 結果 |
+|------|------|
+| NoteNest 単体版の起動フロー | 変更なし |
+| `.notenest` 保存スキーマ | `1.4.1` 変更なし |
+| `MainViewModel` / `MainWindow` | 変更なし |
+| ファイルメニュー分岐（NoteNest / ChatNest / IdeaNest） | v1.7.4 fix 済みの `switch` ディスパッチを維持 |
+| IdeaNest 選択時のファイル操作 | 「未統合」情報ダイアログ表示（v1.7.4 fix より継続） |
+| ChatNest 保存後の TabStrip ` *` 表示 | `SetChatNestTabPath` 修正により正常化 |
+| OnClosing の InputText 破棄確認 | v1.7.4 fix 済みを維持 |
+
+### 仕様確定事項（案A）
+
+`.chatnest` ファイルは投稿済みメッセージ（`Messages` コレクション）のみを保存対象とする。
+入力中テキスト（`InputText`）は保存対象外であり、保存後も残っている場合は未保存状態が維持される。
+この挙動は意図的な設計（案A）であり、ユーザーには「投稿してから保存」を推奨する。
+
+`.chatnest` 保存形式への InputText フィールド追加（案B）は v1.7.5 では行わない。
+
+### 変更しなかったもの
+
+- NoteNest 単体版の通常起動フロー
+- `.notenest` 保存スキーマ（`1.4.1` のまま）
+- IdeaNest（未統合のまま）
+- タブ復元・複数ファイル同時編集
+- 共通プロジェクトファイル形式
+
+### v1.7.6 以降の候補
+
+| バージョン候補 | 内容 |
+|--------------|------|
+| v1.7.6 | タブを閉じる操作の最小対応（閉じボタン・未保存確認・最後の 1 枚） |
+| v1.7.7 | 複数 NoteNest タブの独立した ViewModel 管理 |
+| v1.8.0 | IdeaNest 統合検証 |
+| 将来 | タブ復元・複数ファイル同時編集の本格実装 |
+
+---
+
 ## v1.7.4 — ChatNest `.chatnest` 保存／読込
 
 **リリース日：** 2026-06-14

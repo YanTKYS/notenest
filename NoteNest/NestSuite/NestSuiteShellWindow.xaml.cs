@@ -333,6 +333,10 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// <summary>
     /// ChatNest タブのファイルパスを更新し、タブモデルを最新化する。
     /// 保存成功時に <see cref="ChatNestWorkspaceViewModel.MarkSaved"/> と組み合わせて呼ぶ。
+    ///
+    /// <para>案A: IsModified は MarkSaved() 後の HasUnsavedChanges を引き継ぐ。
+    /// IsDirty は解消されるが InputText が残っている場合は HasUnsavedChanges が true のままになるため、
+    /// IsModified = false を固定せず _chatNestViewModel.HasUnsavedChanges を参照する。</para>
     /// </summary>
     private void SetChatNestTabPath(string path)
     {
@@ -341,7 +345,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         var updated = NestSuiteTabFactory.FromFilePath(path) with
         {
             Id         = tab.Id,
-            IsModified = false
+            IsModified = _chatNestViewModel.HasUnsavedChanges
         };
         ReplaceTab(tab, updated);
     }
