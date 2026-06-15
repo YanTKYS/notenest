@@ -2018,3 +2018,32 @@ NestSuite のタブモデル（v1.7.2 で導入した設計用クラス）の動
 4. `NestSuiteDocumentTabTests` が全件パスすることを確認する（自動）
 5. `ChatNestFileServiceTests` が全件パスすることを確認する（自動）
 6. `ArchitectureBoundaryTests` が全件パスすることを確認する（自動）
+
+---
+
+## §53 v1.8.2 IdeaNest保存・読込方針の整理
+
+### §53-1 JSON 互換確認（手動）
+
+1. IdeaNest タブで何枚かカードを追加する
+2. 将来 v1.8.3 が完成した際: NestSuite で保存した `.ideanest` ファイルを IdeaNest v1.1.4 で開けることを確認する
+3. 逆に IdeaNest v1.1.4 で保存したファイルを NestSuite で開けることを確認する
+4. （v1.8.2 時点では保存未実装のため、フィールド定義の整合を `IdeaNestFileServiceTests` の自動テストで確認する）
+
+### §53-2 IdeaNest ファイルメニュー（未対応ダイアログ継続確認）
+
+1. IdeaNest タブが選択された状態でファイルメニューを開く
+2. 新規・開く・保存・名前を付けて保存のいずれかを選択する
+3. 「未対応」情報ダイアログが表示されることを確認する（v1.8.2 では変更なし）
+4. ダイアログを閉じた後、アプリが正常に継続することを確認する
+
+### §53-3 回帰確認（自動）
+
+1. `ApplicationVersionTests` でアプリバージョンが `1.8.2`、スキーマバージョンが `1.4.1` であることを確認する（自動）
+2. `IdeaNestFileServiceTests` が全件パス（25 件）することを確認する（自動）
+   - `IdeaNestFileService.FileExtension = ".ideanest"` の確認
+   - `IdeaNestFileService.SchemaVersion = "1.1.4"` の確認
+   - `Idea` / `Workspace` / `WorkspaceSettings` の全プロパティに正しい camelCase `[JsonPropertyName]` が付与されていることの確認
+3. `NestSuiteShellTests` が全件パスすることを確認する（自動）
+4. `ChatNestFileServiceTests` が全件パスすることを確認する（自動）
+5. `ArchitectureBoundaryTests` が全件パスすることを確認する（自動）
