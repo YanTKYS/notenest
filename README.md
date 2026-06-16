@@ -230,7 +230,7 @@ NestSuite は、NoteNest / ChatNest / IdeaNest の 3 ツールを 1 つのシェ
 | [docs/nestsuite-user-guide.md](docs/nestsuite-user-guide.md) | NestSuite 利用ガイド（起動・操作・既知制約） |
 | [docs/nestsuite-release-checklist.md](docs/nestsuite-release-checklist.md) | NestSuite リリース前確認チェックリスト |
 | [docs/design-decisions.md](docs/design-decisions.md) | 設計判断の背景と理由 |
-| [docs/backlog.md](docs/backlog.md) | v0.2.0 候補・将来検討・対象外機能 |
+| [docs/backlog.md](docs/backlog.md) | 今後の実装候補・NestSuite改善候補・対象外機能 |
 | [docs/release-notes.md](docs/release-notes.md) | バージョン別リリースノート |
 | [docs/operation-note.md](docs/operation-note.md) | 運用上の注意・既知の制限 |
 | [docs/test-scenarios.md](docs/test-scenarios.md) | 手動テストシナリオ |
