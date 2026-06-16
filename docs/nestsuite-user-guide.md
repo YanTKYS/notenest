@@ -20,7 +20,7 @@ NoteNest.exe sample.ideanest
 - ファイルを指定しない場合、無題の NoteNest タブから始まります
 - 未対応拡張子や読込失敗時はエラーを表示し、無題 NoteNest タブへフォールバックします
 
-### 従来 NoteNest 単体版（互換ルート）
+### 従来 NoteNest 単体版（限定的互換ルート）
 
 ```
 NoteNest.exe --classic-notenest
@@ -30,6 +30,7 @@ NoteNest.exe --classic-notenest sample.notenest
 - `--classic-notenest` を付けると従来の NoteNest 単体版（`MainWindow`）として起動します
 - `.notenest` ファイルを指定すると、NoteNest 単体版でそのファイルを開きます
 - ファイルを指定しない場合、スタートダイアログを表示します
+- **v1.12.0 方針：緊急退避ルートとして当面残しますが、恒久的な並行保守対象ではありません。新機能は原則 NestSuite に反映し、`--classic-notenest` には反映しません。v1.13.0 以降で縮退を実施するか判断します。**
 
 ### `--nestsuite`（互換）
 

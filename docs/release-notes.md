@@ -1,3 +1,14 @@
+## v1.12.0 — 旧NoteNest単体起動ルートの縮退方針整理
+
+- **旧NoteNest単体起動ルートの縮退方針を docs に整理した。** `--classic-notenest` を「緊急退避ルートとして当面残すが恒久的な並行保守対象ではない」という位置づけを明確化した。今後はNestSuiteを本体とし、旧NoteNest単体版は限定的な互換ルートとして扱う方針とした。
+- **縮退案（A/B/C）を比較し、推奨案B（保守対象を限定して維持）を選択した。** 案A（現状維持）は保守コストが継続し、案C（即時削除）は前提条件未達のため、案B（緊急退避ルートとして残すが新機能は反映しない）が現実的な中間案として推奨となった。詳細は `docs/nestsuite-default-startup-plan.md` の「v1.12.0 旧NoteNest単体起動ルートの縮退方針整理」セクションを参照。
+- **v1.13.0 以降で縮退を実施する場合の作業範囲と前提条件を整理した。** 削除対象（`App_Startup` 分岐・`IsClassicMode()`・`MainWindow`・`StartupDialog`・関連テスト・docs）と削除前の確認項目（NestSuite での全操作提供・ファイル関連付け整備・猶予期間・支障報告なし）を明記した。
+- `docs/design-decisions.md` に §50（v1.12.0 縮退方針の設計判断）を追加した。
+- `docs/nestsuite-known-limitations.md` の `--classic-notenest` 行を v1.12.0 方針に更新した。
+- `docs/nestsuite-user-guide.md` の互換ルート説明に v1.12.0 方針の注記を追加した。
+- **起動挙動は変更していない。** `--classic-notenest` / `MainWindow` / 保存形式 / NoteNest 保存スキーマ `1.4.1` はすべて変更なし。
+- v1.13.0 以降の候補：`--classic-notenest` 縮退実施の判断・実施する場合の削除作業（前提条件確認後）。
+
 ## v1.11.1 — 既定起動切替後の回帰確認・小修正
 
 - **docs の起動説明を v1.11.0 以降の挙動に合わせて修正した。** `README.md` の「スタートダイアログ」セクション見出しを「v1.2.6」から「`--classic-notenest` 使用時」に変更し、「EXE を直接起動するとスタートダイアログが表示される」という v1.11.0 以降と矛盾する記述を削除した。`docs/operation-note.md` の同セクションも同様に更新し、スタートダイアログは `--classic-notenest` 使用時のみ表示される旨を明記した。

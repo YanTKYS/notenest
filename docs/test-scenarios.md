@@ -2375,6 +2375,31 @@ v1.11.0 で変更した起動ルートを確認する。
    `StartupArgParserTests` / `NestSuiteShellTests` / `NestSuiteDocumentTabTests` /
    `ThreeToolsMultiTabRegressionTests` / `ApplicationVersionTests`
 
+## §65 v1.12.0 旧NoteNest単体起動ルート縮退方針整理チェックリスト
+
+v1.12.0 は docs-only リリースのため、起動挙動が変わっていないことの確認が主となる。
+
+### docs 整合確認
+
+- [ ] `docs/nestsuite-default-startup-plan.md` に「v1.12.0 旧NoteNest単体起動ルートの縮退方針整理」セクションがある
+- [ ] 案A/B/Cの比較と推奨案B（保守対象を限定して維持）が記載されている
+- [ ] v1.13.0 で縮退を実施する場合の作業範囲が記載されている
+- [ ] `docs/nestsuite-known-limitations.md` の `--classic-notenest` 行が v1.12.0 方針に更新されている
+- [ ] `docs/nestsuite-user-guide.md` の互換ルート説明に v1.12.0 方針の注記がある
+- [ ] `docs/design-decisions.md` に §50 が追加されている
+
+### 起動回帰確認（起動挙動が変わっていないこと）
+
+- [ ] `NoteNest.exe` で NestSuite が起動すること（v1.11.0 以降と同じ）
+- [ ] `NoteNest.exe --classic-notenest` で NoteNest 単体版が起動すること（変更なし）
+- [ ] `NoteNest.exe --nestsuite` で NestSuite が起動すること（変更なし）
+- [ ] 保存・読込・タブ操作が引き続き動作すること
+
+### 自動確認
+
+1. `ApplicationVersionTests` でアプリバージョンが `1.12.0` であることを確認する（自動）。
+2. 全テスト（`dotnet test`）がパスすることを確認する（自動）。
+
 ## §64 v1.11.1 既定起動切替後の回帰確認チェックリスト
 
 v1.11.0 の起動変更後、docs の記述が実挙動と一致しているかを確認する。
