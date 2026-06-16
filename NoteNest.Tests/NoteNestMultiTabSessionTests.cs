@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Windows.Threading;
 using NoteNest.NestSuite;
 using NoteNest.NestSuite.ChatNest;
 using NoteNest.ViewModels;
@@ -6,7 +8,7 @@ using Xunit;
 namespace NoteNest.Tests;
 
 /// <summary>
-/// v1.9.5: NoteNest 複数ファイルタブ対応の Session 独立性テスト。
+/// v1.9.5〜v1.9.6: NoteNest 複数ファイルタブ対応の Session 独立性テスト。
 ///
 /// <para>WPF を起動せずに <see cref="NestSuiteWorkspaceSession"/> /
 /// <see cref="NestSuiteWorkspaceSessionManager"/> / <see cref="MainViewModel"/> のみを使って確認する。</para>
@@ -194,6 +196,119 @@ public class NoteNestMultiTabSessionTests
         var vm = new MainViewModel();
         vm.Dispose();
         vm.Dispose();
+    }
+
+    // ── v1.9.6: AutoSave タイマー停止の実効確認 ──────────────────────────
+
+    private static DispatcherTimer GetAutoSaveTimer(MainViewModel vm) =>
+        (DispatcherTimer)typeof(MainViewModel)
+            .GetField("_autoSaveTimer", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(vm)!;
+
+    [Fact]
+    public void MainViewModel_AutoSaveTimer_IsEnabled_AfterConstruction()
+    {
+        // v1.9.6: コンストラクタで _autoSaveTimer.Start() が呼ばれていることを確認
+        // （Dispose が必要な根拠となるタイマーが実際に稼働していることの検証）
+        using var vm = new MainViewModel();
+        Assert.True(GetAutoSaveTimer(vm).IsEnabled);
+    }
+
+    [Fact]
+    public void MainViewModel_Dispose_StopsAutoSaveTimer()
+    {
+        // v1.9.6: Dispose() によって _autoSaveTimer が停止されることを確認
+        // NoteNest タブを閉じると対応 MainViewModel の AutoSave が呼ばれなくなる
+        var vm = new MainViewModel();
+        Assert.True(GetAutoSaveTimer(vm).IsEnabled);  // 破棄前は動作中
+
+        vm.Dispose();
+
+        Assert.False(GetAutoSaveTimer(vm).IsEnabled); // 破棄後は停止
+    }
+
+    // ── v1.9.6: タブ削除時の Session 削除確認 ────────────────────────────
+
+    [Fact]
+    public void NoteNest_SessionManager_RemoveByTabId_DecreasesCount()
+    {
+        // v1.9.6: CloseTab が _sessionManager.Remove を呼ぶことで Session が削除されることを確認
+        var mgr = new NestSuiteWorkspaceSessionManager();
+        using var vm = new MainViewModel();
+        mgr.Add(new NestSuiteWorkspaceSession("tab-x", NestSuiteWorkspaceKind.NoteNest, vm));
+        Assert.Equal(1, mgr.Count);
+
+        mgr.Remove("tab-x");
+
+        Assert.Equal(0, mgr.Count);
+    }
+
+    [Fact]
+    public void NoteNest_SessionManager_Remove_ThenTryGet_ReturnsFalse()
+    {
+        // v1.9.6: Session 削除後は TryGet が false を返すことを確認
+        // 閉じたタブの Session が残らないことの基盤検証
+        var mgr = new NestSuiteWorkspaceSessionManager();
+        using var vm = new MainViewModel();
+        mgr.Add(new NestSuiteWorkspaceSession("tab-x", NestSuiteWorkspaceKind.NoteNest, vm));
+        mgr.Remove("tab-x");
+
+        Assert.False(mgr.TryGet("tab-x", out _));
+    }
+
+    [Fact]
+    public void NoteNest_TwoSessions_InManager_RemoveOne_OtherRemains()
+    {
+        // v1.9.6: 2 つの NoteNest Session がある場合、片方を削除してももう片方が残ることを確認
+        var mgr = new NestSuiteWorkspaceSessionManager();
+        using var vmA = new MainViewModel();
+        using var vmB = new MainViewModel();
+        mgr.Add(new NestSuiteWorkspaceSession("tab-a", NestSuiteWorkspaceKind.NoteNest, vmA));
+        mgr.Add(new NestSuiteWorkspaceSession("tab-b", NestSuiteWorkspaceKind.NoteNest, vmB));
+
+        mgr.Remove("tab-a");
+
+        Assert.Equal(1, mgr.Count);
+        Assert.True(mgr.TryGet("tab-b", out var remaining));
+        Assert.True(ReferenceEquals(remaining!.WorkspaceViewModel, vmB));
+    }
+
+    // ── v1.9.6: FilePath 保存独立性確認（タブA保存時にタブBが変わらない） ─
+
+    [Fact]
+    public void NoteNest_SessionA_FilePathUpdate_DoesNotAffectSessionB_InManager()
+    {
+        // v1.9.6: タブA保存時（FilePath 更新）がタブBの Session に影響しないことを確認
+        var mgr = new NestSuiteWorkspaceSessionManager();
+        using var vmA = new MainViewModel();
+        using var vmB = new MainViewModel();
+        var sessionA = new NestSuiteWorkspaceSession("tab-a", NestSuiteWorkspaceKind.NoteNest, vmA);
+        var sessionB = new NestSuiteWorkspaceSession("tab-b", NestSuiteWorkspaceKind.NoteNest, vmB);
+        mgr.Add(sessionA);
+        mgr.Add(sessionB);
+
+        sessionA.FilePath = @"C:\a.notenest";
+
+        mgr.TryGet("tab-b", out var foundB);
+        Assert.Null(foundB!.FilePath);
+    }
+
+    [Fact]
+    public void NoteNest_SessionA_IsModifiedUpdate_DoesNotAffectSessionB_InManager()
+    {
+        // v1.9.6: タブAの IsModified 変更がタブBの Session に影響しないことを確認
+        var mgr = new NestSuiteWorkspaceSessionManager();
+        using var vmA = new MainViewModel();
+        using var vmB = new MainViewModel();
+        var sessionA = new NestSuiteWorkspaceSession("tab-a", NestSuiteWorkspaceKind.NoteNest, vmA, null, false);
+        var sessionB = new NestSuiteWorkspaceSession("tab-b", NestSuiteWorkspaceKind.NoteNest, vmB, null, false);
+        mgr.Add(sessionA);
+        mgr.Add(sessionB);
+
+        sessionA.IsModified = true;
+
+        mgr.TryGet("tab-b", out var foundB);
+        Assert.False(foundB!.IsModified);
     }
 
     // ── WorkspaceKind 確認 ────────────────────────────────────────────────

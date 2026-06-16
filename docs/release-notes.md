@@ -1,3 +1,11 @@
+## v1.9.6 — NoteNest 複数ファイルタブ対応後の回帰確認・小修正
+
+- v1.9.5 で実装した NoteNest 複数ファイルタブ対応の回帰確認を行い、新機能の追加はせず安定性を確認した。
+- `NoteNestMultiTabSessionTests` に v1.9.6 確認テストを 7 件追加した。AutoSave タイマーの停止確認（`Dispose()` 後に `_autoSaveTimer.IsEnabled` が `false` になること・コンストラクタ直後は `true` になること）、Session 削除確認（`Remove` 後に `Count` が減ること・`TryGet` が `false` を返すこと・残り Session が失われないこと）、Manager 経由の Session 独立性確認（タブAの `FilePath` 更新がタブBに影響しないこと・タブAの `IsModified` 変更がタブBに影響しないこと）。
+- `NestSuiteShellTests` に v1.9.6 の構造確認テストを 1 件追加した（`SaveNoteNestFileAs` メソッドが `void` で宣言されていることを確認）。
+- NoteNest 保存スキーマ `1.4.1`、ChatNest・IdeaNest 保存形式は変更していない。IdeaNest の複数ファイル対応は行っていない。
+- v1.9.7 以降の候補：IdeaNest 複数ファイルタブ対応。
+
 ## v1.9.5 — NoteNest 複数ファイルタブ対応の最小実装
 
 - NoteNest について、複数の `.notenest` ファイルを別タブとして並行利用できるようにした。各タブは独立した `MainViewModel`（ProjectSessionViewModel / NoteWorkspaceViewModel / TaskBoardViewModel / MarkerPanelViewModel / EditorStateViewModel を含む）・FilePath・IsModified を持つ。

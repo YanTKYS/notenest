@@ -894,4 +894,17 @@ public class NestSuiteShellTests
         Assert.NotNull(method);
         Assert.Equal(typeof(bool), method!.ReturnType);
     }
+
+    // ── v1.9.6: NoteNest 複数ファイルタブ対応の回帰確認 ─────────────────────
+
+    [Fact]
+    public void NestSuiteShellWindow_HasSaveNoteNestFileAsMethod()
+    {
+        // v1.9.6: SaveNoteNestFileAs が選択中 NoteNest タブを名前を付けて保存するメソッドとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("SaveNoteNestFileAs",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+    }
 }
