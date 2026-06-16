@@ -83,7 +83,7 @@ public partial class MainViewModel : BaseViewModel, IDisposable
     }
 
     /// <summary>
-    /// v1.9.6: タイマーを停止し、内部イベント購読を解除する。
+    /// v1.9.5: タイマーを停止し、内部イベント購読を解除する。
     /// NestSuite で NoteNest タブを閉じる際（<see cref="NestSuite.NestSuiteShellWindow"/>）に呼ぶ。
     /// 停止しないと DispatcherTimer が Dispatcher の内部リストに残り、
     /// 閉じたタブの ViewModel が GC されず AutoSave が呼び続ける。

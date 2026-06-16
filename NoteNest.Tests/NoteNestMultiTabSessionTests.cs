@@ -169,19 +169,19 @@ public class NoteNestMultiTabSessionTests
         Assert.False(NestSuiteOpenFilePolicy.IsSameFile(null, null));
     }
 
-    // ── v1.9.6: MainViewModel タイマー・イベント破棄確認 ─────────────────
+    // ── v1.9.5: MainViewModel タイマー・イベント破棄確認 ─────────────────
 
     [Fact]
     public void MainViewModel_ImplementsIDisposable()
     {
-        // v1.9.6: DispatcherTimer リーク防止のため IDisposable を実装していることを確認
+        // v1.9.5: DispatcherTimer リーク防止のため IDisposable を実装していることを確認
         Assert.True(typeof(IDisposable).IsAssignableFrom(typeof(MainViewModel)));
     }
 
     [Fact]
     public void MainViewModel_Dispose_DoesNotThrow()
     {
-        // v1.9.6: Dispose() が例外なく呼び出せることを確認
+        // v1.9.5: Dispose() が例外なく呼び出せることを確認
         var vm = new MainViewModel();
         vm.Dispose();
     }
@@ -189,7 +189,7 @@ public class NoteNestMultiTabSessionTests
     [Fact]
     public void MainViewModel_Dispose_CanBeCalledTwice_WithoutError()
     {
-        // v1.9.6: 二重 Dispose を呼んでも例外が発生しないことを確認
+        // v1.9.5: 二重 Dispose を呼んでも例外が発生しないことを確認
         // （DispatcherTimer.Stop() は複数回呼んでも安全）
         var vm = new MainViewModel();
         vm.Dispose();
