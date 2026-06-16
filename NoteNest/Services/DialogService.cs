@@ -99,6 +99,19 @@ public sealed class DialogService
         return dialog.ShowDialog(_owner) == true ? dialog.FileName : null;
     }
 
+    public string? SelectNestSuiteOpenPath()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = "NestSuite対応ファイル (*.notenest;*.chatnest;*.ideanest)|*.notenest;*.chatnest;*.ideanest" +
+                     "|NoteNestファイル (*.notenest)|*.notenest" +
+                     "|ChatNestファイル (*.chatnest)|*.chatnest" +
+                     "|IdeaNestファイル (*.ideanest)|*.ideanest" +
+                     "|すべてのファイル (*.*)|*.*"
+        };
+        return dialog.ShowDialog(_owner) == true ? dialog.FileName : null;
+    }
+
     public string? SelectIdeaNestSavePath(string defaultFileName) =>
         SelectSaveFilePath("IdeaNest ファイル (*.ideanest)|*.ideanest", ".ideanest", defaultFileName);
 
