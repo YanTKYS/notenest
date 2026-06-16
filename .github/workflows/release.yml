@@ -37,9 +37,14 @@ jobs:
           with open("docs/release-notes.md", "r", encoding="utf-8") as f:
               content = f.read()
 
-          # Match the section starting with "## <tag>" up to the next "## " or end of file
-          pattern = r'^## (' + re.escape(tag) + r'[^\n]*)\n(.*?)(?=\n^## |\Z)'
-          m = re.search(pattern, content, re.MULTILINE | re.DOTALL)
+          # Accept both "1.10.0" and "v1.10.0" as input; release-notes uses "## v1.x.x" format
+          search_variants = [tag, ("v" + tag) if not tag.startswith("v") else tag[1:]]
+          m = None
+          for search_tag in search_variants:
+              pattern = r'^## (' + re.escape(search_tag) + r'[^\n]*)\n(.*?)(?=\n^## |\Z)'
+              m = re.search(pattern, content, re.MULTILINE | re.DOTALL)
+              if m:
+                  break
           if not m:
               print(f"::error::Tag '{tag}' not found in docs/release-notes.md")
               sys.exit(1)
