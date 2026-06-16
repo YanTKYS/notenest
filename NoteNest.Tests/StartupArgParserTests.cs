@@ -27,7 +27,8 @@ public class StartupArgParserTests
         Assert.True(StartupArgParser.IsNestSuiteMode(["--NESTSUITE"]));
     }
 
-    // ── 通常起動扱いになるケース ─────────────────────────────────────────
+    // ── --nestsuite フラグ未指定ケース（IsNestSuiteMode は --nestsuite 検出専用。
+    //    v1.11.0 以降の既定 NestSuite 起動判定とは別） ─────────────────────
 
     [Fact]
     public void IsNestSuiteMode_WithNoArgs_ReturnsFalse()
