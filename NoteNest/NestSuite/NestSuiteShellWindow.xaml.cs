@@ -525,9 +525,24 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         var defaultName = _selectedTab.FilePath != null
             ? Path.GetFileName(_selectedTab.FilePath)
             : "ideas.ideanest";
-        var path = _dialogs.SelectIdeaNestSavePath(defaultName);
-        if (path == null) return;
-        TrySaveIdeaNestToPath(session, path);
+        var rawPath = _dialogs.SelectIdeaNestSavePath(defaultName);
+        if (rawPath == null) return;
+        // v1.9.7 fix: 選択中タブ以外の IdeaNest タブが同じパスを開いていないか確認する
+        // 2 つの独立 ViewModel が同じファイルを指す状態を防ぐ
+        var normalizedPath = NormalizeFilePath(rawPath);
+        var duplicateTab = _tabs.FirstOrDefault(t =>
+            t.Id != _selectedTab.Id &&
+            t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest &&
+            NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, normalizedPath));
+        if (duplicateTab != null)
+        {
+            _dialogs.ShowError(
+                "この IdeaNest ファイルは既に別タブで開かれています。",
+                "保存できません");
+            ActivateTab(duplicateTab);
+            return;
+        }
+        TrySaveIdeaNestToPath(session, normalizedPath);
     }
 
     /// <summary>
