@@ -924,7 +924,6 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// <summary>
     /// 起動時にファイルパスを受け取り、拡張子に応じて適切な Workspace で開く。
     /// App_Startup で <c>--nestsuite + ファイルパス</c> 指定時に呼び出す。
-    /// ウィンドウ表示後に呼ぶことでエラーダイアログのオーナーが確立される。
     ///
     /// <para>v1.7.7: .chatnest ファイルの読込に対応。
     /// .notenest → NoteNest タブ（既存挙動維持）、.chatnest → ChatNest タブとして開く。
@@ -934,6 +933,10 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     ///
     /// <para>v1.8.6: 読込失敗時（ファイル不存在・未対応拡張子・読込エラー）は
     /// EnsureDefaultTab() でフォールバック NoteNest タブを保証する。</para>
+    ///
+    /// <para>v1.10.2: App_Startup で Show() より前に呼ぶよう変更した。指定ファイルの
+    /// タブをウィンドウ表示前に生成することで起動時ちらつきを防ぐ。
+    /// エラーダイアログはウィンドウ未表示でも動作する（非モーダルで表示）。</para>
     /// </summary>
     public void LoadInitialFile(string path)
     {
