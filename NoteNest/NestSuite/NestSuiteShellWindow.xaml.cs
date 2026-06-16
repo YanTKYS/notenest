@@ -747,10 +747,14 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
                 "タブを閉じる", MessageBoxImage.Warning))
             return false;
 
-        // v1.9.5: ViewModel はタブごとの独立インスタンス。PropertyChanged 購読を解除する
+        // v1.9.5: ViewModel はタブごとの独立インスタンス。PropertyChanged 購読を解除し破棄する。
+        // Dispose() でタイマーを停止する（DispatcherTimer は Stop しないと GC されない）
         if (_sessionManager.TryGet(tab.Id, out var session) &&
             session?.WorkspaceViewModel is MainViewModel vm)
+        {
             vm.PropertyChanged -= OnNoteNestSessionPropertyChanged;
+            vm.Dispose();
+        }
 
         return true;
     }

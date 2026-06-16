@@ -4,7 +4,7 @@ using NoteNest.Services;
 
 namespace NoteNest.ViewModels;
 
-public partial class MainViewModel : BaseViewModel
+public partial class MainViewModel : BaseViewModel, IDisposable
 {
     private readonly NoteWorkspaceViewModel _notes = new();
     private readonly TaskBoardViewModel _tasks = new();
@@ -80,5 +80,19 @@ public partial class MainViewModel : BaseViewModel
         if (e.IsDataChanged) IsModified = true;
         foreach (var propertyName in e.PropertyNames)
             OnPropertyChanged(propertyName);
+    }
+
+    /// <summary>
+    /// v1.9.5: タイマーを停止し、内部イベント購読を解除する。
+    /// NestSuite で NoteNest タブを閉じる際（<see cref="NestSuite.NestSuiteShellWindow"/>）に呼ぶ。
+    /// 停止しないと DispatcherTimer が Dispatcher の内部リストに残り、
+    /// 閉じたタブの ViewModel が GC されず AutoSave が呼び続ける。
+    /// </summary>
+    public void Dispose()
+    {
+        _autoSaveTimer.Stop();
+        _unsavedTimer.Stop();
+        _changeCoordinator.Changed -= WorkspaceChanged;
+        _session.PropertyChanged -= SessionPropertyChanged;
     }
 }
