@@ -15,12 +15,14 @@ NestSuite 統合版のリリース前に確認する項目を整理します。
 
 ## 2. 起動確認
 
-- [ ] `NoteNest.exe` → NoteNest 単体版として起動する
-- [ ] `NoteNest.exe sample.notenest` → NoteNest 単体版で指定ファイルを開く
-- [ ] `NoteNest.exe --nestsuite` → NestSuite として起動する（無題 NoteNest タブ 1 枚）
+- [ ] `NoteNest.exe` → NestSuite として起動する（無題 NoteNest タブ）
+- [ ] `NoteNest.exe sample.notenest` → NestSuite で `.notenest` タブを開く
+- [ ] `NoteNest.exe sample.chatnest` → NestSuite で `.chatnest` タブを開く
+- [ ] `NoteNest.exe sample.ideanest` → NestSuite で `.ideanest` タブを開く
+- [ ] `NoteNest.exe --nestsuite` → NestSuite として起動する（互換フラグ、フラグなしと同じ動作）
 - [ ] `NoteNest.exe --nestsuite sample.notenest` → NestSuite で `.notenest` タブを開く
-- [ ] `NoteNest.exe --nestsuite sample.chatnest` → NestSuite で `.chatnest` タブを開く
-- [ ] `NoteNest.exe --nestsuite sample.ideanest` → NestSuite で `.ideanest` タブを開く
+- [ ] `NoteNest.exe --classic-notenest` → NoteNest 単体版として起動する（スタートダイアログ表示）
+- [ ] `NoteNest.exe --classic-notenest sample.notenest` → NoteNest 単体版で指定ファイルを開く
 
 ---
 
@@ -81,10 +83,10 @@ NestSuite 統合版のリリース前に確認する項目を整理します。
 
 ---
 
-## 6. NoteNest 単体版への影響確認
+## 6. NoteNest 単体版への影響確認（`--classic-notenest` 互換ルート）
 
-- [ ] 引数なし起動でNoteNest単体版が起動する
-- [ ] `.notenest` 単独指定起動でNoteNest単体版が起動する
+- [ ] `NoteNest.exe --classic-notenest` でNoteNest単体版が起動する（スタートダイアログ表示）
+- [ ] `NoteNest.exe --classic-notenest sample.notenest` でNoteNest単体版がファイルを開く
 - [ ] 単体版で新規作成できる
 - [ ] 単体版で開く・保存・名前を付けて保存ができる
 - [ ] 単体版の未保存確認が働く
