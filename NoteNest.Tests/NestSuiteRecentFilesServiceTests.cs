@@ -129,4 +129,28 @@ public class NestSuiteRecentFilesServiceTests : IDisposable
 
         Assert.Empty(Directory.GetFiles(_dir, "nestsuite-recent-files.json.*.tmp"));
     }
+
+    // ── v1.14.1: 壊れたファイル・未対応拡張子の耐久性 ──
+
+    [Fact]
+    public void Load_CorruptedJson_ReturnsEmpty()
+    {
+        var dataPath = Path.Combine(_dir, "corrupt.json");
+        File.WriteAllText(dataPath, "this is not valid json }{");
+        var svc = new NestSuiteRecentFilesService(dataPath);
+
+        Assert.Empty(svc.Load());
+    }
+
+    [Fact]
+    public void Remove_UnsupportedExtensionPath_RemovesFromList()
+    {
+        _svc.Add("file.notenest");
+        _svc.Add("foreign.txt");
+
+        var updated = _svc.Remove("foreign.txt");
+
+        Assert.Equal(new[] { "file.notenest" }, updated);
+        Assert.Equal(updated, _svc.Load());
+    }
 }

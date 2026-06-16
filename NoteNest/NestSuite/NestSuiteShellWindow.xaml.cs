@@ -896,6 +896,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// <summary>
     /// v1.14.0: 最近使ったファイル一覧の項目クリック。パス検証・重複チェック後に対応する Load*FileAt を呼ぶ。
     /// ファイルが見つからない場合は一覧から削除してメニューを更新する。
+    /// v1.14.1: 未対応拡張子の場合もエラーダイアログを表示して履歴から削除する。
+    /// v1.14.1: 既存タブをアクティブ化する場合も最近ファイルの先頭へ移動する。
     /// </summary>
     private void MenuRecentFile_Click(object sender, RoutedEventArgs e)
     {
@@ -909,11 +911,25 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             UpdateRecentFilesMenu();
             return;
         }
-        if (!NestSuiteTabFactory.TryGetKind(path, out var kind)) return;
+        if (!NestSuiteTabFactory.TryGetKind(path, out var kind))
+        {
+            _dialogs.ShowError(
+                $"このファイル形式は NestSuite では開けません。\n対応形式: .notenest / .chatnest / .ideanest\n\n最近使ったファイルの一覧から削除しました。\n\n{path}",
+                "未対応のファイル形式");
+            _recentFiles.Remove(path);
+            UpdateRecentFilesMenu();
+            return;
+        }
         var existingTab = _tabs.FirstOrDefault(t =>
             t.WorkspaceKind == kind &&
             NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, path));
-        if (existingTab != null) { ActivateTab(existingTab); return; }
+        if (existingTab != null)
+        {
+            ActivateTab(existingTab);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
+            return;
+        }
         switch (kind)
         {
             case NestSuiteWorkspaceKind.NoteNest: LoadNoteNestFileAt(path); break;
@@ -953,7 +969,13 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         var existingTab = _tabs.FirstOrDefault(t =>
             t.WorkspaceKind == kind &&
             NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, path));
-        if (existingTab != null) { ActivateTab(existingTab); return; }
+        if (existingTab != null)
+        {
+            ActivateTab(existingTab);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
+            return;
+        }
 
         switch (kind)
         {
@@ -1154,7 +1176,13 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         var existingTab = _tabs.FirstOrDefault(t =>
             t.WorkspaceKind == NestSuiteWorkspaceKind.NoteNest &&
             NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, path));
-        if (existingTab != null) { ActivateTab(existingTab); return; }
+        if (existingTab != null)
+        {
+            ActivateTab(existingTab);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
+            return;
+        }
 
         try
         {
@@ -1206,6 +1234,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         if (existingTab != null)
         {
             ActivateTab(existingTab);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
             return;
         }
 
@@ -1246,6 +1276,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         if (existingTab != null)
         {
             ActivateTab(existingTab);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
             return;
         }
 
