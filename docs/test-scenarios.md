@@ -2331,30 +2331,6 @@ v1.10.3 はコード変更なしのドキュメント整理リリース。起動
    `NestSuiteShellTests` / `NestSuiteDocumentTabTests` / `ThreeToolsMultiTabRegressionTests` /
    `ApplicationVersionTests` / `NestSuiteMultiFileTabsDesignTests`
 
-## §64 v1.11.1 既定起動切替後の回帰確認チェックリスト
-
-v1.11.0 の起動変更後、docs の記述が実挙動と一致しているかを確認する。
-
-### docs 整合確認
-
-- [ ] `README.md` の「スタートダイアログ」セクション見出しが「`--classic-notenest` 使用時」になっている
-- [ ] `README.md` に「EXE を直接起動するとスタートダイアログが表示される」という記述が残っていない
-- [ ] `docs/operation-note.md` のスタートダイアログ説明が `--classic-notenest` 使用時のみ表示されると記述している
-- [ ] `docs/nestsuite-release-checklist.md` §2 が NestSuite 既定起動パターンを含んでいる
-- [ ] `docs/nestsuite-release-checklist.md` §6 が `--classic-notenest` ルートの確認になっている
-
-### 起動回帰確認
-
-- [ ] `NoteNest.exe`（フラグなし）で NestSuite が起動すること（スタートダイアログが表示されないこと）
-- [ ] `NoteNest.exe --classic-notenest` でスタートダイアログが表示されること
-- [ ] `NoteNest.exe --classic-notenest sample.notenest` で NoteNest 単体版がファイルを開くこと
-- [ ] `NoteNest.exe sample.notenest` で NestSuite が NoteNest タブを開くこと
-
-### 自動確認
-
-1. `ApplicationVersionTests` でアプリバージョンが `1.11.1` であることを確認する（自動）。
-2. 全テスト（`dotnet test`）がパスすることを確認する（自動）。
-
 ## §63 v1.11.0 既定起動 NestSuite 切り替えチェックリスト
 
 v1.11.0 で変更した起動ルートを確認する。
@@ -2398,3 +2374,27 @@ v1.11.0 で変更した起動ルートを確認する。
 3. 以下の全テストがパスすることを確認する（自動）：
    `StartupArgParserTests` / `NestSuiteShellTests` / `NestSuiteDocumentTabTests` /
    `ThreeToolsMultiTabRegressionTests` / `ApplicationVersionTests`
+
+## §64 v1.11.1 既定起動切替後の回帰確認チェックリスト
+
+v1.11.0 の起動変更後、docs の記述が実挙動と一致しているかを確認する。
+
+### docs 整合確認
+
+- [ ] `README.md` の「スタートダイアログ」セクション見出しが「`--classic-notenest` 使用時」になっている
+- [ ] `README.md` に「EXE を直接起動するとスタートダイアログが表示される」という記述が残っていない
+- [ ] `docs/operation-note.md` のスタートダイアログ説明が `--classic-notenest` 使用時のみ表示されると記述している
+- [ ] `docs/nestsuite-release-checklist.md` §2 が NestSuite 既定起動パターンを含んでいる
+- [ ] `docs/nestsuite-release-checklist.md` §6 が `--classic-notenest` ルートの確認になっている
+
+### 起動回帰確認
+
+- [ ] `NoteNest.exe`（フラグなし）で NestSuite が起動すること（スタートダイアログが表示されないこと）
+- [ ] `NoteNest.exe --classic-notenest` でスタートダイアログが表示されること
+- [ ] `NoteNest.exe --classic-notenest sample.notenest` で NoteNest 単体版がファイルを開くこと
+- [ ] `NoteNest.exe sample.notenest` で NestSuite が NoteNest タブを開くこと
+
+### 自動確認
+
+1. `ApplicationVersionTests` でアプリバージョンが `1.11.1` であることを確認する（自動）。
+2. 全テスト（`dotnet test`）がパスすることを確認する（自動）。
