@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using NoteNest.NestSuite.ChatNest;
 using NoteNest.NestSuite.IdeaNest.ViewModels;
-using NoteNest.NestSuite.IdeaNest.Models;
 using NoteNest.NestSuite.IdeaNest.Services;
 using NoteNest.Services;
 using NoteNest.ViewModels;
@@ -39,7 +38,6 @@ namespace NoteNest.NestSuite;
 public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 {
     private readonly DialogService _dialogs;
-    private readonly IdeaNestWorkspaceViewModel _ideaNestViewModel = new();
     private MainViewModel ViewModel => (MainViewModel)DataContext;
 
     public NestSuiteShellWindow(string? initialFilePath = null)
@@ -67,12 +65,9 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
         WorkspaceView.DialogHost = this;
 
-        // v1.8.0: IdeaNest 統合検証用 Workspace は独立した ViewModel を持つ
         // v1.9.2: ChatNestWorkspaceView.DataContext はタブ切替時に ActivateTab で差し替える
-        IdeaNestWorkspaceView.DataContext = _ideaNestViewModel;
-
-        // v1.9.5: DataContext は ActivateTab でアクティブ NoteNest タブの MainViewModel に設定する。
-        // NoteNest タブ作成（CreateSessionForTab → CreateNoteNestViewModel）と同時に DataContext が確立される。
+        // v1.9.5: DataContext は ActivateTab でアクティブ NoteNest タブの MainViewModel に設定する
+        // v1.9.7: IdeaNestWorkspaceView.DataContext はタブ切替時に ActivateTab で差し替える
         // v1.8.6: ファイル指定なし起動のみ初期 NoteNest タブを作成する。
         // ファイル指定ありの場合は LoadInitialFile 内で適切なタブが作成される。
         TabStrip.ItemsSource = _tabs;
@@ -83,8 +78,6 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             _sessionManager.Add(CreateSessionForTab(initialTab));
             ActivateTab(initialTab);
         }
-
-        _ideaNestViewModel.PropertyChanged += OnIdeaNestPropertyChanged;
     }
 
     protected override void OnClosing(CancelEventArgs e)
@@ -101,11 +94,16 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             }
         }
 
-        // v1.8.0: IdeaNest 変更確認
-        if (_ideaNestViewModel.HasChanges)
+        // v1.9.7: すべての IdeaNest Session を順に確認する
+        foreach (var ideaSession in _sessionManager.Sessions
+            .Where(s => s.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest).ToList())
         {
+            var ideaVm = (IdeaNestWorkspaceViewModel)ideaSession.WorkspaceViewModel;
+            if (!ideaVm.HasChanges) continue;
+            var ideaTab = _tabs.FirstOrDefault(t => t.Id == ideaSession.TabId);
+            var ideaTabName = ideaTab?.DisplayName ?? "IdeaNest";
             if (!_dialogs.Confirm(
-                "IdeaNest に未保存の変更があります。\n終了すると内容は失われます。終了しますか？",
+                $"「{ideaTabName}」に未保存の変更があります。\n終了すると内容は失われます。終了しますか？",
                 "未保存の IdeaNest", MessageBoxImage.Warning))
             { e.Cancel = true; return; }
         }
@@ -185,7 +183,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         {
             NestSuiteWorkspaceKind.NoteNest => CreateNoteNestViewModel(),
             NestSuiteWorkspaceKind.ChatNest => CreateChatNestViewModel(),
-            NestSuiteWorkspaceKind.IdeaNest => _ideaNestViewModel,
+            NestSuiteWorkspaceKind.IdeaNest => CreateIdeaNestViewModel(),
             _ => throw new ArgumentOutOfRangeException(nameof(tab), tab.WorkspaceKind, null)
         };
         return new NestSuiteWorkspaceSession(tab.Id, tab.WorkspaceKind, vm, tab.FilePath, tab.IsModified);
@@ -235,6 +233,18 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     {
         var vm = new ChatNestWorkspaceViewModel();
         vm.PropertyChanged += OnChatNestPropertyChanged;
+        return vm;
+    }
+
+    /// <summary>
+    /// v1.9.7: IdeaNest タブ用の独立 ViewModel を生成し、PropertyChanged を購読する。
+    /// ChatNest の <see cref="CreateChatNestViewModel"/> と対称な実装。
+    /// タブを閉じる際（<see cref="ConfirmAndResetIdeaNest"/>）に購読を解除する。
+    /// </summary>
+    private IdeaNestWorkspaceViewModel CreateIdeaNestViewModel()
+    {
+        var vm = new IdeaNestWorkspaceViewModel();
+        vm.PropertyChanged += OnIdeaNestPropertyChanged;
         return vm;
     }
 
@@ -289,6 +299,10 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             // v1.9.2: ChatNest タブ切替時に選択タブの ViewModel に DataContext を差し替える
             if (isChatNest && _sessionManager.TryGet(tab.Id, out var chatSession) && chatSession != null)
                 ChatWorkspaceView.DataContext = chatSession.WorkspaceViewModel;
+
+            // v1.9.7: IdeaNest タブ切替時に選択タブの ViewModel に DataContext を差し替える
+            if (isIdeaNest && _sessionManager.TryGet(tab.Id, out var ideaNestSession) && ideaNestSession != null)
+                IdeaNestWorkspaceView.DataContext = ideaNestSession.WorkspaceViewModel;
             if (!tool.IsIntegrated)
             {
                 PlaceholderTitle.Text = tool.DisplayName;
@@ -433,22 +447,27 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     private void OnIdeaNestPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(IdeaNestWorkspaceViewModel.HasChanges))
-            SyncIdeaNestTab();
+        if (e.PropertyName == nameof(IdeaNestWorkspaceViewModel.HasChanges) &&
+            sender is IdeaNestWorkspaceViewModel vm)
+            SyncIdeaNestTabForViewModel(vm);
     }
 
     /// <summary>
-    /// IdeaNest の HasChanges を IdeaNest タブモデルの IsModified に反映する。
+    /// v1.9.7: 指定 IdeaNest ViewModel に対応するタブの IsModified を HasChanges に同期する。
+    /// Session Manager で ViewModel から逆引きしてタブを特定する。
     /// </summary>
-    private void SyncIdeaNestTab()
+    private void SyncIdeaNestTabForViewModel(IdeaNestWorkspaceViewModel vm)
     {
-        var tab = _tabs.FirstOrDefault(t => t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest);
+        var session = _sessionManager.Sessions.FirstOrDefault(s => ReferenceEquals(s.WorkspaceViewModel, vm));
+        if (session == null) return;
+        var tab = _tabs.FirstOrDefault(t => t.Id == session.TabId);
         if (tab == null) return;
-        ReplaceTab(tab, tab with { IsModified = _ideaNestViewModel.HasChanges });
+        ReplaceTab(tab, tab with { IsModified = vm.HasChanges });
     }
 
     /// <summary>
-    /// IdeaNest タブを閉じる前の確認とリセット。
+    /// v1.9.7: IdeaNest タブを閉じる前の確認と PropertyChanged 購読解除。
+    /// ViewModel はタブごとの独立インスタンスのため LoadFromWorkspace リセットは不要。
     /// </summary>
     private bool ConfirmAndResetIdeaNest(NestSuiteDocumentTab tab)
     {
@@ -457,86 +476,99 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
                 "IdeaNest に未保存の変更があります。\n閉じると変更は失われます。閉じますか？",
                 "タブを閉じる", MessageBoxImage.Warning))
             return false;
-        _ideaNestViewModel.LoadFromWorkspace(new NoteNest.NestSuite.IdeaNest.Models.Workspace());
+
+        // v1.9.7: ViewModel はタブごとの独立インスタンス。PropertyChanged 購読を解除する。
+        if (_sessionManager.TryGet(tab.Id, out var session) &&
+            session?.WorkspaceViewModel is IdeaNestWorkspaceViewModel vm)
+            vm.PropertyChanged -= OnIdeaNestPropertyChanged;
+
         return true;
     }
 
-    private bool TrySaveIdeaNestToPath(string path)
+    /// <summary>v1.9.7: 指定 Session の IdeaNest を指定パスへ保存する。失敗時はエラーダイアログを表示し false を返す。</summary>
+    private bool TrySaveIdeaNestToPath(NestSuiteWorkspaceSession session, string path)
     {
+        path = NormalizeFilePath(path);
+        var vm = (IdeaNestWorkspaceViewModel)session.WorkspaceViewModel;
         try
         {
-            IdeaNestFileService.Save(path, _ideaNestViewModel.BuildWorkspaceForSave());
-            _ideaNestViewModel.MarkSaved();
-            var tab = _tabs.FirstOrDefault(t => t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest);
-            if (tab != null) ReplaceTab(tab, NestSuiteTabFactory.FromFilePath(path) with { Id = tab.Id, IsModified = false });
-            return true;
-        }
-        catch (Exception ex) { _dialogs.ShowError($"IdeaNest ファイルの保存に失敗しました。\n\n{ex.Message}", "保存エラー"); return false; }
-    }
-
-    private void SaveIdeaNestFile()
-    {
-        var tab = _tabs.FirstOrDefault(t => t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest);
-        if (tab?.FilePath != null) TrySaveIdeaNestToPath(tab.FilePath); else SaveIdeaNestFileAs();
-    }
-
-    private void SaveIdeaNestFileAs()
-    {
-        var tab = _tabs.FirstOrDefault(t => t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest);
-        var path = _dialogs.SelectIdeaNestSavePath(tab?.FilePath != null ? Path.GetFileName(tab.FilePath) : "ideas.ideanest");
-        if (path != null) TrySaveIdeaNestToPath(path);
-    }
-
-    private void OpenIdeaNestFile()
-    {
-        var path = _dialogs.SelectIdeaNestOpenPath();
-        if (path == null) return;
-        var tab = _tabs.FirstOrDefault(t => t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest);
-        if (tab != null && _ideaNestViewModel.HasChanges && !_dialogs.Confirm("IdeaNest に未保存の変更があります。\nファイルを開くと現在の内容は失われます。続けますか？", "未保存の変更", MessageBoxImage.Warning)) return;
-        TryLoadIdeaNestFile(path);
-    }
-
-    /// <summary>
-    /// 指定された .ideanest ファイルを読み込み、IdeaNest タブを作成または更新する。
-    /// ファイルダイアログ経由と起動時ファイル指定の共通読込経路。
-    /// </summary>
-    private bool TryLoadIdeaNestFile(string path)
-    {
-        try
-        {
-            var workspace = IdeaNestFileService.Load(path);
-            var tab = _tabs.FirstOrDefault(t => t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest);
-            _ideaNestViewModel.LoadFromWorkspace(workspace);
-            if (tab == null)
-            {
-                tab = NestSuiteTabFactory.FromFilePath(path);
-                _tabs.Add(tab);
-                _sessionManager.Add(CreateSessionForTab(tab));
-            }
-            else { var current = _tabs.FirstOrDefault(t => t.Id == tab.Id) ?? tab; ReplaceTab(current, NestSuiteTabFactory.FromFilePath(path) with { Id = tab.Id, IsModified = false }); tab = _tabs.First(t => t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest); }
-            ActivateTab(tab);
+            IdeaNestFileService.Save(path, vm.BuildWorkspaceForSave());
+            vm.MarkSaved();
+            var tab = _tabs.FirstOrDefault(t => t.Id == session.TabId);
+            if (tab != null)
+                ReplaceTab(tab, NestSuiteTabFactory.FromFilePath(path) with { Id = tab.Id, IsModified = false });
             return true;
         }
         catch (Exception ex)
         {
-            _dialogs.ShowError($"IdeaNest ファイルを開けませんでした。\n\n{ex.Message}", "読込エラー");
+            _dialogs.ShowError($"IdeaNest ファイルの保存に失敗しました。\n\n{ex.Message}", "保存エラー");
             return false;
         }
     }
 
-    private void NewIdeaNestWorkspace()
+    /// <summary>v1.9.7: 選択中 IdeaNest タブの Session で上書き保存。パスがなければ名前を付けて保存へ委譲する。</summary>
+    private void SaveIdeaNestFile()
     {
-        var tab = _tabs.FirstOrDefault(t => t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest);
-        if (tab != null && _ideaNestViewModel.HasChanges && !_dialogs.Confirm("IdeaNest に未保存の変更があります。\n新規作成すると現在の内容は失われます。続けますか？", "未保存の変更", MessageBoxImage.Warning)) return;
-        _ideaNestViewModel.LoadFromWorkspace(new Workspace());
-        if (tab == null)
+        if (_selectedTab?.WorkspaceKind != NestSuiteWorkspaceKind.IdeaNest) return;
+        if (!_sessionManager.TryGet(_selectedTab.Id, out var session) || session == null) return;
+        if (_selectedTab.FilePath != null)
+            TrySaveIdeaNestToPath(session, _selectedTab.FilePath);
+        else
+            SaveIdeaNestFileAs();
+    }
+
+    /// <summary>v1.9.7: 選択中 IdeaNest タブの Session で名前を付けて保存。ダイアログでパスを選択し保存する。</summary>
+    private void SaveIdeaNestFileAs()
+    {
+        if (_selectedTab?.WorkspaceKind != NestSuiteWorkspaceKind.IdeaNest) return;
+        if (!_sessionManager.TryGet(_selectedTab.Id, out var session) || session == null) return;
+        var defaultName = _selectedTab.FilePath != null
+            ? Path.GetFileName(_selectedTab.FilePath)
+            : "ideas.ideanest";
+        var path = _dialogs.SelectIdeaNestSavePath(defaultName);
+        if (path == null) return;
+        TrySaveIdeaNestToPath(session, path);
+    }
+
+    /// <summary>
+    /// v1.9.7: .ideanest ファイルを開き、新しい IdeaNest タブ／Session を作成してロードする。
+    /// 同じファイルが既に開かれている場合は既存タブをアクティブ化する。
+    /// </summary>
+    private void OpenIdeaNestFile()
+    {
+        var rawPath = _dialogs.SelectIdeaNestOpenPath();
+        if (rawPath == null) return;
+        var path = NormalizeFilePath(rawPath);
+
+        var existingTab = _tabs.FirstOrDefault(t =>
+            t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest &&
+            NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, path));
+        if (existingTab != null) { ActivateTab(existingTab); return; }
+
+        try
         {
-            tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.IdeaNest);
+            var workspace = IdeaNestFileService.Load(path);
+            var vm = CreateIdeaNestViewModel();
+            vm.LoadFromWorkspace(workspace);
+            var tab = NestSuiteTabFactory.FromFilePath(path);
+            var session = new NestSuiteWorkspaceSession(tab.Id, NestSuiteWorkspaceKind.IdeaNest, vm, path, false);
             _tabs.Add(tab);
-            _sessionManager.Add(CreateSessionForTab(tab));
+            _sessionManager.Add(session);
+            ActivateTab(tab);
         }
-        else ReplaceTab(tab, NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.IdeaNest) with { Id = tab.Id });
-        ActivateTab(_tabs.First(t => t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest));
+        catch (Exception ex)
+        {
+            _dialogs.ShowError($"IdeaNest ファイルを開けませんでした。\n\n{ex.Message}", "読込エラー");
+        }
+    }
+
+    /// <summary>v1.9.7: 新規 IdeaNest タブを作成する。既存の IdeaNest タブには影響しない。</summary>
+    private void NewIdeaNestSession()
+    {
+        var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.IdeaNest);
+        _tabs.Add(tab);
+        _sessionManager.Add(CreateSessionForTab(tab));
+        ActivateTab(tab);
     }
 
     // ── v1.7.4: ChatNest ファイル操作 ─────────────────────────────────────
@@ -795,7 +827,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
                 NewChatNestSession();
                 break;
             case NestSuiteWorkspaceKind.IdeaNest:
-                NewIdeaNestWorkspace();
+                NewIdeaNestSession();
                 break;
         }
     }
@@ -891,8 +923,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
                 LoadInitialChatNestFile(path);
                 break;
             case NestSuiteWorkspaceKind.IdeaNest:
-                if (!TryLoadIdeaNestFile(path))
-                    EnsureDefaultTab();
+                LoadInitialIdeaNestFile(path);
                 break;
             default:
                 _dialogs.ShowError(
@@ -1046,6 +1077,43 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         catch (Exception ex)
         {
             _dialogs.ShowError($"ChatNest ファイルを開けませんでした。\n\n{ex.Message}", "読込エラー");
+            EnsureDefaultTab();
+        }
+    }
+
+    /// <summary>
+    /// v1.9.7: 起動時に .ideanest ファイルを新しい IdeaNest タブ／Session として読み込む。
+    /// 読込成功後のタブは FilePath 設定済み・IsModified=false になる。
+    /// 同じファイルが既に開かれている場合は既存タブをアクティブ化する（念のため）。
+    /// </summary>
+    private void LoadInitialIdeaNestFile(string path)
+    {
+        path = NormalizeFilePath(path);
+
+        var existingTab = _tabs.FirstOrDefault(t =>
+            t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest &&
+            NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, path));
+        if (existingTab != null)
+        {
+            ActivateTab(existingTab);
+            return;
+        }
+
+        try
+        {
+            var workspace = IdeaNestFileService.Load(path);
+            var vm = CreateIdeaNestViewModel();
+            vm.LoadFromWorkspace(workspace);
+
+            var tab = NestSuiteTabFactory.FromFilePath(path);
+            var session = new NestSuiteWorkspaceSession(tab.Id, NestSuiteWorkspaceKind.IdeaNest, vm, path, false);
+            _tabs.Add(tab);
+            _sessionManager.Add(session);
+            ActivateTab(tab);
+        }
+        catch (Exception ex)
+        {
+            _dialogs.ShowError($"IdeaNest ファイルを開けませんでした。\n\n{ex.Message}", "読込エラー");
             EnsureDefaultTab();
         }
     }

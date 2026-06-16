@@ -391,24 +391,27 @@ public class NestSuiteShellTests
     }
 
     [Fact]
-    public void NestSuiteShellWindow_HoldsIdeaNestViewModelField()
+    public void NestSuiteShellWindow_IdeaNestViewModelField_IsRemovedInV197()
     {
-        // v1.8.0: 終了時の変更確認のため、IdeaNest ViewModel をフィールドとして保持していることを確認
+        // v1.9.7: IdeaNest もタブごとに独立した ViewModel を持つため、共有 _ideaNestViewModel フィールドを削除した
+        // Session Manager 経由でタブごとの ViewModel を管理するため、クラスフィールドは不要
         var field = typeof(NestSuiteShellWindow)
             .GetFields(AllInstance)
             .FirstOrDefault(f => f.FieldType ==
                 typeof(NoteNest.NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel));
-        Assert.NotNull(field);
+        Assert.Null(field);
     }
 
     [Fact]
-    public void NestSuiteShellWindow_HasSyncIdeaNestTabMethod()
+    public void NestSuiteShellWindow_HasSyncIdeaNestTabForViewModelMethod()
     {
-        // v1.8.0: SyncIdeaNestTab が IdeaNest 変更状態をタブに反映するメソッドとして宣言されていることを確認
+        // v1.9.7: SyncIdeaNestTabForViewModel が IdeaNest 変更状態を対応タブへ反映するメソッドとして宣言されていることを確認
+        // v1.8.0 の SyncIdeaNestTab() を ViewModel 逆引きパターンへ置き換えた
         var method = typeof(NestSuiteShellWindow)
-            .GetMethod("SyncIdeaNestTab",
+            .GetMethod("SyncIdeaNestTabForViewModel",
                 BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
         Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
     }
 
     [Fact]
@@ -493,15 +496,13 @@ public class NestSuiteShellTests
     }
 
     [Fact]
-    public void NestSuiteShellWindow_HasSharedIdeaNestLoadMethod()
+    public void NestSuiteShellWindow_TryLoadIdeaNestFile_IsRemovedInV197()
     {
+        // v1.9.7: TryLoadIdeaNestFile は LoadInitialIdeaNestFile と OpenIdeaNestFile に分割・置換された
         var method = typeof(NestSuiteShellWindow).GetMethod(
             "TryLoadIdeaNestFile",
             BindingFlags.NonPublic | BindingFlags.Instance);
-
-        Assert.NotNull(method);
-        Assert.Equal(typeof(bool), method!.ReturnType);
-        Assert.Equal(typeof(string), method.GetParameters().Single().ParameterType);
+        Assert.Null(method);
     }
 
     [Fact]
@@ -906,5 +907,97 @@ public class NestSuiteShellTests
                 BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
         Assert.NotNull(method);
         Assert.Equal(typeof(void), method!.ReturnType);
+    }
+
+    // ── v1.9.7: IdeaNest 複数ファイルタブ対応の実装確認 ─────────────────────
+
+    [Fact]
+    public void NestSuiteShellWindow_HasCreateIdeaNestViewModelMethod()
+    {
+        // v1.9.7: CreateIdeaNestViewModel がタブごとの独立 IdeaNestWorkspaceViewModel 生成メソッドとして宣言されていることを確認
+        // ChatNest の CreateChatNestViewModel / NoteNest の CreateNoteNestViewModel と対称な実装
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("CreateIdeaNestViewModel",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        Assert.NotNull(method);
+        Assert.Equal(
+            typeof(NoteNest.NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel),
+            method!.ReturnType);
+        Assert.Empty(method.GetParameters());
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasNewIdeaNestSessionMethod()
+    {
+        // v1.9.7: NewIdeaNestSession が新規 IdeaNest タブ作成メソッドとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("NewIdeaNestSession",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+        Assert.Empty(method.GetParameters());
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasOpenIdeaNestFileMethod()
+    {
+        // v1.9.7: OpenIdeaNestFile がファイルを開くメソッドとして宣言されていることを確認
+        // 二重オープン検出・新規タブ作成・ActivateTab を含む
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("OpenIdeaNestFile",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+        Assert.Empty(method!.GetParameters());
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasSaveIdeaNestFileMethod()
+    {
+        // v1.9.7: SaveIdeaNestFile が選択中 IdeaNest タブの Session 経由で上書き保存するメソッドとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("SaveIdeaNestFile",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasSaveIdeaNestFileAsMethod()
+    {
+        // v1.9.7: SaveIdeaNestFileAs が選択中 IdeaNest タブを名前を付けて保存するメソッドとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("SaveIdeaNestFileAs",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasLoadInitialIdeaNestFileMethod()
+    {
+        // v1.9.7: LoadInitialIdeaNestFile が起動時 .ideanest 読込ヘルパーとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("LoadInitialIdeaNestFile",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
+                null,
+                [typeof(string)],
+                null);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasConfirmAndResetIdeaNestMethod_ReturnsBool()
+    {
+        // v1.9.7: ConfirmAndResetIdeaNest がタブ閉じ確認メソッドとして bool を返すことを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("ConfirmAndResetIdeaNest",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
+                null,
+                [typeof(NestSuiteDocumentTab)],
+                null);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(bool), method!.ReturnType);
     }
 }

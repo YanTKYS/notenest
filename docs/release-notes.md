@@ -1,3 +1,22 @@
+## v1.9.7 — IdeaNest 複数ファイルタブ対応の設計・最小実装
+
+- IdeaNest について、複数の `.ideanest` ファイルを別タブとして並行利用できるようにした。各タブは独立した `IdeaNestWorkspaceViewModel`（カード一覧・タグ一覧・フィルタ・表示設定・未保存状態を含む）・FilePath・IsModified を持つ。
+- `CreateIdeaNestViewModel()` ヘルパーを追加した。タブ作成ごとに新規 `IdeaNestWorkspaceViewModel` を生成し、`PropertyChanged` 購読をまとめて設定する。ChatNest の `CreateChatNestViewModel()` と対称な実装。
+- `CreateSessionForTab` の IdeaNest ケースを共有 `_ideaNestViewModel` から `CreateIdeaNestViewModel()`（タブ独立インスタンス）に変更した。共有フィールド `_ideaNestViewModel` は削除した。
+- `ActivateTab` で IdeaNest タブへの切替時に `IdeaNestWorkspaceView.DataContext` を選択タブの Session の `IdeaNestWorkspaceViewModel` に差し替えるようにした。
+- `SyncIdeaNestTab()` を `SyncIdeaNestTabForViewModel(IdeaNestWorkspaceViewModel)` に置き換えた。`OnIdeaNestPropertyChanged` の sender から `IdeaNestWorkspaceViewModel` を特定し、Session Manager で逆引きしてタブを同期する。
+- `NewIdeaNestSession()` を追加した。`NewIdeaNestWorkspace()` を置き換え、新規 IdeaNest タブ・Session を作成する（既存 IdeaNest タブに影響しない）。
+- `OpenIdeaNestFile()` を更新した。同じファイルが既に開かれている場合は既存タブをアクティブ化し、そうでない場合は新規 IdeaNest タブ・Session を作成してロードする。`NestSuiteOpenFilePolicy.IsSameFile` による大文字小文字を区別しない二重オープン検出に対応。
+- `SaveIdeaNestFile()` / `SaveIdeaNestFileAs()` を更新した。選択中 Session の `IdeaNestWorkspaceViewModel` を対象にし、他のタブには影響しない。
+- `TrySaveIdeaNestToPath(NestSuiteWorkspaceSession, string)` を更新した（従来は引数なし）。Session 経由で対象 ViewModel を特定して保存する。
+- `LoadInitialIdeaNestFile(string)` を追加した。起動時 `.ideanest` ファイル指定を新しい IdeaNest タブ／Session として読み込む。同じファイルが既に開かれている場合は既存タブをアクティブ化する。`TryLoadIdeaNestFile` は削除した。
+- `ConfirmAndResetIdeaNest` を更新した。`LoadFromWorkspace(new Workspace())` リセット呼び出しを削除し、`PropertyChanged` 購読解除のみ行うよう変更した（タブごとの独立インスタンスのため）。
+- `OnClosing` の IdeaNest 確認を単一 ViewModel チェックから全 IdeaNest Session の走査（`foreach`）に変更した。タブごとに個別の保存確認を行う。
+- `IdeaNestMultiTabSessionTests` を新規追加した（27 件：ViewModel 独立性・Session 逆引き・FilePath 独立性・IsModified 独立性・Session 削除・IdeaNest/NoteNest/ChatNest 混在フィルタ・二重オープン検出・Manager 経由独立性確認・WorkspaceKind 確認）。
+- `NestSuiteShellTests` を更新した。`HoldsIdeaNestViewModelField` テストを「フィールドが削除されていること」の確認に更新した。`HasSyncIdeaNestTabMethod` テストを `HasSyncIdeaNestTabForViewModelMethod` に更新した。`HasSharedIdeaNestLoadMethod` テストを `TryLoadIdeaNestFile_IsRemovedInV197` に更新した。v1.9.7 の型境界確認テストを 7 件追加した（`CreateIdeaNestViewModel` 戻り値・`NewIdeaNestSession` 存在・`OpenIdeaNestFile` 存在・`SaveIdeaNestFile` 存在・`SaveIdeaNestFileAs` 存在・`LoadInitialIdeaNestFile` 存在・`ConfirmAndResetIdeaNest` 戻り値）。
+- NoteNest 保存スキーマ `1.4.1`、ChatNest・IdeaNest 保存形式は変更していない。NoteNest / ChatNest の複数ファイル対応は壊していない。
+- v1.9.8 以降の候補：3 ツール複数ファイル対応後の回帰確認（v1.9.8）、タブ運用の細部改善（v1.9.9）、将来：タブ復元、将来：複数ファイル同時オープン。
+
 ## v1.9.6 — NoteNest 複数ファイルタブ対応後の回帰確認・小修正
 
 - v1.9.5 で実装した NoteNest 複数ファイルタブ対応の回帰確認を行い、新機能の追加はせず安定性を確認した。
