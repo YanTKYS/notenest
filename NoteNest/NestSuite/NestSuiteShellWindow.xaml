@@ -179,7 +179,9 @@
 
                 <!-- Workspace コンテンツ（選択タブに対応する Workspace を表示） -->
                 <Grid Grid.Row="1">
-                    <views:NoteNestWorkspaceView x:Name="WorkspaceView"/>
+                    <!-- v1.10.2: Visibility="Collapsed" デフォルトにした。ActivateTab が表示を制御する。
+                         起動時にタブ未選択の瞬間 NoteNest Workspace が見えるちらつきを防ぐ。 -->
+                    <views:NoteNestWorkspaceView x:Name="WorkspaceView" Visibility="Collapsed"/>
                     <!-- v1.7.0: ChatNest 統合検証用 Workspace（ChatNest タブ選択時に表示） -->
                     <chatnest:ChatNestWorkspaceView x:Name="ChatWorkspaceView" Visibility="Collapsed"/>
                     <!-- v1.8.0: IdeaNest 統合検証用 Workspace（IdeaNest タブ選択時に表示） -->

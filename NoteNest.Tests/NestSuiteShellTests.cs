@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using NoteNest;
 using NoteNest.NestSuite;
 using NoteNest.NestSuite.ChatNest;
 using NoteNest.Views;
@@ -1118,5 +1119,54 @@ public class NestSuiteShellTests
         Assert.False(NestSuiteTabFactory.TryGetKind("document.txt", out _));
         Assert.False(NestSuiteTabFactory.TryGetKind("document.docx", out _));
         Assert.False(NestSuiteTabFactory.TryGetKind("noextension", out _));
+    }
+
+    // ── v1.10.2: NestSuite 起動時ファイル指定の初期タブちらつき修正 ──
+
+    [Fact]
+    public void StartupTabPolicy_WithNullPath_ShouldCreateInitialTab()
+    {
+        // v1.10.2: ファイル未指定（null）→ 無題タブを作成すべき
+        Assert.True(NestSuiteStartupTabPolicy.ShouldCreateInitialTab(null));
+    }
+
+    [Fact]
+    public void StartupTabPolicy_WithEmptyPath_ShouldCreateInitialTab()
+    {
+        // v1.10.2: 空文字列も未指定扱い → 無題タブを作成すべき
+        Assert.True(NestSuiteStartupTabPolicy.ShouldCreateInitialTab(""));
+    }
+
+    [Fact]
+    public void StartupTabPolicy_AllThreeKindPaths_SuppressInitialTab()
+    {
+        // v1.10.2: 3 種すべての拡張子で初期無題タブが抑制されることを確認
+        Assert.False(NestSuiteStartupTabPolicy.ShouldCreateInitialTab("sample.notenest"));
+        Assert.False(NestSuiteStartupTabPolicy.ShouldCreateInitialTab("sample.chatnest"));
+        Assert.False(NestSuiteStartupTabPolicy.ShouldCreateInitialTab("sample.ideanest"));
+    }
+
+    [Fact]
+    public void StartupTabPolicy_WithUnsupportedExtension_SuppressesInitialTab()
+    {
+        // v1.10.2: 未対応拡張子のパスも「パスあり」とみなし初期無題タブは抑制される。
+        // LoadInitialFile が拡張子エラーを処理し、フォールバックタブを作成する。
+        Assert.False(NestSuiteStartupTabPolicy.ShouldCreateInitialTab("document.txt"));
+    }
+
+    [Fact]
+    public void StartupArgParser_GetFilePath_ReturnsNonFlagArg()
+    {
+        // v1.10.2: --nestsuite + ファイルパスの組み合わせで GetFilePath が正しくパスを返す
+        var args = new[] { "--nestsuite", "C:\\work\\test.chatnest" };
+        Assert.Equal("C:\\work\\test.chatnest", StartupArgParser.GetFilePath(args));
+    }
+
+    [Fact]
+    public void StartupArgParser_GetFilePath_WithNoFileArg_ReturnsNull()
+    {
+        // v1.10.2: --nestsuite のみ（ファイルなし）は null → ShouldCreateInitialTab(null) → true
+        var args = new[] { "--nestsuite" };
+        Assert.Null(StartupArgParser.GetFilePath(args));
     }
 }

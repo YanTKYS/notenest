@@ -18,9 +18,13 @@ public partial class App : Application
             var shell = new NestSuiteShellWindow(nestSuiteFilePath);
             MainWindow = shell;
             ShutdownMode = ShutdownMode.OnMainWindowClose;
-            shell.Show();
+            // v1.10.2: LoadInitialFile を Show() より前に呼ぶことで、指定ファイルタブを
+            // ウィンドウ表示前に生成する。Show() 後に呼ぶと一瞬だけ空／NoteNest 状態が
+            // 見えるちらつきが発生するため、順序を入れ替えた。
+            // エラーダイアログはウィンドウが未表示でも動作する（非モーダルで表示される）。
             if (nestSuiteFilePath != null)
                 shell.LoadInitialFile(nestSuiteFilePath);
+            shell.Show();
             return;
         }
 

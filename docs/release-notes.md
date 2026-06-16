@@ -1,3 +1,11 @@
+## v1.10.2 — NestSuite起動時ファイル指定の初期タブちらつき修正
+
+- **`App_Startup` で `LoadInitialFile` を `Show()` より前に呼ぶよう変更した。** 従来は `shell.Show()` を先に呼んでいたため、ウィンドウ表示直後から `LoadInitialFile` 完了までの間に空の NoteNest Workspace が一瞬見える「ちらつき」が発生していた。`LoadInitialFile` を `Show()` の前に移動したことで、ウィンドウが画面に現れる時点ではすでに目的のタブが生成済みとなり、ちらつきを根本から解消した。
+- **`NoteNestWorkspaceView` の初期 `Visibility` を `Collapsed` に変更した（防御的修正）。** XAML 側で `NoteNestWorkspaceView` のデフォルト Visibility が `Visible` のままだったため、`ActivateTab` が呼ばれる前の一瞬だけ NoteNest Workspace が表示されていた。`Visibility="Collapsed"` をデフォルト値として明示し、`ActivateTab` が表示を制御する設計を一貫させた。`ChatWorkspaceView` と `IdeaNestWorkspaceView` は既に `Collapsed` が設定されており、3 Workspace の扱いが揃った。
+- `NestSuiteStartupTabPolicy` と `StartupArgParser` のエッジケース（null/空文字列・未対応拡張子・3 種拡張子全種・ファイルなし引数）に対する自動確認テストを 6 件追加した。
+- NoteNest 保存スキーマ `1.4.1`、ChatNest・IdeaNest 保存形式は変更していない。
+- v1.10.3 以降の候補：タブ復元の設計整理・最近ファイル統合の設計整理・将来：NoteNestWorkspaceSessionViewModel への軽量化・将来：複数ファイル一括オープン・将来：UI モダン化。
+
 ## v1.10.1 — NestSuiteのファイルを開く導線の共通化
 
 - **NestSuite の「開く」メニューを 3 形式統合ダイアログに変更した。** 従来は選択中タブの種別（NoteNest / ChatNest / IdeaNest）によってダイアログのフィルタが変わり、異なる種別のファイルを直接開けなかった。v1.10.1 では `.notenest / .chatnest / .ideanest` を一覧できる単一の OpenFileDialog を表示し、選択したファイルの拡張子から自動的に種別を判定してタブを作成するようにした。タブを選択中でなくても・どのツールのタブを選択中でも任意の種別のファイルを開ける。

@@ -2272,3 +2272,33 @@ v1.10.1 で追加した共通「開く」ダイアログと「新規」メニュ
 3. 以下の全テストがパスすることを確認する（自動）：
    `NestSuiteShellTests` / `NestSuiteDocumentTabTests` / `ThreeToolsMultiTabRegressionTests` /
    `ApplicationVersionTests` / `NestSuiteMultiFileTabsDesignTests`
+
+## §61 v1.10.2 NestSuite起動時ファイル指定ちらつき修正チェックリスト
+
+v1.10.2 で修正した起動時ちらつきと Visibility デフォルト値の修正を確認する。
+
+### 起動時ちらつき（主要確認）
+
+- [ ] `NoteNest.exe --nestsuite sample.chatnest` で起動したとき、一瞬も NoteNest Workspace が表示されない（ちらつきがない）
+- [ ] `NoteNest.exe --nestsuite sample.notenest` で起動したとき、NoteNest タブが最初から表示されている
+- [ ] `NoteNest.exe --nestsuite sample.ideanest` で起動したとき、IdeaNest タブが最初から表示されている
+- [ ] `NoteNest.exe --nestsuite`（ファイルなし）で起動したとき、無題 NoteNest タブが正常に表示される
+
+### ファイル指定起動のエラー処理
+
+- [ ] `NoteNest.exe --nestsuite unknown.txt` で起動したとき、エラーダイアログが表示され、無題 NoteNest タブにフォールバックする
+- [ ] エラーダイアログは `Show()` 前に呼ばれてもモーダルで正常に動作する
+
+### 回帰確認
+
+- [ ] NoteNest 単体版（引数なし起動）が壊れていない
+- [ ] 既存のタブ操作（新規作成・開く・保存・閉じる）が引き続き動く
+- [ ] バージョン番号が v1.10.2 になっている
+
+### 自動確認
+
+1. `ApplicationVersionTests` でアプリバージョンが `1.10.2` であることを確認する（自動）。
+2. `NestSuiteShellTests` の新規追加テスト（`StartupTabPolicy_*` 系 / `StartupArgParser_*` 系）がパスすることを確認する（自動）。
+3. 以下の全テストがパスすることを確認する（自動）：
+   `NestSuiteShellTests` / `NestSuiteDocumentTabTests` / `ThreeToolsMultiTabRegressionTests` /
+   `ApplicationVersionTests` / `NestSuiteMultiFileTabsDesignTests`
