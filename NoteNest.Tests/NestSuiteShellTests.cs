@@ -1169,4 +1169,54 @@ public class NestSuiteShellTests
         var args = new[] { "--nestsuite" };
         Assert.Null(StartupArgParser.GetFilePath(args));
     }
+
+    // ── v1.14.0: NestSuite 最近使ったファイル ──────────────────────────────
+
+    [Fact]
+    public void NestSuiteShellWindow_HasRecentFilesMenuField()
+    {
+        // v1.14.0: XAML x:Name="RecentFilesMenu" による最近ファイルメニューフィールドの存在・型確認
+        var field = typeof(NestSuiteShellWindow)
+            .GetFields(AllInstance)
+            .FirstOrDefault(f => f.Name == "RecentFilesMenu");
+        Assert.NotNull(field);
+        Assert.Equal(typeof(MenuItem), field!.FieldType);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasUpdateRecentFilesMenuMethod()
+    {
+        // v1.14.0: UpdateRecentFilesMenu が最近ファイルメニュー更新ヘルパーとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("UpdateRecentFilesMenu",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+        Assert.Empty(method.GetParameters());
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasRecentFilesServiceField()
+    {
+        // v1.14.0: _recentFiles フィールド（NestSuiteRecentFilesService）が追加されていることを確認
+        var field = typeof(NestSuiteShellWindow)
+            .GetFields(AllInstance)
+            .FirstOrDefault(f => f.FieldType == typeof(NestSuiteRecentFilesService));
+        Assert.NotNull(field);
+    }
+
+    [Fact]
+    public void NestSuiteRecentFilesService_DefaultDataPath_ContainsNestSuiteFileName()
+    {
+        // v1.14.0: デフォルトパスが旧単体版 recent-files.json と別ファイルであることを確認
+        // NestSuiteRecentFilesService と RecentFilesService のストレージが分離されている
+        var svcField = typeof(NestSuiteRecentFilesService)
+            .GetFields(BindingFlags.Static | BindingFlags.NonPublic)
+            .FirstOrDefault(f => f.Name == "DefaultDataPath");
+        Assert.NotNull(svcField);
+        var path = (string?)svcField!.GetValue(null);
+        Assert.NotNull(path);
+        Assert.Contains("nestsuite-recent-files.json", path, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("recent-files.json\"", path, StringComparison.OrdinalIgnoreCase);
+    }
 }

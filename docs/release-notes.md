@@ -1,3 +1,12 @@
+## v1.14.0 — NestSuite 最近使ったファイル統合（最小実装）
+
+- **NestSuite 横断の「最近使ったファイル」メニューを実装した。** ファイルメニューの「開く」直下に「最近使ったファイル」サブメニューを追加した。NoteNest / ChatNest / IdeaNest の 3 ツール横断で最大 10 件を記録し、先頭に最新ファイルを追加する。重複は先頭移動・自動排除する。
+- **`NestSuiteRecentFilesService` を新設した。** ストレージパスは `%APPDATA%\NoteNest\nestsuite-recent-files.json`（既存の NoteNest 単体版 `recent-files.json` とは別ファイル）。最大 10 件・重複排除・先頭挿入・削除・クリア・原子書き込みに対応する。
+- **ファイルが見つからない場合は履歴から自動削除する。** 最近ファイルに記録されたパスのファイルが削除・移動されていた場合、エラーダイアログを表示してそのエントリを履歴から除去する。
+- **NoteNest の「名前を付けて保存」も最近ファイルに反映する。** NoteNest タブの `CurrentFilePath` 変化を `OnNoteNestSessionPropertyChanged` でフックし、セッションが既存（ロード後の保存）の場合のみ最近ファイルに追加する。ロード時の二重追加は session 未登録タイミングの guard で自然に防いでいる。
+- **既存の NoteNest 単体版 `RecentFilesService`（`recent-files.json`、最大 5 件）は変更しない。** 旧サービスとは分離されており、`--classic-notenest` ルートへの影響はない。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v1.13.0 — 旧NoteNest単体起動ルートの保守限定化を実装に反映
 
 - **`--classic-notenest` は削除せず、限定的互換ルートとして継続した。** v1.12.0 で整理した推奨案B（保守対象を限定して維持）を継続する。`--classic-notenest` / `MainWindow` / `StartupArgParser.IsClassicMode()` は引き続き存在する。
