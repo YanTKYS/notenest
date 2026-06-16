@@ -1,3 +1,12 @@
+## v1.10.3 — NestSuite既定起動化に向けた設計整理
+
+- **NestSuite 既定起動化の移行計画を `docs/nestsuite-default-startup-plan.md` として新規作成した。** 現在の起動ルート（4 パターン）・NoteNest 単体版と NestSuite 版の並行保守課題・v1.11.0 での既定起動切り替え方針・`--classic-notenest` 退避ルートの位置づけ・v1.12.x 以降の縮退ロードマップ・廃止の前提条件を整理した。
+- **`docs/design-decisions.md` に §49（v1.10.3 設計判断）を追加した。** docs-first リリースとした理由・`--classic-notenest` フラグ名の選定理由・`--nestsuite` フラグの v1.11.0 以降の扱いを記録した。
+- **`docs/nestsuite-known-limitations.md` を更新した。** 「既定起動は NoteNest 単体版のまま」制約に「v1.11.0 で既定起動を NestSuite へ切り替え予定」の注記と計画書へのリンクを追加した。
+- **`docs/nestsuite-user-guide.md` を更新した。** 「今後の方向性」セクションを追加し、v1.11.0・v1.12.x の予定変更を案内するようにした。
+- 起動挙動・保存形式・UI は変更していない。NoteNest 保存スキーマ `1.4.1` を維持している。
+- v1.11.0 以降の候補：`NoteNest.exe` 既定起動を NestSuite へ切り替え（`--classic-notenest` 退避ルート実装）・タブ復元の設計整理・最近ファイル統合の設計整理・将来：`NoteNestWorkspaceSessionViewModel` への軽量化・将来：`MainWindow` 廃止。
+
 ## v1.10.2 — NestSuite起動時ファイル指定の初期タブちらつき修正
 
 - **`App_Startup` で `LoadInitialFile` を `Show()` より前に呼ぶよう変更した。** 従来は `shell.Show()` を先に呼んでいたため、ウィンドウ表示直後から `LoadInitialFile` 完了までの間に空の NoteNest Workspace が一瞬見える「ちらつき」が発生していた。`LoadInitialFile` を `Show()` の前に移動したことで、ウィンドウが画面に現れる時点ではすでに目的のタブが生成済みとなり、ちらつきを根本から解消した。
