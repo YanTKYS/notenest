@@ -18,6 +18,9 @@
                     <MenuItem Header="新規 IdeaNest"  Click="MenuNewIdeaNest_Click"/>
                 </MenuItem>
                 <MenuItem Header="開く(_O)..." Click="MenuOpen_Click"/>
+                <MenuItem x:Name="RecentFilesMenu" Header="最近使ったファイル(_R)">
+                    <MenuItem Header="（履歴なし）" IsEnabled="False"/>
+                </MenuItem>
                 <Separator/>
                 <MenuItem Header="上書き保存(_S)" Click="MenuSave_Click"/>
                 <MenuItem Header="名前を付けて保存(_A)..." Click="MenuSaveAs_Click"/>

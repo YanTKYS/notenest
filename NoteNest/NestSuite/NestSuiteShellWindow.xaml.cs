@@ -49,6 +49,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         new ThemeService().Apply(uiSettings.Theme);
 
         InitializeComponent();
+        UpdateRecentFilesMenu();
 
         _sidebarBorders = new Dictionary<string, Border>(StringComparer.Ordinal)
         {
@@ -162,6 +163,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     private readonly ObservableCollection<NestSuiteDocumentTab> _tabs = new();
     private readonly NestSuiteWorkspaceSessionManager _sessionManager = new();
+    private readonly NestSuiteRecentFilesService _recentFiles = new();
     private NestSuiteDocumentTab? _selectedTab;
     private bool _isActivatingTab;
 
@@ -434,6 +436,20 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         if (e.PropertyName is nameof(MainViewModel.CurrentFilePath) or nameof(MainViewModel.IsModified) &&
             sender is MainViewModel vm)
             SyncNoteNestTabForViewModel(vm);
+
+        // v1.14.0: CurrentFilePath 変化時にセッションがすでに存在する場合は保存先として最近ファイルに追加する
+        // （セッション登録前の OpenFileAtStartup による変化は session == null で除外される）
+        if (e.PropertyName == nameof(MainViewModel.CurrentFilePath) &&
+            sender is MainViewModel noteVm &&
+            noteVm.CurrentFilePath is string filePath)
+        {
+            var session = _sessionManager.Sessions.FirstOrDefault(s => ReferenceEquals(s.WorkspaceViewModel, noteVm));
+            if (session != null)
+            {
+                _recentFiles.Add(filePath);
+                UpdateRecentFilesMenu();
+            }
+        }
     }
 
     private void OnChatNestPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -495,6 +511,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             var tab = _tabs.FirstOrDefault(t => t.Id == session.TabId);
             if (tab != null)
                 ReplaceTab(tab, NestSuiteTabFactory.FromFilePath(path) with { Id = tab.Id, IsModified = false });
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
             return true;
         }
         catch (Exception ex)
@@ -575,6 +593,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             _tabs.Add(tab);
             _sessionManager.Add(session);
             ActivateTab(tab);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
         }
         catch (Exception ex)
         {
@@ -625,6 +645,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             ChatNestFileService.Save(path, vm.Messages);
             vm.MarkSaved();
             UpdateChatNestTabPath(session, path);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
             return true;
         }
         catch (Exception ex)
@@ -707,6 +729,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             _sessionManager.Add(session);
             newVm.PropertyChanged += OnChatNestPropertyChanged;
             ActivateTab(tab);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
         }
         catch (Exception ex)
         {
@@ -844,6 +868,58 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             vm.PropertyChanged -= OnChatNestPropertyChanged;
 
         return true;
+    }
+
+    // ── v1.14.0: 最近使ったファイル ──────────────────────────────────────────
+
+    /// <summary>
+    /// v1.14.0: 最近使ったファイルメニューを現在のリストで再構築する。
+    /// 空の場合は「（履歴なし）」の無効項目を表示する。
+    /// </summary>
+    private void UpdateRecentFilesMenu()
+    {
+        RecentFilesMenu.Items.Clear();
+        var files = _recentFiles.Load();
+        if (files.Count == 0)
+        {
+            RecentFilesMenu.Items.Add(new MenuItem { Header = "（履歴なし）", IsEnabled = false });
+            return;
+        }
+        foreach (var path in files)
+        {
+            var item = new MenuItem { Header = Path.GetFileName(path), ToolTip = path, Tag = path };
+            item.Click += MenuRecentFile_Click;
+            RecentFilesMenu.Items.Add(item);
+        }
+    }
+
+    /// <summary>
+    /// v1.14.0: 最近使ったファイル一覧の項目クリック。パス検証・重複チェック後に対応する Load*FileAt を呼ぶ。
+    /// ファイルが見つからない場合は一覧から削除してメニューを更新する。
+    /// </summary>
+    private void MenuRecentFile_Click(object sender, RoutedEventArgs e)
+    {
+        if (((MenuItem)sender).Tag is not string path) return;
+        if (!File.Exists(path))
+        {
+            _dialogs.ShowError(
+                $"ファイルが見つかりません。最近使ったファイルの一覧から削除します。\n\n{path}",
+                "ファイルを開けません");
+            _recentFiles.Remove(path);
+            UpdateRecentFilesMenu();
+            return;
+        }
+        if (!NestSuiteTabFactory.TryGetKind(path, out var kind)) return;
+        var existingTab = _tabs.FirstOrDefault(t =>
+            t.WorkspaceKind == kind &&
+            NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, path));
+        if (existingTab != null) { ActivateTab(existingTab); return; }
+        switch (kind)
+        {
+            case NestSuiteWorkspaceKind.NoteNest: LoadNoteNestFileAt(path); break;
+            case NestSuiteWorkspaceKind.ChatNest: LoadChatNestFileAt(path); break;
+            case NestSuiteWorkspaceKind.IdeaNest: LoadIdeaNestFileAt(path); break;
+        }
     }
 
     // ── v1.7.4: ファイルメニューハンドラ（タブ種別でディスパッチ） ─────────
@@ -1018,6 +1094,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             _tabs.Add(tab);
             _sessionManager.Add(session);
             ActivateTab(tab);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
         }
         catch (Exception ex)
         {
@@ -1087,6 +1165,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             _tabs.Add(tab);
             _sessionManager.Add(session);
             ActivateTab(tab);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
         }
         catch (Exception ex)
         {
@@ -1141,6 +1221,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             _sessionManager.Add(session);
             newVm.PropertyChanged += OnChatNestPropertyChanged;
             ActivateTab(tab);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
         }
         catch (Exception ex)
         {
@@ -1178,6 +1260,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             _tabs.Add(tab);
             _sessionManager.Add(session);
             ActivateTab(tab);
+            _recentFiles.Add(path);
+            UpdateRecentFilesMenu();
         }
         catch (Exception ex)
         {
