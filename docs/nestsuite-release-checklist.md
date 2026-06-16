@@ -1,6 +1,6 @@
-# NestSuite リリース前確認チェックリスト（v1.10.0）
+# NestSuite リリース前確認チェックリスト（v1.13.0）
 
-NestSuite 統合版のリリース前に確認する項目を整理します。
+NestSuite 統合版のリリース前に確認する項目を整理します。v1.13.0 より、NestSuite を主対象とし、`--classic-notenest` の確認は限定的互換ルートのスモーク確認として扱います。
 
 ---
 
@@ -13,7 +13,7 @@ NestSuite 統合版のリリース前に確認する項目を整理します。
 
 ---
 
-## 2. 起動確認
+## 2. 起動確認（NestSuite 主対象）
 
 - [ ] `NoteNest.exe` → NestSuite として起動する（無題 NoteNest タブ）
 - [ ] `NoteNest.exe sample.notenest` → NestSuite で `.notenest` タブを開く
@@ -21,8 +21,11 @@ NestSuite 統合版のリリース前に確認する項目を整理します。
 - [ ] `NoteNest.exe sample.ideanest` → NestSuite で `.ideanest` タブを開く
 - [ ] `NoteNest.exe --nestsuite` → NestSuite として起動する（互換フラグ、フラグなしと同じ動作）
 - [ ] `NoteNest.exe --nestsuite sample.notenest` → NestSuite で `.notenest` タブを開く
-- [ ] `NoteNest.exe --classic-notenest` → NoteNest 単体版として起動する（スタートダイアログ表示）
-- [ ] `NoteNest.exe --classic-notenest sample.notenest` → NoteNest 単体版で指定ファイルを開く
+
+### `--classic-notenest` スモーク確認（限定的互換ルート）
+
+- [ ] `NoteNest.exe --classic-notenest` → NoteNest 単体版として起動できる（起動不能でない）
+- [ ] `NoteNest.exe --classic-notenest sample.notenest` → 指定ファイルを開ける
 
 ---
 
@@ -83,29 +86,17 @@ NestSuite 統合版のリリース前に確認する項目を整理します。
 
 ---
 
-## 6. NoteNest 単体版への影響確認（`--classic-notenest` 互換ルート）
-
-- [ ] `NoteNest.exe --classic-notenest` でNoteNest単体版が起動する（スタートダイアログ表示）
-- [ ] `NoteNest.exe --classic-notenest sample.notenest` でNoteNest単体版がファイルを開く
-- [ ] 単体版で新規作成できる
-- [ ] 単体版で開く・保存・名前を付けて保存ができる
-- [ ] 単体版の未保存確認が働く
-- [ ] 単体版の最近ファイル導線が壊れていない
-
----
-
-## 7. About / バージョン表示確認
+## 6. About / バージョン表示確認
 
 - [ ] NestSuite の About に「試験統合版」と表示される
 - [ ] About に「統合検証中」という古い文言が含まれていない
-- [ ] バージョン番号が最新版（v1.10.0）になっている
-- [ ] NoteNest 単体版の About 表示が壊れていない
+- [ ] バージョン番号が最新版になっている
 
 ---
 
-## 8. ドキュメント確認
+## 7. ドキュメント確認
 
 - [ ] README に NestSuite の起動方法が記載されている
 - [ ] `docs/nestsuite-user-guide.md` が存在する
 - [ ] `docs/nestsuite-known-limitations.md` が存在する
-- [ ] `docs/release-notes.md` に v1.10.0 エントリが記載されている
+- [ ] `docs/release-notes.md` に最新バージョンエントリが記載されている

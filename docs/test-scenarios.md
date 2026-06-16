@@ -2375,6 +2375,35 @@ v1.11.0 で変更した起動ルートを確認する。
    `StartupArgParserTests` / `NestSuiteShellTests` / `NestSuiteDocumentTabTests` /
    `ThreeToolsMultiTabRegressionTests` / `ApplicationVersionTests`
 
+## §66 v1.13.0 旧NoteNest単体起動ルート保守限定化チェックリスト
+
+v1.13.0 は保守限定化の実装への反映が主。起動挙動の変更はない。
+
+### NestSuite 主対象確認
+
+- [ ] `NoteNest.exe` で NestSuite が起動すること
+- [ ] `NoteNest.exe sample.notenest` で NestSuite が `.notenest` タブを開くこと
+- [ ] `NoteNest.exe sample.chatnest` で NestSuite が `.chatnest` タブを開くこと
+- [ ] `NoteNest.exe sample.ideanest` で NestSuite が `.ideanest` タブを開くこと
+- [ ] NestSuite 上で保存・未保存確認・タブを閉じる操作が動作すること
+
+### `--classic-notenest` スモーク確認（限定的互換ルート）
+
+- [ ] `NoteNest.exe --classic-notenest` で起動できること（起動不能でない）
+- [ ] `NoteNest.exe --classic-notenest sample.notenest` で指定ファイルを開けること
+
+### docs 整合確認
+
+- [ ] `docs/nestsuite-release-checklist.md` の見出しが v1.13.0 になっている
+- [ ] リリースチェックリストの §6（旧単体版詳細確認）が縮小・削除されている
+- [ ] `docs/nestsuite-known-limitations.md` のアーキテクチャ行の表現が「限定的互換ルート」になっている
+- [ ] `docs/design-decisions.md` に §51 が追加されている
+
+### 自動確認
+
+1. `ApplicationVersionTests` でアプリバージョンが `1.13.0` であることを確認する（自動）。
+2. 全テスト（`dotnet test`）がパスすることを確認する（自動）。
+
 ## §65 v1.12.0 旧NoteNest単体起動ルート縮退方針整理チェックリスト
 
 v1.12.0 は docs-only リリースのため、起動挙動が変わっていないことの確認が主となる。

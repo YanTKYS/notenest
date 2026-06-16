@@ -195,7 +195,7 @@ NestSuite は、NoteNest / ChatNest / IdeaNest の 3 ツールを 1 つのシェ
 - 余分な無題タブはちらつきなく作成されません
 - 詳細は [docs/nestsuite-user-guide.md](docs/nestsuite-user-guide.md) を参照してください
 
-## v1.12.0 時点の制限
+## v1.13.0 時点の制限
 
 | 機能 | 状態 |
 |------|------|
