@@ -9,8 +9,7 @@
         MinHeight="500" MinWidth="800"
         WindowStartupLocation="CenterScreen">
     <DockPanel>
-        <!-- v1.7.4 NestSuite メニュー（ファイル操作・ツール選択・ヘルプ） -->
-        <!-- ファイルメニューは選択中タブのツール種別に応じてハンドラが適切な操作を行う -->
+        <!-- ファイルメニュー: 新規/開くはツール横断、保存系は選択中タブの WorkspaceKind に応じて処理する -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="ファイル(_F)">
                 <MenuItem Header="新規(_N)">
