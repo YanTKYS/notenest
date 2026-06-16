@@ -211,6 +211,31 @@ public class ChatNestMultiTabSessionTests
             @"C:\projects\meeting.chatnest"));
     }
 
+    // ── パス正規化後の二重オープン検出（v1.9.2 fix） ────────────────────────
+
+    [Fact]
+    public void OpenFilePolicy_AfterNormalization_RelativeAndAbsolute_AreSameFile()
+    {
+        // v1.9.2 fix: Shell は IsSameFile に渡す前に Path.GetFullPath() で正規化する。
+        // 相対パス（起動引数）と絶対パス（ファイルダイアログ）が同じファイルを指す場合、
+        // 正規化後の比較で同一ファイルと判定できることを確認する。
+        var relPath = "sample.chatnest";
+        var absPath = Path.GetFullPath(relPath);  // Shell が行う正規化と同等
+
+        Assert.True(NestSuiteOpenFilePolicy.IsSameFile(
+            Path.GetFullPath(relPath),
+            absPath));
+    }
+
+    [Fact]
+    public void OpenFilePolicy_BothNormalized_DifferentFiles_AreNotSame()
+    {
+        var pathA = Path.GetFullPath("a.chatnest");
+        var pathB = Path.GetFullPath("b.chatnest");
+
+        Assert.False(NestSuiteOpenFilePolicy.IsSameFile(pathA, pathB));
+    }
+
     // ── PropertyChanged 通知の独立性 ────────────────────────────────────────
 
     [Fact]

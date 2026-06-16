@@ -229,6 +229,13 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     }
 
     /// <summary>
+    /// v1.9.2: ファイルパスをフルパスに正規化する。
+    /// タブ・Session への保存と <see cref="NestSuiteOpenFilePolicy.IsSameFile"/> 比較の両側で
+    /// 同じ形式に統一し、相対パスと絶対パスが混在しても二重オープン検出が機能するようにする。
+    /// </summary>
+    private static string NormalizeFilePath(string path) => Path.GetFullPath(path);
+
+    /// <summary>
     /// v1.9.1: 選択中タブに対応する Session を取得する。
     /// v1.9.2 以降でファイルメニュー処理を Session 経由へ置き換える際の導線。
     /// </summary>
@@ -543,6 +550,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// <summary>v1.9.2: 指定 Session の ChatNest を指定パスへ保存する。失敗時はエラーダイアログを表示し false を返す。</summary>
     private bool TrySaveChatNestToPath(NestSuiteWorkspaceSession session, string path)
     {
+        // v1.9.2 fix: 保存先パスも正規化し、タブ・Session に保存されるパスを常にフルパスに統一する
+        path = NormalizeFilePath(path);
         var vm = (ChatNestWorkspaceViewModel)session.WorkspaceViewModel;
         try
         {
@@ -588,8 +597,10 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// </summary>
     private void OpenChatNestFile()
     {
-        var path = _dialogs.SelectChatNestOpenPath();
-        if (path == null) return;
+        var rawPath = _dialogs.SelectChatNestOpenPath();
+        if (rawPath == null) return;
+        // v1.9.2 fix: 相対パスと絶対パスが混在しても比較が成立するよう正規化する
+        var path = NormalizeFilePath(rawPath);
 
         // 同じファイルが既に開いている場合は既存タブをアクティブ化する
         var existingTab = _tabs.FirstOrDefault(t =>
@@ -897,6 +908,9 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// </summary>
     private void LoadInitialChatNestFile(string path)
     {
+        // v1.9.2 fix: 起動引数は相対パスで渡される可能性があるためフルパスに正規化する
+        path = NormalizeFilePath(path);
+
         var existingTab = _tabs.FirstOrDefault(t =>
             t.WorkspaceKind == NestSuiteWorkspaceKind.ChatNest &&
             NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, path));
