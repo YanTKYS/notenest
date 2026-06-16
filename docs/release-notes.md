@@ -1,3 +1,16 @@
+## v1.9.4 — NoteNest 複数ファイルタブ対応の設計・分割
+
+- NoteNest 複数ファイルタブ対応に向けた現状棚卸しと設計整理を行った。本格実装は行っていない。
+- NoteNest の状態保持構造を整理した。`MainViewModel` が内部に `ProjectSessionViewModel` / `NoteWorkspaceViewModel` / `TaskBoardViewModel` / `MarkerPanelViewModel` / `EditorStateViewModel` を持ち、`ProjectLifecycleService` がライフサイクルを管理することを確認した。
+- タブごとに独立させるべき状態（FilePath・IsModified・Notebooks・Tasks・Markers・Editor状態など）と、共有してよいサービス（`ProjectFileService` / `ProjectDocumentService` / `ExportService` など、すべてステートレス）を整理した。
+- 設計候補A（タブごとに `MainViewModel` を生成）・B（`NoteNestWorkspaceSessionViewModel` を切り出す）・C（段階的に `MainViewModel` をタブ Session として扱う）を比較した。
+- **採用案として案C（段階的 MainViewModel per-tab）を選定した。** `ProjectLifecycleService` が ViewModel を DI で受け取る設計のため新規インスタンス生成が容易であること、ChatNest の `CreateChatNestViewModel()` と対称な実装が可能なことが理由。案Bは分割量が大きく v1.9.x での完成が危険なため採用しない。
+- 現状の制約を整理した。`SyncNoteNestTabToViewModel()` が「最初の NoteNest タブ」だけを更新すること、`ConfirmAndResetNoteNest` が共有 ViewModel をリセットすること、`RequestClose = Close` がウィンドウ全体を閉じることなど、v1.9.5 で解消すべき問題点を特定した。
+- v1.9.5 での実装計画（`CreateNoteNestViewModel()`・`SyncNoteNestTabForViewModel(MainViewModel)` 追加・`ConfirmAndResetNoteNest` 変更・`OnClosing` の Session 走査変更）を `docs/nestsuite-notenest-multi-file-plan.md` に記録した。
+- 設計固定テスト `NoteNestMultiFileDesignTests` を新規追加した（18 件：NoteNest Session の WorkspaceKind・FilePath・IsModified 独立性・SessionManager 管理・保存スキーマ 1.4.1・TabFactory 拡張子認識・二重オープン検出・ChatNest 複数タブ回帰確認）。
+- NoteNest / IdeaNest の複数ファイル対応本格実装は行っていない。NoteNest 保存スキーマ `1.4.1`、ChatNest・IdeaNest 保存形式は変更していない。
+- v1.9.5 以降の候補：NoteNest 複数ファイルタブ対応の最小実装（v1.9.5）、回帰確認・小修正（v1.9.6）、IdeaNest 複数ファイルタブ対応（v1.9.7）、3 ツール複数ファイル対応後の回帰確認（v1.9.8）。
+
 ## v1.9.3 — ChatNest 複数ファイルタブ対応後の回帰確認・小修正
 
 - v1.9.2 で実装した ChatNest 複数ファイルタブ対応の回帰確認を行い、コードレビューで指摘された小修正を適用した安定化版。新機能の追加はない。
