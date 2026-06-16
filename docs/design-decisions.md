@@ -1431,3 +1431,28 @@ v1.12.0 では起動挙動の変更は行わず、方針整理のみとした。
 | UI の改善 | 対応しない |
 
 詳細は [`docs/nestsuite-default-startup-plan.md`](nestsuite-default-startup-plan.md) を参照。
+
+## 51. v1.13.0 旧NoteNest単体起動ルートの保守限定化の実装への反映
+
+### なぜ削除でなく保守限定化としたか
+
+v1.13.0 では `--classic-notenest` / `MainWindow` の削除は行わなかった。
+
+- **前提条件がまだ揃っていない**：ファイル関連付けの NestSuite 対応・最近ファイル統合・タブ復元が未実装のまま削除すると、単体版を使い続けたい利用者への影響が出る可能性がある
+- **v1.12.0 で推奨した案Bを継続**：「緊急退避ルートとして残すが新機能は反映しない」という方針の「実装・テスト・docs への反映」フェーズが v1.13.0 の役割
+
+### 確認範囲の縮小について
+
+`nestsuite-release-checklist.md` §6 の NoteNest 単体版詳細確認を削除し、§2 の `--classic-notenest` スモーク確認（2項目）に集約した理由：
+
+- 旧単体版の詳細操作（新規作成・開く・保存・最近ファイル）は NestSuite 側で確認すべき項目。単体版に同等のテストを維持し続けることは保守コストになる
+- 「起動できること」「指定ファイルを開けること」の 2 点が「緊急退避ルートとして機能している」ことの確認として必要十分
+
+### `StartupArgParserTests` の `IsClassicMode_*` は維持した理由
+
+`--classic-notenest` フラグの認識テストは削除しなかった。
+
+- フラグ認識ロジックは `App_Startup` の起動分岐の基礎。誤動作すると NestSuite が起動しなくなるリスクがある
+- テスト件数は少ない（12件程度）のに対し削除リスクが高いため、現状維持が合理的
+
+詳細は [`docs/nestsuite-default-startup-plan.md`](nestsuite-default-startup-plan.md) を参照。

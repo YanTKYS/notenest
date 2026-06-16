@@ -1,3 +1,11 @@
+## v1.13.0 — 旧NoteNest単体起動ルートの保守限定化を実装に反映
+
+- **`--classic-notenest` は削除せず、限定的互換ルートとして継続した。** v1.12.0 で整理した推奨案B（保守対象を限定して維持）を継続する。`--classic-notenest` / `MainWindow` / `StartupArgParser.IsClassicMode()` は引き続き存在する。
+- **旧単体版の通常確認範囲を縮小し、NestSuite を主対象に整理した。** `nestsuite-release-checklist.md` の §6「NoteNest 単体版への影響確認」（詳細操作確認 6 項目）を削除し、§2 内の `--classic-notenest` スモーク確認（起動できること・指定ファイルを開けること）2 項目に集約した。About 確認からも旧単体版の確認を除外した。チェックリスト見出しを v1.13.0 に更新した。
+- **旧単体版への新機能反映は行わない方針を docs に反映した。** `nestsuite-default-startup-plan.md` の段階的移行テーブルに v1.12.0・v1.13.0 実施済みエントリを追加した。`nestsuite-known-limitations.md` のアーキテクチャ制約行の表現を「単体起動は継続する設計」から「限定的互換ルートとして残す（恒久保守対象ではない）」に修正した。`design-decisions.md` に §51 を追加した。
+- **起動挙動・保存形式は変更していない。** `NoteNest.exe` → NestSuite、`NoteNest.exe --classic-notenest` → NoteNest 単体版（スタートダイアログ）のルートは変わらない。NoteNest 保存スキーマ `1.4.1` を維持している。
+- v1.14.x 以降の候補：前提条件（NestSuite での全操作提供・ファイル関連付け整備・支障報告なし）が整った場合の `--classic-notenest` 完全削除（案C）。
+
 ## v1.12.0 — 旧NoteNest単体起動ルートの縮退方針整理
 
 - **旧NoteNest単体起動ルートの縮退方針を docs に整理した。** `--classic-notenest` を「緊急退避ルートとして当面残すが恒久的な並行保守対象ではない」という位置づけを明確化した。今後はNestSuiteを本体とし、旧NoteNest単体版は限定的な互換ルートとして扱う方針とした。
