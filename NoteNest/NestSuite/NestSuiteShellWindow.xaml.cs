@@ -936,7 +936,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     ///
     /// <para>v1.10.2: App_Startup で Show() より前に呼ぶよう変更した。指定ファイルの
     /// タブをウィンドウ表示前に生成することで起動時ちらつきを防ぐ。
-    /// エラーダイアログはウィンドウ未表示でも動作する（非モーダルで表示）。</para>
+    /// エラーダイアログは Show() 前でも MessageBox として表示できる。</para>
     /// </summary>
     public void LoadInitialFile(string path)
     {

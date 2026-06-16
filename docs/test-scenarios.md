@@ -2302,3 +2302,31 @@ v1.10.2 で修正した起動時ちらつきと Visibility デフォルト値の
 3. 以下の全テストがパスすることを確認する（自動）：
    `NestSuiteShellTests` / `NestSuiteDocumentTabTests` / `ThreeToolsMultiTabRegressionTests` /
    `ApplicationVersionTests` / `NestSuiteMultiFileTabsDesignTests`
+
+## §62 v1.10.3 NestSuite既定起動化設計整理チェックリスト
+
+v1.10.3 はコード変更なしのドキュメント整理リリース。起動挙動の変更がないことと、移行計画の整備を確認する。
+
+### 起動挙動の非変更確認
+
+- [ ] `NoteNest.exe` で NoteNest 単体版（`MainWindow`）が起動すること（従来どおり）
+- [ ] `NoteNest.exe sample.notenest` で NoteNest 単体版がファイルを開くこと（従来どおり）
+- [ ] `NoteNest.exe --nestsuite` で NestSuite が起動すること（従来どおり）
+- [ ] `NoteNest.exe --nestsuite sample.chatnest` で NestSuite が ChatNest タブを開くこと（従来どおり）
+
+### ドキュメント整備確認
+
+- [ ] `docs/nestsuite-default-startup-plan.md` が存在し、現在の起動ルート 4 パターンが記載されていること
+- [ ] `docs/nestsuite-default-startup-plan.md` に v1.11.0 実装スコープが記載されていること
+- [ ] `docs/nestsuite-default-startup-plan.md` に `--classic-notenest` の位置づけと廃止前提条件が記載されていること
+- [ ] `docs/nestsuite-default-startup-plan.md` に v1.12.x 以降の縮退ロードマップが記載されていること
+- [ ] `docs/nestsuite-known-limitations.md` に v1.11.0 予定の注記が追加されていること
+- [ ] `docs/nestsuite-user-guide.md` に「今後の方向性」セクションが追加されていること
+- [ ] `docs/design-decisions.md` に §49 が追加されていること
+
+### 自動確認
+
+1. `ApplicationVersionTests` でアプリバージョンが `1.10.3` であることを確認する（自動）。
+2. 以下の全テストがパスすることを確認する（自動）：
+   `NestSuiteShellTests` / `NestSuiteDocumentTabTests` / `ThreeToolsMultiTabRegressionTests` /
+   `ApplicationVersionTests` / `NestSuiteMultiFileTabsDesignTests`
