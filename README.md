@@ -195,7 +195,7 @@ NestSuite は、NoteNest / ChatNest / IdeaNest の 3 ツールを 1 つのシェ
 - 余分な無題タブはちらつきなく作成されません
 - 詳細は [docs/nestsuite-user-guide.md](docs/nestsuite-user-guide.md) を参照してください
 
-## v1.11.0 時点の制限
+## v1.12.0 時点の制限
 
 | 機能 | 状態 |
 |------|------|
@@ -209,6 +209,7 @@ NestSuite は、NoteNest / ChatNest / IdeaNest の 3 ツールを 1 つのシェ
 | NestSuite タブ復元 | 未対応（将来検討） |
 | NestSuite 最近ファイル統合 | 未対応（将来検討） |
 | ファイル関連付けの自動設定 | 未対応（手動設定が必要） |
+| `--classic-notenest`（旧NoteNest単体版）| v1.12.0 方針：緊急退避ルートとして当面維持。新機能は原則反映しない。v1.13.0 以降で縮退を検討 |
 
 ## 対象外機能
 
