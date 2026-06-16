@@ -1,3 +1,12 @@
+## v1.10.1 — NestSuiteのファイルを開く導線の共通化
+
+- **NestSuite の「開く」メニューを 3 形式統合ダイアログに変更した。** 従来は選択中タブの種別（NoteNest / ChatNest / IdeaNest）によってダイアログのフィルタが変わり、異なる種別のファイルを直接開けなかった。v1.10.1 では `.notenest / .chatnest / .ideanest` を一覧できる単一の OpenFileDialog を表示し、選択したファイルの拡張子から自動的に種別を判定してタブを作成するようにした。タブを選択中でなくても・どのツールのタブを選択中でも任意の種別のファイルを開ける。
+- **「新規」メニューをツール別サブメニューに分割した。** 従来の「新規(_N)」は選択中タブの種別に応じて対応ツールの新規タブを作成していた。v1.10.1 ではサブメニューを「新規 NoteNest」「新規 ChatNest」「新規 IdeaNest」に分割し、ユーザーが意図するツールを明示的に選択できるようにした。
+- **`OpenNestSuiteFile()` を追加した。** `DialogService.SelectNestSuiteOpenPath()` による共通ダイアログ → `NestSuiteTabFactory.TryGetKind()` による拡張子判定 → 重複チェック → `Load*FileAt(path)` ヘルパー呼び出しの流れで実装した。未対応拡張子は「未対応のファイル形式」エラーを表示する。
+- **`Load*FileAt(string path)` ヘルパーを抽出した。** `LoadNoteNestFileAt` / `LoadChatNestFileAt` / `LoadIdeaNestFileAt` として既存の `Open*File()` 読込部分を分離した。`Open*File()` はダイアログ・重複チェックの責務を維持し、読込ロジックをヘルパーに委譲する。
+- NoteNest 保存スキーマ `1.4.1`、ChatNest・IdeaNest 保存形式は変更していない。
+- v1.10.2 以降の候補：タブ復元の設計整理・最近ファイル統合の設計整理・将来：NoteNestWorkspaceSessionViewModel への軽量化・将来：複数ファイル一括オープン・将来：UI モダン化。
+
 ## v1.10.0 — NestSuite 統合版の実機利用整理
 
 - v1.9.9 までで整備した NestSuite 統合版（NoteNest / ChatNest / IdeaNest の 3 ツールのファイル単位タブ対応）を、実際に試用・説明・リリース判断できる状態へ整理した。新機能の追加はない。

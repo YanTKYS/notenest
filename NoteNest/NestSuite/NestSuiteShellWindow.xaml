@@ -13,7 +13,11 @@
         <!-- ファイルメニューは選択中タブのツール種別に応じてハンドラが適切な操作を行う -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="ファイル(_F)">
-                <MenuItem Header="新規(_N)" Click="MenuNew_Click"/>
+                <MenuItem Header="新規(_N)">
+                    <MenuItem Header="新規 NoteNest" Click="MenuNewNoteNest_Click"/>
+                    <MenuItem Header="新規 ChatNest"  Click="MenuNewChatNest_Click"/>
+                    <MenuItem Header="新規 IdeaNest"  Click="MenuNewIdeaNest_Click"/>
+                </MenuItem>
                 <MenuItem Header="開く(_O)..." Click="MenuOpen_Click"/>
                 <Separator/>
                 <MenuItem Header="上書き保存(_S)" Click="MenuSave_Click"/>

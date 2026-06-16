@@ -1016,4 +1016,107 @@ public class NestSuiteShellTests
         Assert.NotNull(method);
         Assert.Equal(typeof(bool), method!.ReturnType);
     }
+
+    // ── v1.10.1: NestSuite 共通「開く」導線の統合 ──────────────────────────
+
+    [Fact]
+    public void DialogService_HasSelectNestSuiteOpenPathMethod()
+    {
+        // v1.10.1: 3 形式統合 OpenFileDialog を提供するメソッドが DialogService に追加されていることを確認
+        var method = typeof(NoteNest.Services.DialogService)
+            .GetMethod("SelectNestSuiteOpenPath",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(string), method!.ReturnType);
+        Assert.Empty(method.GetParameters());
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasOpenNestSuiteFileMethod()
+    {
+        // v1.10.1: OpenNestSuiteFile が 3 形式共通「開く」の中心メソッドとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("OpenNestSuiteFile",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+        Assert.Empty(method.GetParameters());
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasLoadNoteNestFileAtMethod()
+    {
+        // v1.10.1: LoadNoteNestFileAt が OpenNestSuiteFile から呼ばれる NoteNest 読込ヘルパーとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("LoadNoteNestFileAt",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
+                null,
+                [typeof(string)],
+                null);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasLoadChatNestFileAtMethod()
+    {
+        // v1.10.1: LoadChatNestFileAt が OpenNestSuiteFile から呼ばれる ChatNest 読込ヘルパーとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("LoadChatNestFileAt",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
+                null,
+                [typeof(string)],
+                null);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_HasLoadIdeaNestFileAtMethod()
+    {
+        // v1.10.1: LoadIdeaNestFileAt が OpenNestSuiteFile から呼ばれる IdeaNest 読込ヘルパーとして宣言されていることを確認
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("LoadIdeaNestFileAt",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
+                null,
+                [typeof(string)],
+                null);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+    }
+
+    [Fact]
+    public void NestSuiteShellWindow_MenuNew_Click_IsRemovedInV1101()
+    {
+        // v1.10.1: MenuNew_Click（ツール種別ディスパッチ）は 3 つのツール別ハンドラに置き換えられた
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("MenuNew_Click",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        Assert.Null(method);
+    }
+
+    [Fact]
+    public void NestSuiteTabFactory_TryGetKind_NoteNestExtension_ReturnsNoteNestKind()
+    {
+        // v1.10.1: OpenNestSuiteFile が .notenest を NoteNest として識別できることの確認
+        Assert.True(NestSuiteTabFactory.TryGetKind("sample.notenest", out var kind));
+        Assert.Equal(NestSuiteWorkspaceKind.NoteNest, kind);
+    }
+
+    [Fact]
+    public void NestSuiteTabFactory_TryGetKind_ChatNestExtension_ReturnsChatNestKind()
+    {
+        // v1.10.1: OpenNestSuiteFile が .chatnest を ChatNest として識別できることの確認
+        Assert.True(NestSuiteTabFactory.TryGetKind("sample.chatnest", out var kind));
+        Assert.Equal(NestSuiteWorkspaceKind.ChatNest, kind);
+    }
+
+    [Fact]
+    public void NestSuiteTabFactory_TryGetKind_UnsupportedExtension_ReturnsFalse()
+    {
+        // v1.10.1: 未対応拡張子は TryGetKind が false を返すことを確認（OpenNestSuiteFile のエラー分岐の前提）
+        Assert.False(NestSuiteTabFactory.TryGetKind("document.txt", out _));
+        Assert.False(NestSuiteTabFactory.TryGetKind("document.docx", out _));
+        Assert.False(NestSuiteTabFactory.TryGetKind("noextension", out _));
+    }
 }

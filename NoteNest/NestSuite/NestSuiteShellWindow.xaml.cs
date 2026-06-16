@@ -546,6 +546,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// <summary>
     /// v1.9.7: .ideanest ファイルを開き、新しい IdeaNest タブ／Session を作成してロードする。
     /// 同じファイルが既に開かれている場合は既存タブをアクティブ化する。
+    /// v1.10.1: 読込ロジックを LoadIdeaNestFileAt に分離した。
     /// </summary>
     private void OpenIdeaNestFile()
     {
@@ -558,6 +559,12 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, path));
         if (existingTab != null) { ActivateTab(existingTab); return; }
 
+        LoadIdeaNestFileAt(path);
+    }
+
+    /// <summary>v1.10.1: パス指定で IdeaNest ファイルを読み込みタブを作成する。ダイアログ・重複チェックは呼び元の責務。</summary>
+    private void LoadIdeaNestFileAt(string path)
+    {
         try
         {
             var workspace = IdeaNestFileService.Load(path);
@@ -670,30 +677,30 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// <summary>
     /// v1.9.2: .chatnest ファイルを開き、新しい ChatNest タブ／Session を作成してロードする。
     /// 同じファイルが既に開かれている場合は既存タブをアクティブ化する。
+    /// v1.10.1: 読込ロジックを LoadChatNestFileAt に分離した。
     /// </summary>
     private void OpenChatNestFile()
     {
         var rawPath = _dialogs.SelectChatNestOpenPath();
         if (rawPath == null) return;
-        // v1.9.2 fix: 相対パスと絶対パスが混在しても比較が成立するよう正規化する
         var path = NormalizeFilePath(rawPath);
 
-        // 同じファイルが既に開いている場合は既存タブをアクティブ化する
         var existingTab = _tabs.FirstOrDefault(t =>
             t.WorkspaceKind == NestSuiteWorkspaceKind.ChatNest &&
             NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, path));
-        if (existingTab != null)
-        {
-            ActivateTab(existingTab);
-            return;
-        }
+        if (existingTab != null) { ActivateTab(existingTab); return; }
 
+        LoadChatNestFileAt(path);
+    }
+
+    /// <summary>v1.10.1: パス指定で ChatNest ファイルを読み込みタブを作成する。ダイアログ・重複チェックは呼び元の責務。</summary>
+    private void LoadChatNestFileAt(string path)
+    {
         try
         {
             var newVm = new ChatNestWorkspaceViewModel();
             var messages = ChatNestFileService.Load(path);
             newVm.LoadMessages(messages);
-
             var tab = NestSuiteTabFactory.FromFilePath(path);
             var session = new NestSuiteWorkspaceSession(tab.Id, NestSuiteWorkspaceKind.ChatNest, newVm, path, false);
             _tabs.Add(tab);
@@ -843,35 +850,40 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     // ツール種別を明示的に分岐することで、IdeaNest 選択中に非表示の NoteNest へ
     // 操作が流れることを防ぐ。3 ツールすべてを選択中タブの WorkspaceKind で分岐する。
 
-    private void MenuNew_Click(object sender, RoutedEventArgs e)
-    {
-        switch (_selectedTab?.WorkspaceKind)
-        {
-            case NestSuiteWorkspaceKind.NoteNest:
-                NewNoteNestSession();
-                break;
-            case NestSuiteWorkspaceKind.ChatNest:
-                NewChatNestSession();
-                break;
-            case NestSuiteWorkspaceKind.IdeaNest:
-                NewIdeaNestSession();
-                break;
-        }
-    }
+    private void MenuNewNoteNest_Click(object sender, RoutedEventArgs e) => NewNoteNestSession();
+    private void MenuNewChatNest_Click(object sender, RoutedEventArgs e)  => NewChatNestSession();
+    private void MenuNewIdeaNest_Click(object sender, RoutedEventArgs e)  => NewIdeaNestSession();
 
-    private void MenuOpen_Click(object sender, RoutedEventArgs e)
+    private void MenuOpen_Click(object sender, RoutedEventArgs e) => OpenNestSuiteFile();
+
+    /// <summary>
+    /// v1.10.1: 共通「開く」ダイアログ。3 形式すべてに対応した単一 OpenFileDialog を表示し、
+    /// 拡張子から自動的に種別を判定してタブを作成する。ツール選択中に関わらず任意の形式を開ける。
+    /// </summary>
+    private void OpenNestSuiteFile()
     {
-        switch (_selectedTab?.WorkspaceKind)
+        var rawPath = _dialogs.SelectNestSuiteOpenPath();
+        if (rawPath == null) return;
+        var path = NormalizeFilePath(rawPath);
+
+        if (!NestSuiteTabFactory.TryGetKind(path, out var kind))
         {
-            case NestSuiteWorkspaceKind.NoteNest:
-                OpenNoteNestFile();
-                break;
-            case NestSuiteWorkspaceKind.ChatNest:
-                OpenChatNestFile();
-                break;
-            case NestSuiteWorkspaceKind.IdeaNest:
-                OpenIdeaNestFile();
-                break;
+            _dialogs.ShowError(
+                "このファイル形式はNestSuiteでは開けません。\n対応形式: .notenest, .chatnest, .ideanest",
+                "未対応のファイル形式");
+            return;
+        }
+
+        var existingTab = _tabs.FirstOrDefault(t =>
+            t.WorkspaceKind == kind &&
+            NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, path));
+        if (existingTab != null) { ActivateTab(existingTab); return; }
+
+        switch (kind)
+        {
+            case NestSuiteWorkspaceKind.NoteNest: LoadNoteNestFileAt(path); break;
+            case NestSuiteWorkspaceKind.ChatNest: LoadChatNestFileAt(path); break;
+            case NestSuiteWorkspaceKind.IdeaNest: LoadIdeaNestFileAt(path); break;
         }
     }
 
@@ -975,6 +987,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// <summary>
     /// v1.9.5: .notenest ファイルを開き、新しい NoteNest タブ／Session を作成してロードする。
     /// 同じファイルが既に開かれている場合は既存タブをアクティブ化する。
+    /// v1.10.1: 読込ロジックを LoadNoteNestFileAt に分離した。
     /// </summary>
     private void OpenNoteNestFile()
     {
@@ -987,6 +1000,12 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, path));
         if (existingTab != null) { ActivateTab(existingTab); return; }
 
+        LoadNoteNestFileAt(path);
+    }
+
+    /// <summary>v1.10.1: パス指定で NoteNest ファイルを読み込みタブを作成する。ダイアログ・重複チェックは呼び元の責務。</summary>
+    private void LoadNoteNestFileAt(string path)
+    {
         try
         {
             var vm = CreateNoteNestViewModel();
