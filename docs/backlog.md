@@ -1,16 +1,38 @@
-# Backlog — NoteNest
+# Backlog — NestSuite / NoteNest
 
-実装候補の一覧です。実装済み項目は release-notes.md を参照してください。
-設計判断の背景は [docs/design-decisions.md](design-decisions.md) を参照してください。
+## このファイルの位置づけ
 
-**優先度の定義**
-- **A**：日常操作の体感改善が大きい・既存設計と相性が良い・WPF 標準 TextBox の範囲内
-- **B**：有益だが影響範囲・設計コストが中程度
-- **C**：長期的に有望だが現時点では慎重に扱う
+このファイルは「今後の実装候補」を整理する場所です。完了履歴を積み上げる場所ではありません。
+
+- **実装済み項目**は `docs/release-notes.md` を参照してください
+- **設計判断の背景**は `docs/design-decisions.md` を参照してください
+- **既知の制約**は `docs/nestsuite-known-limitations.md` を参照してください
+
+### 現在の主方針
+
+- **NestSuite が現在の主起動ルート**です（v1.11.0 以降、`NoteNest.exe` 既定 = NestSuite）
+- NoteNest / ChatNest / IdeaNest の 3 ツールは、NestSuite のファイル単位タブとして動作しています
+- `--classic-notenest` は**限定的互換ルート**です（緊急退避用、恒久保守対象ではない）
+- 今後の新機能候補は原則として NestSuite を対象とします。旧 NoteNest 単体版への反映は行いません
 
 ---
 
-## 低難易度
+## 優先度の定義
+
+- **A**：現行運用上の体感改善が大きく、既存設計への影響が小さい
+- **B**：有益だが、設計整理や複数 Workspace への影響確認が必要
+- **C**：長期的に有望だが、現時点では慎重に扱う
+- **D**：当面見送り、または方針上実装しない
+
+NoteNest Workspace の改善では「WPF 標準 TextBox の範囲内かどうか」を追加判断基準として参照してください。
+
+---
+
+## NoteNest Workspace 改善候補
+
+NestSuite 上の NoteNest Workspace（`.notenest` タブ）に対する改善候補です。
+
+### 低難易度
 
 既存 UI・データ構造への影響が小さく、比較的短期間で実装可能な項目。
 
@@ -23,9 +45,7 @@
 | L6 | 右ペインのタスク・マーカー件数バッジ | タスクグループ見出しに未完了件数、マーカー見出しにフィルタ後件数を控えめに表示する。`FilteredMarkerCountText` はすでに算出済みのため追加コストが小さい | B |
 | L8 | `.bak` 復元ガイドへの導線 | ヘルプメニュー等から `.bak` ファイルの復元方法を確認できるようにする。自動復元ではなく、operation-note への案内に留める | B |
 
----
-
-## 中難易度
+### 中難易度
 
 既存 UI・サービス層への変更を伴うが、新たな外部依存を増やさない項目。
 
@@ -39,9 +59,7 @@
 | M7 | ノート間リンクのノートブック名修飾 | `[[ノートブック名/ノート名]]` 形式での一意指定。リンク解決ロジックの変更と挿入ダイアログへの反映が必要 | C |
 | M8 | 検索の正規表現対応 | 現在は単純文字列検索。正規表現モードを既存検索ダイアログに追加 | C |
 
----
-
-## 高難易度
+### 高難易度
 
 エディタ内部構造・既存設計に大きく影響するため、長期的な検討が必要な項目。
 
@@ -51,71 +69,88 @@
 | H2 | 編集箇所の行番号ハイライト | 現在編集中の行番号を視覚的に強調。WPF 標準 TextBox ではキャレット位置と行番号ガターの同期が複雑になる | C |
 | H3 | ノートリンクの視覚的ハイライト | エディタ内の `[[ノート名]]` を色付き表示。WPF 標準 TextBox では安全な実装が難しく、エディタ部品の差し替えが前提 | C |
 | H4 | マーカー行の表示／非表示 | `[TODO]` `[FIXME]` `[NOTE]` を含む行を一時的に非表示にする。表示用テキストと保存用本文の乖離リスクがあり慎重な設計が必要 | C |
-| H5 | 保守性改善：DI 導入の技術検証 | Microsoft.Extensions.DependencyInjection 等を用いた依存性注入を小規模に検証する。全面導入は慎重に判断する | C |
-| H6 | 保守性改善：Attached Behavior 導入検討 | ドラッグ＆ドロップ等の UI 固有処理をコードビハインドから切り出すため、必要箇所に限定して検討する | C |
 
 ---
 
-## NestSuite対応準備
+## NestSuite 改善候補
 
-NestSuiteへの将来的な統合に向けた準備作業。すぐに実装するものではなく、v1.5.x以降の候補として記載する。
-設計の背景は [`docs/nestsuite-preparation.md`](nestsuite-preparation.md) を参照。
+NestSuite シェル・タブ管理・起動導線に関する改善候補です。
 
-※ N1「AppShell / Workspace 境界の棚卸し」は v1.5.1 で `ArchitectureBoundaryTests.cs` の追加とドキュメント整備により完了。
-※ N2「Workspace側のAppShell依存チェック強化」は v1.5.2 でソース文字列チェック・Model型・Window継承チェックを追加して完了。
-  IL解析や Roslyn Analyzer の本格導入は現状では見送り（残課題として design-decisions.md §25 に記録）。
-※ N3「NoteNestWorkspaceView 構想の設計」は v1.5.3 で設計メモを追加して完了。
-※ N4「NoteNestWorkspaceView 実切り出し」は v1.5.5 で完了。`Views/NoteNestWorkspaceView.xaml` を新規作成し、5 列グリッドとイベントハンドラを `MainWindow` から分離した。
+| 項目 | 概要 | 優先度 |
+|------|------|--------|
+| タブ復元 | アプリ再起動後、前回開いていたタブ（ファイルパス・アクティブタブ）を復元する | B |
+| 最近ファイル統合 | NestSuite としての統合最近ファイルリスト（3 ツール横断）を実装する | B |
+| 複数ファイル一括オープン | ファイルダイアログで複数ファイルを同時選択し、それぞれタブとして開く | B |
+| タブ並び替え | ドラッグ&ドロップによるタブの順序変更を実装する | B |
+| ファイル関連付けの案内または自動設定 | `.notenest` / `.chatnest` / `.ideanest` のファイル関連付けの設定手順をアプリ内から案内する。インストーラーによる自動設定は依存増大のため慎重に判断する | B |
+| 起動時エラー時の案内改善 | 未対応拡張子や読込失敗時のエラーダイアログに、NestSuite の使い方説明や対処方法を加える | B |
 
-| No | 項目 | 概要 | 優先度 |
-|----|------|------|--------|
-※ N5「NestSuite 最小 AppShell 骨格」は v1.6.0 で完了。`NoteNest/NestSuite/NestSuiteShellWindow.xaml` を新設し、`NoteNestWorkspaceView` をホストする WPF Window 骨格を追加。`IWorkspaceDialogHost` を明示的実装で委譲。
-※ N7「NestSuiteShellWindow 起動導線検討」は v1.6.1 で完了。`--nestsuite` コマンドライン引数と `StartupArgParser` を追加し、開発・検証用の起動導線を実現した。
-※ N8「NestSuite 統合母体の最小成立」は v1.6.2 で完了。`NestSuiteShellWindow` を統合母体の最小構成として整備した。ツール選択領域・Workspace 領域・最小メニュー・ステータスバーを追加し、`NestSuiteToolRegistry` を新設。
-※ N9「NestSuite 内 NoteNest ファイル操作整理」は v1.6.3 で完了。ファイルメニューに新規・開く・保存・名前を付けて保存を追加。ツールメニュー追加。動的ステータスバー実装。StartupArgParser に GetFilePath を追加し `--nestsuite + ファイルパス` 起動に対応。
-※ N10「NestSuite ツール切替モデル整理」は v1.6.4 で完了。`NestSuiteTool` 定義モデル新設。`NestSuiteToolRegistry.ToolDefinitions` 追加。`SelectTool()` でサイドバー・ツールメニュー・ステータスバー・Workspace 表示を一括切替。IdeaNest / ChatNest 選択時に未統合プレースホルダーを表示。v1.6.x はここで終了し、次は v1.7.0 で IdeaNest または ChatNest の統合検証を行う。
-※ N11「NestSuite ChatNest 統合検証」は v1.7.0 で完了。参照ソース ChatNest v0.4.1（`reference/external/chatnest-v0.4.1/`）の Workspace 部分（Model・ViewModel・View・Converter）を `NestSuite/ChatNest/` へ取り込み、ChatNest を統合検証段階（`IsIntegrated=true`）として NestSuite 上で表示・切替できるようにした。`SelectTool()` を NoteNest / ChatNest / 未統合プレースホルダーの 3 状態に一般化。IdeaNest は未統合のまま。ChatNest AppShell・`.chatnest` 保存・ファイル単位タブは取り込まず次段階へ。最終的な NestSuite タブはツール単位ではなくファイル／作業単位を想定する。
-※ N12「ファイル単位タブの最小設計」は v1.7.2 で完了。`NestSuiteWorkspaceKind` enum・`NestSuiteDocumentTab` sealed record・`NestSuiteTabFactory` 骨格を追加。タブはツール単位ではなくファイル／作業単位。拡張子（.notenest / .chatnest / .ideanest）と WorkspaceKind の対応を確立。本格 TabControl 実装・.chatnest 保存・IdeaNest 統合は次段階。
-※ N13「ファイル単位タブ UI の最小骨格」は v1.7.3 で完了。`NestSuiteShellWindow` の Column 1 に `ListBox` タブストリップを追加。`ObservableCollection<NestSuiteDocumentTab>` でタブ管理。`ActivateTab()` / `EnsureTabForToolId()` でタブ切替を一元管理。サイドバーをツール切替からタブランチャーに変更。design-decisions.md §37 追加。
-※ N14「ChatNest の .chatnest 保存／読込」は v1.7.4 で完了。`ChatNestFileService` 新設（Save/Load, tmp+replace, v0.4.1 互換）。`DialogService` に `SelectChatNestOpenPath` / `SelectChatNestSavePath` を追加。ファイルメニューを Click ハンドラ化し `SelectedToolId` でディスパッチ。`OnClosing` を「保存しますか？ Yes/No/Cancel」に更新（パスあり時）。design-decisions.md §38 追加。
-※ N15「ファイル単位タブ・ChatNest 保存の回帰確認・小修正」は v1.7.5 で完了。`SetChatNestTabPath` の `IsModified = false` バグを修正（案A: `HasUnsavedChanges` を参照するよう変更）。`ChatNestWorkspaceViewModelTests` に案A動作テスト 4 件追加。`NestSuiteDocumentTabTests` に拡張子混同防止テスト 3 件追加。
-※ N16「タブを閉じる操作の最小対応」は v1.7.6 で完了。タブ閉じボタン（×）・未保存確認・最後の 1 枚を閉じた場合の無題 NoteNest タブ自動作成・隣接タブへの移動を実装。`_isClosingTab` フラグで NoteNest VM リセット中の二重同期を抑制。`MainViewModel.CreateNewProjectDirect()` を追加。
-※ N18「起動時 .chatnest ファイル指定の最小対応」は v1.7.7 で完了。`LoadInitialFile` を拡張し `.chatnest` 起動時読込に対応。`LoadInitialChatNestFile` を追加。StartupArgParser 変更なし（既存 `GetFilePath` で対応）。
-※ N19「IdeaNest統合前のファイル単位タブ回帰確認・小修正」は v1.7.8 で完了。`OpenChatNestFile` / `NewChatNestSession` のスタレコードバグを修正（`LoadMessages` / `Clear()` 後に `SyncChatNestTab` がタブを置換し、`_tabs.IndexOf(tab)` が -1 になる問題を Id ルックアップで解消）。`NestSuiteDocumentTabTests` に IdeaNest 拡張子テスト 2 件追加。
-※ N20「IdeaNest 統合検証」は v1.8.0 で完了。IdeaNest v1.1.4 参照ソースから Models・Commands・Converters・Services・ViewModels・Views を `NestSuite/IdeaNest/` へ取り込み。`NestSuiteShellWindow` に `IdeaNestWorkspaceView` を追加し、IdeaNest タブ選択時に Workspace を表示。カード追加・編集・削除・ピン・アーカイブ・プレビュー・タグ管理・フィルタリングが動作。`IsIntegrated=true`（統合検証段階）に変更。`.ideanest` 保存・読込は v1.8.0 では未対応。
-※ 「IdeaNest統合後の回帰確認・小修正」は v1.8.1 で完了。`LoadInitialFile` に `.ideanest` 明示ケース追加、変更通知を `PropertyChanged` 経路に一本化（`DirtyRequested` 削除）、`NestSuiteTabFactory` コメント更新。テスト 13 件追加・更新。`.ideanest` を NoteNest / ChatNest として誤認しないこと・起動時指定でアプリが落ちないことを確認。
-※ N22「起動時ファイル指定時の無題NoteNestタブ生成修正」は v1.8.6 で完了。`NestSuiteShellWindow` コンストラクタに `string? initialFilePath = null` を追加し、ファイル指定ありの場合は初期タブを作成しないようにした。`EnsureDefaultTab()` を追加し、失敗パスのみ無題NoteNestタブを保証する。6パターン（ファイルなし・各拡張子成功・存在しない・未対応拡張子）の起動動作を確認。
-※ N23「同一ツール複数ファイル対応の設計整理」は v1.9.0 で完了。`docs/nestsuite-multi-file-tabs-plan.md` を新設し、現状構造・課題・設計案比較・採用案（案B: タブ ID と WorkspaceSession 別管理）・ツール別難易度・v1.9.x ロードマップを整理。二重オープン判定の比較方針を `NestSuiteOpenFilePolicy` に固定。本格実装は v1.9.1 以降。
-※ N24「WorkspaceSession / TabSession 管理の最小骨格」は v1.9.1 で完了。`NestSuiteWorkspaceSession`・`NestSuiteWorkspaceSessionManager` を追加。タブ作成・削除に Session 作成・破棄を接続。`TryGetActiveSession` でファイルメニュー Session 経由化の導線を設置。テスト 16+7 件追加。`docs/nestsuite-multi-file-tabs-plan.md` を新設し、現状構造・課題・設計案比較・採用案（案B: タブ ID と WorkspaceSession 別管理）・ツール別難易度・v1.9.x ロードマップを整理。二重オープン判定の比較方針を `NestSuiteOpenFilePolicy` に固定。本格実装は v1.9.1 以降。
+---
 
-| No | 項目 | 概要 | 優先度 |
-|----|------|------|--------|
-| N6 | MainViewModel Workspace Facade 分離 | `MainViewModel` から Workspace 固有プロパティ・コマンドを `NoteNestWorkspaceViewModel`（仮）へ段階的に引き出す。DataContext を差し替えることで NestSuite AppShell との接続が容易になる。XAML バインディングへの影響を最小化しながら段階的に移行する | B |
-| N17 | 複数 NoteNest タブの独立した ViewModel 管理 | 現状 `WorkspaceView` は 1 つで複数タブが同じ VM を共有している。タブごとに VM を生成・破棄するライフサイクル管理を実装する。v1.9.0 で設計整理済み（案B採用）。NoteNest は最重量のため v1.9.4 で着手予定 | B |
-| N21 | IdeaNest `.ideanest` 保存・読込 | NestSuite の IdeaNest タブで `.ideanest` ファイルの保存・読込を実装する。ファイルメニューの新規・開く・保存・名前を付けて保存を有効化する。v1.8.2 で方針整理、v1.8.3 で最小保存／読込・UI ワイヤリング・起動時指定を実装済み。同一ツール複数ファイルは将来改善 | B |
-| N24 | WorkspaceSession / TabSession 管理の最小骨格 | 案B（タブ ID と WorkspaceSession 別管理）に基づき、TabId をキーに Session を束ねる最小骨格を実装する。最初は最軽量の ChatNest 1 種で実証する。v1.9.1 候補 | B |
-| N25 | ChatNest 複数ファイルタブ対応 | ChatNest を最初の複数ファイル対応実証対象として、タブごとに `ChatNestWorkspaceViewModel` インスタンスを持つ構造に移行する。v1.9.2 候補 | B |
-| N26 | IdeaNest 複数ファイルタブ対応 | ChatNest の実証後、IdeaNest をタブごとの `IdeaNestWorkspaceViewModel` 独立化へ移行する。v1.9.3 候補 | B |
-| N27 | NoteNest 複数ファイルタブ対応の設計・分割 | 最重量の `MainViewModel`（5 サブ VM＋タイマ＋オートセーブ＋最近ファイル）をタブごとに持つための設計・分割。Session 骨格を ChatNest/IdeaNest で確立後に着手する。v1.9.4 候補 | C |
+## 保守性改善候補
+
+アーキテクチャ・テスト・コード品質に関する改善候補です。
+
+| 項目 | 概要 | 優先度 |
+|------|------|--------|
+| N6: NoteNestWorkspaceSessionViewModel への軽量化 | `MainViewModel` から Workspace 固有プロパティ・コマンドを段階的に切り出し、NestSuite AppShell との接続を整理する。DataContext を差し替えることでタブ管理の効率化が見込める。XAML バインディングへの影響を最小化しながら段階的に移行する | C |
+| DI 導入の小規模技術検証 | Microsoft.Extensions.DependencyInjection 等を用いた依存性注入を小規模に検証する。全面導入は慎重に判断する | C |
+| Attached Behavior 導入検討 | ドラッグ＆ドロップ等の UI 固有処理をコードビハインドから切り出すため、必要箇所に限定して検討する | C |
+
+---
+
+## 条件付き候補
+
+以下は、特定の前提条件が整った場合のみ実施する候補です。現時点では実施しません。
+
+### `--classic-notenest` 完全削除
+
+`--classic-notenest` / `MainWindow` / `StartupDialog` を削除し、NestSuite に一本化する。
+
+**実施条件（すべて揃っていること）：**
+1. NestSuite で NoteNest 単体版の全操作（新規・開く・保存・名前を付けて保存・エクスポート・最近ファイル）が利用できること
+2. ファイル関連付け（`.notenest` ダブルクリック）が NestSuite 版で整備されていること
+3. 廃止への支障報告がないこと（v1.12.x 以降の猶予期間を経ていること）
+4. 移行説明（docs・リリースノート）が完了していること
+
+詳細は `docs/nestsuite-default-startup-plan.md` を参照。
 
 ---
 
 ## 対象外・当面見送り
 
-NoteNest の設計方針から意図的に除外しているもの。要望があっても原則実装しません。
+設計方針から意図的に除外しているもの、または当面実装しないもの。
 
 | 機能 | 理由 |
 |------|------|
 | 画像貼り付け | 軽量テキスト管理ツールの軸がぶれる。単一 JSON への画像埋め込みはファイルサイズ増大を招く |
 | 共同編集 | ローカル単一ファイル管理の方針と根本的に合わない。排他制御・マージ処理が複雑 |
 | クラウド同期 | ローカル利用を前提としている。OneDrive 等のフォルダへ手動配置で代替可能 |
-| タスク期限・優先度 | モデル拡張だけでなく、表示・通知・ソート設計が広範に必要 |
+| タスク期限・優先度 | モデル拡張だけでなく、表示・通知・ソート設計が広範に必要。当面見送り |
 | 通知機能 | タスク期限が前提。デスクトップ通知の OS 依存があり方針未定 |
 | 高機能 Markdown エディタ化 | エディタ部品の差し替えは影響範囲が大きい。安定性優先のため見送り |
-| Markdown プレビュー | WebView2 等の依存が増える。標準 TextBox 方針と整合しない |
+| Markdown プレビュー | WebView2 等の依存が増える。標準 TextBox 方針と整合しない。当面見送り |
 | シンタックスハイライト | 高機能エディタ部品が前提 |
 | 添付ファイル管理 | 単一 JSON ファイルとの相性が悪い |
 | バックアップ自動化 | `.notenest` ファイルのコピーで代替可能。アプリ内実装は過剰 |
-| 複数プロジェクトのタブ管理 | 多重起動で代替可能 |
+| プロジェクト横断ダッシュボード | 複数プロジェクトの集計・横断検索。複数起動で代替可能。NestSuite のタブはファイル単位のため、プロジェクト横断集計は設計方針と合わない |
 | 文字数表示 | 現時点の主要価値（プロジェクト管理）に対して優先度が低い |
 | Git 連携 | `.notenest` ファイルをコミット対象とすれば外部ツールで完結 |
+| 旧 NoteNest 単体版への新機能追加 | `--classic-notenest` は限定的互換ルートであり、恒久保守対象ではない。新機能は NestSuite に反映する |
+
+---
+
+## 完了済み項目の参照先
+
+過去に完了した実装候補の詳細は以下を参照してください。
+
+- **`docs/release-notes.md`**：バージョン別の実装内容
+- **`docs/design-decisions.md`**：設計判断の背景と理由
+
+主な完了項目（v1.9.x）：
+- WorkspaceSession / TabSession 管理（N24、v1.9.1）
+- ChatNest 複数ファイルタブ対応（N25、v1.9.2〜v1.9.3）
+- NoteNest 複数ファイルタブ対応の設計・実装（N27→案C、v1.9.4〜v1.9.5）
+- IdeaNest 複数ファイルタブ対応（N26、v1.9.7）
+- 3ツール複数ファイル対応後の回帰確認（v1.9.8）
+- IdeaNest `.ideanest` 保存・読込（N21、v1.8.3）
