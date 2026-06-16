@@ -1,3 +1,11 @@
+## v1.11.1 — 既定起動切替後の回帰確認・小修正
+
+- **docs の起動説明を v1.11.0 以降の挙動に合わせて修正した。** `README.md` の「スタートダイアログ」セクション見出しを「v1.2.6」から「`--classic-notenest` 使用時」に変更し、「EXE を直接起動するとスタートダイアログが表示される」という v1.11.0 以降と矛盾する記述を削除した。`docs/operation-note.md` の同セクションも同様に更新し、スタートダイアログは `--classic-notenest` 使用時のみ表示される旨を明記した。
+- **`docs/nestsuite-release-checklist.md` の起動確認項目を v1.11.0 以降の仕様に更新した。** §2 起動確認で「`NoteNest.exe` → NoteNest 単体版として起動する」などの旧記述を NestSuite 既定起動・`--classic-notenest` 互換ルートの両方を含む記述に差し替えた。§6 も「引数なし起動・単独指定起動でNoteNest単体版が起動する」から `--classic-notenest` ルートの確認に更新した。
+- **`docs/design-decisions.md` §31 の v1.6.1 設計判断に v1.11.0 での変更注記を追加した。** 「既定起動への影響ゼロ（フラグなし = 従来の NoteNest 単体版）」という前提が v1.11.0 で覆ったことを注記した。
+- 起動挙動・保存形式・UI は変更していない。NoteNest 保存スキーマ `1.4.1` を維持している。
+- v1.12.x 以降の候補：`--classic-notenest` ルートの縮退・廃止検討・タブ復元・最近ファイル統合。
+
 ## v1.11.0 — 既定起動をNestSuiteへ切り替え
 
 - **`NoteNest.exe` の既定起動を NestSuite に切り替えた。** v1.10.x までは `--nestsuite` フラグなしの起動は NoteNest 単体版（`MainWindow`）だった。v1.11.0 からはフラグなしでも NestSuite（`NestSuiteShellWindow`）が起動する。
