@@ -1,3 +1,12 @@
+## v1.9.6 — NoteNest 複数ファイルタブ対応後の回帰確認・小修正
+
+- v1.9.5 で実装した NoteNest 複数ファイルタブ対応のレビューで指摘されたタイマーリーク問題を修正した安定化版。新機能の追加はない。
+- `MainViewModel` に `IDisposable` を実装した（`Dispose()` メソッド追加）。`_autoSaveTimer.Stop()` / `_unsavedTimer.Stop()` / `_changeCoordinator.Changed -= WorkspaceChanged` / `_session.PropertyChanged -= SessionPropertyChanged` を行う。`DispatcherTimer` は `Stop()` を呼ばない限り Dispatcher の内部リストに保持され、閉じたタブの ViewModel が GC されないまま `AutoSave()` が呼び続けるため、明示的な停止が必要。
+- `ConfirmAndResetNoteNest()` で `vm.Dispose()` を呼ぶよう変更した。NoteNest タブを閉じる際に `PropertyChanged` 購読解除に加えて `Dispose()` を呼び、タイマーを確実に停止する。
+- `NoteNestMultiTabSessionTests` に v1.9.6 タイマー破棄確認テスト 3 件を追加した（`IDisposable` 実装確認・`Dispose()` 例外なし確認・二重 Dispose 安全確認）。
+- NoteNest 保存スキーマ `1.4.1`、ChatNest・IdeaNest 保存形式は変更していない。IdeaNest の複数ファイル対応は行っていない。
+- v1.9.7 以降の候補：IdeaNest 複数ファイルタブ対応（v1.9.7）、3 ツール複数ファイル対応後の回帰確認（v1.9.8）。
+
 ## v1.9.5 — NoteNest 複数ファイルタブ対応の最小実装
 
 - NoteNest について、複数の `.notenest` ファイルを別タブとして並行利用できるようにした。各タブは独立した `MainViewModel`（ProjectSessionViewModel / NoteWorkspaceViewModel / TaskBoardViewModel / MarkerPanelViewModel / EditorStateViewModel を含む）・FilePath・IsModified を持つ。
