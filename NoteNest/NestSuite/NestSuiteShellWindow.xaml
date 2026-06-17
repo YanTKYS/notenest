@@ -114,14 +114,15 @@
         <!-- メインエリア: Workspace 領域（v1.16.2: 左ツール選択カラムを廃止し全幅化） -->
         <Grid>
             <Grid.RowDefinitions>
-                <!-- v1.7.3: ファイル単位タブストリップ -->
-                <RowDefinition Height="32"/>
+                <!-- v1.16.4: Height="Auto" + MinHeight="50" でタブ（32px）とスクロールバー（~17px）が重ならないよう確保 -->
+                <RowDefinition Height="Auto"/>
                 <!-- Workspace コンテンツ -->
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- v1.7.3: ファイル単位タブストリップ（最小骨格）。ItemsSource は NestSuiteDocumentTab のコレクション -->
             <Border Grid.Row="0"
+                    MinHeight="50"
                     BorderBrush="{DynamicResource PaneBorder}"
                     BorderThickness="0,0,0,1">
                 <ListBox x:Name="TabStrip"

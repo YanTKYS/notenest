@@ -144,8 +144,9 @@
                     Padding="14,10"
                     Visibility="{Binding IsSampleProject, Converter={StaticResource BoolToVis}}">
                 <DockPanel>
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
-                                VerticalAlignment="Center" Margin="12,0,0,0">
+                    <!-- v1.16.4: Dock="Bottom" に変更。右側配置では TextBlock に残る幅が極端に狭くなり折り返し崩れが発生していた -->
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                                Margin="0,6,0,0">
                         <Button Content="新規プロジェクト"
                                 Command="{Binding NewProjectCommand}"
                                 Padding="10,4" Margin="0,0,8,0" FontSize="11.5"

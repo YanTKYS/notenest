@@ -1,3 +1,9 @@
+## v1.16.4 — NestSuite / NoteNest Workspace UI 不具合修正（2 件）
+
+- **NestSuite タブストリップの水平スクロールバーがタブと重なる不具合を修正した。** タブ行の `RowDefinition` を固定 32px から `Height="Auto"` に変更し、外側 `Border` に `MinHeight="50"` を設定した。`Auto` により WPF の Measure フェーズでタブの実高さ（32px）が確保され、Arrange フェーズで現れるスクロールバー（約 17px）のための余白が得られる。`MinHeight="50"` は多数タブで折り返しが起きないウィンドウ幅での最小保証として機能する。
+- **NoteNest Workspace の「サンプルプロジェクト」バナーでボタンが TextBlock を極端に圧迫していた不具合を修正した。** バナー内の `DockPanel` でボタン群を `Dock="Right"` から `Dock="Bottom"` に変更した。`Dock="Right"` では「新規プロジェクト」「名前を付けて保存...」の 2 ボタン（合計約 256px）が先に右側を占有し、残り幅が数十 px しかない中央カラム幅では TextBlock が 1〜2 文字/行で折り返す崩れが発生していた。`Dock="Bottom"` に変更することで TextBlock が全幅を使えるようになる。
+- **`--classic-notenest` 側・保存形式は変更していない。** NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v1.16.3 — NoteNest Workspace 右ペイン再表示ボタンの視認性修正
 
 - **NoteNest Workspace で右ペインを折り畳んだあと、同一起動中に再表示できない UI 不具合を修正した。** 再表示用の「»」ボタンは以前からエディタ領域の右端に存在していたが、縦スクロールバーと重なって視認・操作が困難な状態だった。
