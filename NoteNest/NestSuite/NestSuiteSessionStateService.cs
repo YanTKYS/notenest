@@ -20,11 +20,11 @@ public class NestSuiteSessionStateService
     {
         try
         {
-            if (!File.Exists(_dataPath)) return NestSuiteSessionState.Empty;
+            if (!File.Exists(_dataPath)) return new NestSuiteSessionState();
             return JsonSerializer.Deserialize<NestSuiteSessionState>(File.ReadAllText(_dataPath))
-                ?? NestSuiteSessionState.Empty;
+                ?? new NestSuiteSessionState();
         }
-        catch { return NestSuiteSessionState.Empty; }
+        catch { return new NestSuiteSessionState(); }
     }
 
     public void Save(NestSuiteSessionState state)
