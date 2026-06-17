@@ -1269,4 +1269,28 @@ public class NestSuiteShellTests
         Assert.NotNull(path);
         Assert.Contains("nestsuite-session.json", path, StringComparison.OrdinalIgnoreCase);
     }
+
+    // ── v1.16.0: NestSuite 複数ファイル一括オープン ─────────────────────────
+
+    [Fact]
+    public void DialogService_HasSelectNestSuiteOpenPathsMethod()
+    {
+        // v1.16.0: SelectNestSuiteOpenPaths が IReadOnlyList<string> を返すメソッドとして存在することを確認
+        var method = typeof(NoteNest.Services.DialogService)
+            .GetMethod("SelectNestSuiteOpenPaths",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+        Assert.NotNull(method);
+        Assert.True(typeof(IReadOnlyList<string>).IsAssignableFrom(method!.ReturnType));
+        Assert.Empty(method.GetParameters());
+    }
+
+    [Fact]
+    public void DialogService_DoesNotHaveSingleSelectNestSuiteOpenPathMethod()
+    {
+        // v1.16.0: 旧 SelectNestSuiteOpenPath（単一選択）が削除されていることを確認
+        var method = typeof(NoteNest.Services.DialogService)
+            .GetMethod("SelectNestSuiteOpenPath",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+        Assert.Null(method);
+    }
 }
