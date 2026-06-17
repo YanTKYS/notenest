@@ -1019,18 +1019,9 @@ public class NestSuiteShellTests
     }
 
     // ── v1.10.1: NestSuite 共通「開く」導線の統合 ──────────────────────────
-
-    [Fact]
-    public void DialogService_HasSelectNestSuiteOpenPathMethod()
-    {
-        // v1.10.1: 3 形式統合 OpenFileDialog を提供するメソッドが DialogService に追加されていることを確認
-        var method = typeof(NoteNest.Services.DialogService)
-            .GetMethod("SelectNestSuiteOpenPath",
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-        Assert.NotNull(method);
-        Assert.Equal(typeof(string), method!.ReturnType);
-        Assert.Empty(method.GetParameters());
-    }
+    // Note: SelectNestSuiteOpenPath (単一選択) は v1.16.0 で SelectNestSuiteOpenPaths に置き換え済み。
+    // 旧テスト DialogService_HasSelectNestSuiteOpenPathMethod は削除。
+    // 後継は v1.16.0 セクションの DialogService_HasSelectNestSuiteOpenPathsMethod を参照。
 
     [Fact]
     public void NestSuiteShellWindow_HasOpenNestSuiteFileMethod()
