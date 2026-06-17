@@ -35,6 +35,18 @@ public class NestSuiteSessionStateServiceTests : IDisposable
     }
 
     [Fact]
+    public void Load_EmptyState_ReturnsNewInstance()
+    {
+        // Load() が毎回新しいインスタンスを返すことで、呼び出し側の変更が他の呼び出し結果に影響しないことを確認する
+        var state1 = _svc.Load();
+        var state2 = _svc.Load();
+
+        Assert.NotSame(state1, state2);
+        state1.FilePaths.Add("polluted.notenest");
+        Assert.Empty(state2.FilePaths);
+    }
+
+    [Fact]
     public void Save_AndLoad_RoundTrip()
     {
         var state = new NestSuiteSessionState
