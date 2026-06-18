@@ -129,15 +129,15 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// v1.16.5: NoteNest / IdeaNest への貼り付けに適したプレーンテキスト形式を生成する。
-    /// 発言者名を [] で括ったラベルと本文を改行区切りで並べる。
+    /// v1.16.7: NoteNest への貼り付けに適した形式を生成する。
+    /// 先頭に [NOTE] マーカーと転記日時を付け、発言者を ## 見出しで表現する。
     /// 連続する同一発言者のメッセージは 1 ブロックに集約する。
     /// </summary>
     public string BuildNestSuiteText()
     {
         if (Messages.Count == 0) return string.Empty;
         var sb = new StringBuilder();
-        bool firstGroup = true;
+        sb.AppendLine($"[NOTE] ChatNestからの転記: {DateTime.Now:yyyy-MM-dd HH:mm}");
         int i = 0;
         while (i < Messages.Count)
         {
@@ -148,11 +148,11 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
                 groupTexts.Add(Messages[i].Text);
                 i++;
             }
-            if (!firstGroup) sb.AppendLine();
-            sb.AppendLine($"[{speaker}]");
+            sb.AppendLine();
+            sb.AppendLine($"## {speaker}");
+            sb.AppendLine();
             sb.Append(string.Join(Environment.NewLine, groupTexts));
             sb.AppendLine();
-            firstGroup = false;
         }
         return sb.ToString().TrimEnd();
     }

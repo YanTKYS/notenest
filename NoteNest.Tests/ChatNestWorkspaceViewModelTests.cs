@@ -256,9 +256,10 @@ public class ChatNestWorkspaceViewModelTests
 
         var text = vm.BuildNestSuiteText();
 
-        Assert.Contains("[自分]", text);
+        Assert.Contains("[NOTE] ChatNestからの転記:", text);
+        Assert.Contains("## 自分", text);
         Assert.Contains("考えA", text);
-        Assert.Contains("[反論]", text);
+        Assert.Contains("## 反論", text);
         Assert.Contains("考えB", text);
     }
 
@@ -274,13 +275,13 @@ public class ChatNestWorkspaceViewModelTests
 
         var text = vm.BuildNestSuiteText();
 
-        // [自分] は集約されて 1 回のみ現れる
-        Assert.Equal(1, text.Split("[自分]").Length - 1);
+        // ## 自分 は集約されて 1 回のみ現れる
+        Assert.Equal(1, text.Split("## 自分").Length - 1);
         // 両メッセージがブロック内に存在する
         Assert.Contains("一言目", text);
         Assert.Contains("二言目", text);
         // 別発言者は独立したブロックになる
-        Assert.Contains("[反論]", text);
+        Assert.Contains("## 反論", text);
     }
 
     [Fact]

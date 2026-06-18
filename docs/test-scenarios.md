@@ -2792,3 +2792,36 @@ v1.16.6 で整備した IdeaNest Workspace のテキスト貼り付け・D&D カ
 1. `ApplicationVersionTests` でアプリバージョンが `1.16.6` であることを確認する（自動）。
 2. `CardOperationsServicePasteTests`（6 件）がパスすることを確認する（自動）。
 3. 全テスト（`dotnet test`）がパスすることを確認する（自動）。
+
+---
+
+## §77 v1.16.7 ChatNest Copy NestSuite 出力形式確認
+
+v1.16.7 で見直した ChatNest の「Copy NestSuite」出力形式を確認する。
+
+### Copy NestSuite 出力形式
+
+- [ ] ChatNest タブにメッセージを投稿し「Copy NestSuite」を押す
+- [ ] クリップボードの先頭行が `[NOTE] ChatNestからの転記: yyyy-MM-dd HH:mm` 形式になっている
+- [ ] 発言者が `## 発言者名` 見出しで表現されている（`[発言者]` 形式でない）
+- [ ] 発言者の後に空行が入り、本文が続く
+- [ ] 連続する同一発言者のメッセージが 1 ブロックに集約されている（`## 見出し` の繰り返しがない）
+- [ ] NoteNest タブに貼り付けたとき `[NOTE]` マーカーとして認識される
+
+### Copy Markdown 形式が変更されていないことを確認
+
+- [ ] 「Copy Markdown」を押すとクリップボードの先頭が `# ChatNest Export` になっている
+- [ ] 発言者が `## 発言者名` 見出しで表現されている
+- [ ] 連続する同一発言者が集約されている
+
+### 既存機能への影響なし
+
+- [ ] `.chatnest` 保存・読み込みは従来どおり動作する
+- [ ] NoteNest / IdeaNest タブに影響がない
+- [ ] コピー後に「コピーしました」が 2 秒間表示される
+
+### 自動確認
+
+1. `ApplicationVersionTests` でアプリバージョンが `1.16.7` であることを確認する（自動）。
+2. `ChatNestWorkspaceViewModelTests` の `BuildNestSuiteText_*` テスト（3 件）がパスすることを確認する（自動）。
+3. 全テスト（`dotnet test`）がパスすることを確認する（自動）。

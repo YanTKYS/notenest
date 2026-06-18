@@ -1,3 +1,24 @@
+## v1.16.7 — ChatNest Copy NestSuite 出力形式の見直し
+
+- **「Copy NestSuite」の出力形式を NoteNest マーカー形式に改めた。** 先頭に `[NOTE] ChatNestからの転記: yyyy-MM-dd HH:mm` を付け、発言者を `## 発言者名` の見出しで表現する形式に変更した。以前の `[発言者]` 角括弧形式は廃止した。
+- **出力例（3 発言、うち 自分 が 2 連続）：**
+  ```
+  [NOTE] ChatNestからの転記: 2026-06-18 14:30
+
+  ## 自分
+
+  一言目
+  二言目
+
+  ## 反論
+
+  反論内容
+  ```
+- **連続する同一発言者の集約は引き続き有効。** 同じ発言者が続く場合は `## 見出し` を繰り返さず、本文を同一ブロックにまとめる。
+- **「Copy Markdown」の形式は変更なし。** `# ChatNest Export` を先頭に、`## 発言者名` 形式を維持する。
+- **`.chatnest` 保存スキーマは変更なし。** NoteNest / IdeaNest タブへの影響なし。`--classic-notenest` 側は変更なし。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v1.16.6 — IdeaNest Workspace テキスト取り込み機能復元
 
 - **IdeaNest Workspace でのテキスト貼り付けおよびテキストファイル D&D によるカード作成機能を整備した。** NestSuite 上の IdeaNest Workspace（`.ideanest` タブ）を対象とする。単体 IdeaNest アプリ側の変更はない。
