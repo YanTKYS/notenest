@@ -1,0 +1,67 @@
+# ファイル関連付けの設定
+
+NoteNest v1.18.0 以降、NestSuite のヘルプメニューから `.notenest` / `.chatnest` / `.ideanest` のファイル関連付けを登録・解除できます。
+
+## 概要
+
+ファイル関連付けを登録すると、エクスプローラーで各ファイルをダブルクリックしたとき NestSuite が起動し、対応する Workspace タブとして開きます。
+
+| 拡張子 | 開くタブ |
+|--------|----------|
+| `.notenest` | NoteNest Workspace |
+| `.chatnest` | ChatNest Workspace |
+| `.ideanest` | IdeaNest Workspace |
+
+## アプリ内から設定する（推奨）
+
+1. NestSuite を起動する
+2. メニューの「ヘルプ → ファイル関連付けの設定...」を開く
+3. ダイアログで現在の状態を確認する
+4. 「関連付けを登録」ボタンを押す
+5. 確認メッセージで OK を選択する
+
+登録後に「登録済み」と表示されていれば成功です。
+
+## 登録後の動作確認
+
+エクスプローラーで `.notenest` / `.chatnest` / `.ideanest` ファイルをダブルクリックすると NestSuite が起動し、対応する Workspace タブでファイルが開きます。
+
+反映されない場合は、エクスプローラーを再起動（または一度ログアウト・ログイン）してください。
+
+## 関連付けの解除
+
+1. 「ヘルプ → ファイル関連付けの設定...」を開く
+2. 「関連付けを解除」ボタンを押す
+
+この操作では、この機能（ProgId: `NoteNest.notenest` / `NoteNest.chatnest` / `NoteNest.ideanest`）で作成した登録のみ削除します。他アプリや OS 全体の設定は変更しません。
+
+## 仕様
+
+- **登録先**: `HKCU\Software\Classes`（ユーザー単位）
+- **管理者権限**: 不要
+- **自動登録**: アプリ起動時には自動登録しない。利用者が明示的に操作した場合のみ登録・解除する
+- **状態表示**: ダイアログは `HKCU\Software\Classes` で確認できる範囲の状態を表示する
+
+## NoteNest.exe を移動した場合
+
+NoteNest.exe の配置場所を変えた場合は、再度「関連付けを登録」を実行してください。古いパスが登録されたままだと、ファイルをダブルクリックしても起動しません。
+
+## 補足：PowerShell で手動登録する場合
+
+アプリを起動せずに関連付けを登録・解除したい場合は、同梱のスクリプトを使用できます。
+
+**登録**:
+```powershell
+.\tools\register-nestsuite-file-association.ps1 -ExePath "C:\path\to\NoteNest.exe"
+```
+
+**解除**:
+```powershell
+.\tools\unregister-nestsuite-file-association.ps1
+```
+
+これらのスクリプトは IT 担当者向けの補助手段です。通常はアプリ内のダイアログを使用してください。
+
+## 関連付けが反映されない場合
+
+Windows 10 / 11 では、OS の「設定 → アプリ → 既定のアプリ」が `HKCU\Software\Classes` の設定より優先される場合があります。関連付けが反映されない場合は、Windows の設定から手動で NoteNest を既定のアプリとして設定してください。

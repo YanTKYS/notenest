@@ -1,3 +1,18 @@
+## v1.18.0 — NestSuite ファイル関連付けヘルプ対応
+
+- **ヘルプメニューに「ファイル関連付けの設定...」を追加した。** 選択するとファイル関連付けダイアログが開き、`.notenest` / `.chatnest` / `.ideanest` の現在の状態確認・登録・解除ができる。
+- **登録はユーザー単位（`HKCU\Software\Classes`）で行う。** 管理者権限は不要。アプリ起動時に自動登録はしない。利用者が明示的に操作した場合のみ登録・解除する。
+- **登録後は各拡張子のファイルをダブルクリックすると NestSuite が起動し対応 Workspace タブで開く。**
+  - `.notenest` → NoteNest Workspace
+  - `.chatnest` → ChatNest Workspace
+  - `.ideanest` → IdeaNest Workspace
+- **解除はこの機能が作成した ProgId（`NoteNest.notenest` / `NoteNest.chatnest` / `NoteNest.ideanest`）のみ対象とする。** 他アプリや OS 全体の設定は変更しない。
+- **登録・解除の前後に確認メッセージを表示する。** 失敗時もアプリが落ちず分かりやすいエラーを表示する。
+- **補助として PowerShell スクリプト `tools/register-*.ps1` / `tools/unregister-*.ps1` を追加した。** IT 担当者向けの補助手段であり、通常はダイアログを使用する。
+- **`docs/file-association.md` を追加した。** 登録・解除手順、EXE 移動時の再登録、反映されない場合の対処を記載。
+- **既存 NestSuite 機能・保存スキーマに副作用はない。** `--classic-notenest` 側は変更なし。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v1.17.0 — NestSuite タブ並び替え対応
 
 - **NestSuite のタブストリップでタブをドラッグ＆ドロップして並び替えられるようにした。** `.notenest` / `.chatnest` / `.ideanest` が混在していても任意の順に移動できる。
