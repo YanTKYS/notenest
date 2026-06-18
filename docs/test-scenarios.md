@@ -2825,3 +2825,35 @@ v1.16.7 で見直した ChatNest の「Copy NestSuite」出力形式を確認す
 1. `ApplicationVersionTests` でアプリバージョンが `1.16.7` であることを確認する（自動）。
 2. `ChatNestWorkspaceViewModelTests` の `BuildNestSuiteText_*` テスト（3 件）がパスすることを確認する（自動）。
 3. 全テスト（`dotnet test`）がパスすることを確認する（自動）。
+
+---
+
+## §78 v1.16.8 IdeaNest 貼り付け時の ChatNest 転記形式確認
+
+v1.16.8 で対応した、IdeaNest Workspace への ChatNest 転記形式貼り付けを確認する。
+
+### ChatNest 転記形式の貼り付け
+
+- [ ] ChatNest タブでメッセージを投稿し「Copy NestSuite」を押す
+- [ ] IdeaNest タブをアクティブにし Ctrl+V で貼り付けると、カードのタイトルが `ChatNestからの転記: yyyy-MM-dd HH:mm` 形式になっている
+- [ ] カード本文に `[NOTE] ChatNestからの転記:` ヘッダー行が含まれていない
+- [ ] カード本文に `## 自分` `## 反論` などの発言者見出しが残っている
+- [ ] カード本文の先頭に不自然な空行が残っていない
+- [ ] カード本文にチャットの発言内容が含まれている
+
+### 通常貼り付けが従来どおり動作することを確認
+
+- [ ] 普通のテキストを貼り付けるとタイトルが `Paste_yyyyMMddHHmm` 形式になっている
+- [ ] `[NOTE]` を含むが形式が異なるテキストは通常貼り付けとして扱われる
+
+### 既存機能への影響なし
+
+- [ ] `.txt` / `.md` ファイルのドラッグ＆ドロップによるカード作成に変化がない
+- [ ] NoteNest / ChatNest タブに影響がない
+- [ ] 最近ファイル、タブ復元、Ctrl+S 保存に影響がない
+
+### 自動確認
+
+1. `ApplicationVersionTests` でアプリバージョンが `1.16.8` であることを確認する（自動）。
+2. `CardOperationsServicePasteTests` の v1.16.8 セクション（6 件）がパスすることを確認する（自動）。
+3. 全テスト（`dotnet test`）がパスすることを確認する（自動）。
