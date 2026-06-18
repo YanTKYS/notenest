@@ -388,6 +388,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     private void TabStrip_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        _tabDragSource = null;
         if (IsDescendantOfButton(e.OriginalSource as DependencyObject)) return;
         _tabDragStartPoint = e.GetPosition(null);
         _tabDragSource = GetTabFromVisualTree(e.OriginalSource as DependencyObject);
