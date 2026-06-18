@@ -132,7 +132,9 @@ public partial class IdeaNestWorkspaceView : UserControl
     {
         if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
         var paths = e.Data.GetData(DataFormats.FileDrop) as string[] ?? Array.Empty<string>();
-        var textFiles = paths.Where(IsAcceptableTextFile).ToArray();
+        // v1.16.6 fix: 拡張子のみで絞り込む。存在確認は CreateCardsFromFiles の catch に委ねることで
+        // 削除済みファイルなど読み込み失敗時にも警告ダイアログを表示できる
+        var textFiles = paths.Where(HasAcceptableExtension).ToArray();
         if (textFiles.Length == 0) return;
         Workspace?.CreateCardsFromFiles(textFiles);
         e.Handled = true;
@@ -142,14 +144,13 @@ public partial class IdeaNestWorkspaceView : UserControl
     {
         if (!data.GetDataPresent(DataFormats.FileDrop)) return false;
         var paths = data.GetData(DataFormats.FileDrop) as string[];
-        return paths != null && paths.Any(IsAcceptableTextFile);
+        return paths != null && paths.Any(HasAcceptableExtension);
     }
 
-    private static bool IsAcceptableTextFile(string path)
+    private static bool HasAcceptableExtension(string path)
     {
-        if (string.IsNullOrEmpty(path) || !File.Exists(path)) return false;
+        if (string.IsNullOrEmpty(path)) return false;
         var ext = Path.GetExtension(path);
-        // v1.16.6: .md も対象に追加
         return string.Equals(ext, ".txt", StringComparison.OrdinalIgnoreCase)
             || string.Equals(ext, ".md", StringComparison.OrdinalIgnoreCase);
     }
