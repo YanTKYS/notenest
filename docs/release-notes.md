@@ -1,3 +1,15 @@
+## v1.16.8 — IdeaNest 貼り付け時の ChatNest 転記形式対応
+
+- **IdeaNest Workspace へ ChatNest の「Copy NestSuite」出力を貼り付けると、転記カードとして自然に整形されるようにした。** 貼り付けテキストの 1 行目が `[NOTE] ChatNestからの転記: yyyy-MM-dd HH:mm` 形式に一致する場合、転記形式として扱う。
+- **転記形式として認識した場合のカード構成：**
+  - タイトル：`ChatNestからの転記: yyyy-MM-dd HH:mm`（1 行目のヘッダー文字列から日時部分を抜粋）
+  - 本文：ヘッダー行および直後の空行を除いた残りのテキスト（`## 自分` `## 反論` などの見出しはそのまま残る）
+- **転記形式に一致しない場合は従来どおり `Paste_yyyyMMddHHmm` タイトルで通常貼り付けとして扱う。**
+- **ファイル D&D 時の挙動は変更なし。** `.txt` / `.md` ドロップ処理には影響しない。
+- **タブ間の直接連携は行っていない。** クリップボードを経由した間接的な転記のみ対応する。
+- **`.ideanest` / `.chatnest` 保存スキーマは変更なし。** NoteNest / ChatNest タブへの影響なし。`--classic-notenest` 側は変更なし。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v1.16.7 — ChatNest Copy NestSuite 出力形式の見直し
 
 - **「Copy NestSuite」の出力形式を NoteNest マーカー形式に改めた。** 先頭に `[NOTE] ChatNestからの転記: yyyy-MM-dd HH:mm` を付け、発言者を `## 発言者名` の見出しで表現する形式に変更した。以前の `[発言者]` 角括弧形式は廃止した。

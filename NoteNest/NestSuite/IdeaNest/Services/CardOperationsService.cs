@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NoteNest.NestSuite.IdeaNest.Models;
 using NoteNest.NestSuite.IdeaNest.ViewModels;
 
@@ -14,6 +15,9 @@ namespace NoteNest.NestSuite.IdeaNest.Services;
 /// </summary>
 public class CardOperationsService
 {
+    private static readonly Regex ChatNestTransferHeaderPattern =
+        new(@"^\[NOTE\] ChatNestからの転記: (\d{4}-\d{2}-\d{2} \d{2}:\d{2})$", RegexOptions.Compiled);
+
     private readonly List<Idea> _ideas;
     private readonly ObservableCollection<IdeaCardViewModel> _allCards;
     private readonly Action _onDirty;
@@ -64,9 +68,28 @@ public class CardOperationsService
     public bool CommitAddFromText(string body)
     {
         if (string.IsNullOrWhiteSpace(body)) return false;
-        // v1.16.6: タイトルを Paste_yyyyMMddHHmm 形式で自動生成する
-        var title = $"Paste_{_now():yyyyMMddHHmm}";
-        return CommitAdd(new Idea { Title = title, Body = body });
+
+        // v1.16.8: ChatNest Copy NestSuite 転記形式を検出し、タイトルと本文を分離する
+        var newlineIdx = body.IndexOf('\n');
+        var firstLine = (newlineIdx >= 0 ? body[..newlineIdx] : body).TrimEnd('\r');
+        var match = ChatNestTransferHeaderPattern.Match(firstLine);
+
+        string title;
+        string bodyText;
+        if (match.Success)
+        {
+            title = $"ChatNestからの転記: {match.Groups[1].Value}";
+            var rest = newlineIdx >= 0 ? body[(newlineIdx + 1)..] : string.Empty;
+            bodyText = rest.TrimStart('\r', '\n');
+        }
+        else
+        {
+            // v1.16.6: タイトルを Paste_yyyyMMddHHmm 形式で自動生成する
+            title = $"Paste_{_now():yyyyMMddHHmm}";
+            bodyText = body;
+        }
+
+        return CommitAdd(new Idea { Title = title, Body = bodyText });
     }
 
     public bool CommitAddFromFileContent(string fileName, string body)

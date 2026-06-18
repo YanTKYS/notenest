@@ -143,4 +143,95 @@ public class CardOperationsServicePasteTests
         Assert.Equal(fixedNow, ideas[0].CreatedAt);
         Assert.Equal(fixedNow, ideas[0].UpdatedAt);
     }
+
+    // ── v1.16.8: ChatNest 転記形式の貼り付け ───────────────────────────────
+
+    [Fact]
+    public void CommitAddFromText_ChatNestHeader_ExtractsTitleFromHeader()
+    {
+        var ideas = new List<Idea>();
+        var cards = new ObservableCollection<IdeaCardViewModel>();
+        var svc = MakeService(ideas, cards);
+        var paste = "[NOTE] ChatNestからの転記: 2026-06-18 14:30\n\n## 自分\n\n本文内容";
+
+        var result = svc.CommitAddFromText(paste);
+
+        Assert.True(result);
+        Assert.Equal("ChatNestからの転記: 2026-06-18 14:30", ideas[0].Title);
+    }
+
+    [Fact]
+    public void CommitAddFromText_ChatNestHeader_StripsHeaderLineFromBody()
+    {
+        var ideas = new List<Idea>();
+        var cards = new ObservableCollection<IdeaCardViewModel>();
+        var svc = MakeService(ideas, cards);
+        var paste = "[NOTE] ChatNestからの転記: 2026-06-18 14:30\n\n## 自分\n\n本文内容";
+
+        svc.CommitAddFromText(paste);
+
+        Assert.DoesNotContain("[NOTE]", ideas[0].Body);
+        Assert.Contains("## 自分", ideas[0].Body);
+        Assert.Contains("本文内容", ideas[0].Body);
+    }
+
+    [Fact]
+    public void CommitAddFromText_ChatNestHeader_StripsLeadingBlankLineFromBody()
+    {
+        var ideas = new List<Idea>();
+        var cards = new ObservableCollection<IdeaCardViewModel>();
+        var svc = MakeService(ideas, cards);
+        var paste = "[NOTE] ChatNestからの転記: 2026-06-18 09:15\n\n## 結論\n\nまとめ";
+
+        svc.CommitAddFromText(paste);
+
+        Assert.StartsWith("## 結論", ideas[0].Body);
+    }
+
+    [Fact]
+    public void CommitAddFromText_ChatNestHeader_MultipleSpeakers_KeepsAllContent()
+    {
+        var ideas = new List<Idea>();
+        var cards = new ObservableCollection<IdeaCardViewModel>();
+        var svc = MakeService(ideas, cards);
+        var paste = "[NOTE] ChatNestからの転記: 2026-06-18 14:30\n\n## 自分\n\n一言目\n二言目\n\n## 反論\n\n反論内容";
+
+        svc.CommitAddFromText(paste);
+
+        Assert.Contains("## 自分", ideas[0].Body);
+        Assert.Contains("一言目", ideas[0].Body);
+        Assert.Contains("二言目", ideas[0].Body);
+        Assert.Contains("## 反論", ideas[0].Body);
+        Assert.Contains("反論内容", ideas[0].Body);
+    }
+
+    [Fact]
+    public void CommitAddFromText_SimilarButNotMatchingHeader_UsesPasteTitle()
+    {
+        var fixedNow = new DateTime(2026, 6, 18, 14, 30, 0);
+        var ideas = new List<Idea>();
+        var cards = new ObservableCollection<IdeaCardViewModel>();
+        var svc = MakeService(ideas, cards, () => fixedNow);
+
+        // 角括弧なし → 通常貼り付けとして扱う
+        svc.CommitAddFromText("NOTE ChatNestからの転記: 2026-06-18 14:30\n本文");
+
+        Assert.Equal("Paste_202606181430", ideas[0].Title);
+    }
+
+    [Fact]
+    public void CommitAddFromText_ChatNestHeaderCrLf_ExtractsTitleCorrectly()
+    {
+        var ideas = new List<Idea>();
+        var cards = new ObservableCollection<IdeaCardViewModel>();
+        var svc = MakeService(ideas, cards);
+        // Windows 改行（CRLF）
+        var paste = "[NOTE] ChatNestからの転記: 2026-06-18 14:30\r\n\r\n## 自分\r\n\r\n本文内容";
+
+        svc.CommitAddFromText(paste);
+
+        Assert.Equal("ChatNestからの転記: 2026-06-18 14:30", ideas[0].Title);
+        Assert.DoesNotContain("[NOTE]", ideas[0].Body);
+        Assert.Contains("## 自分", ideas[0].Body);
+    }
 }
