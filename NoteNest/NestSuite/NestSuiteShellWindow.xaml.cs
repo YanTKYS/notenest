@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using NoteNest.NestSuite.ChatNest;
+using NoteNest.NestSuite.FileAssociation;
 using NoteNest.NestSuite.IdeaNest.ViewModels;
 using NoteNest.NestSuite.IdeaNest.Services;
 using NoteNest.Services;
@@ -1451,6 +1452,14 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     private void MenuTool_Click(object sender, RoutedEventArgs e)
         => EnsureTabForToolId((string)((FrameworkElement)sender).Tag);
+
+    private void MenuFileAssociation_Click(object sender, RoutedEventArgs e)
+    {
+        var exePath = Environment.ProcessPath
+            ?? System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
+            ?? string.Empty;
+        new FileAssociationDialog(exePath) { Owner = this }.ShowDialog();
+    }
 
     private void MenuAbout_Click(object sender, RoutedEventArgs e)
         => _dialogs.ShowInfo(

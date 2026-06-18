@@ -47,6 +47,8 @@
                           Click="MenuTool_Click"/>
             </MenuItem>
             <MenuItem Header="ヘルプ(_H)">
+                <MenuItem Header="ファイル関連付けの設定(_A)..." Click="MenuFileAssociation_Click"/>
+                <Separator/>
                 <MenuItem Header="NestSuite について" Click="MenuAbout_Click"/>
             </MenuItem>
         </Menu>
