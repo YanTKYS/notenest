@@ -1,3 +1,16 @@
+## v1.20.1 — docs 構成整理
+
+`docs/` 直下にファイルが増えて煩雑になっていたため、用途別フォルダへ整理した。アプリ本体の機能変更はない。
+
+- **`docs/guide/`** を作成し、`nestsuite-user-guide.md` を移動した。
+- **`docs/testing/`** を作成し、`test-scenarios.md` / `nestsuite-release-checklist.md` を移動した。
+- **`docs/design/`** を作成し、`design-decisions.md` / `nestsuite-preparation.md` / `nestsuite-default-startup-plan.md` / `nestsuite-known-limitations.md` / `nestsuite-multi-file-tabs-plan.md` / `nestsuite-notenest-multi-file-plan.md` / `ideanest-save-load-plan.md` / `review-gemini.md` を移動した。
+- **`docs/operations/`** を作成し、`file-association.md` / `operation-note.md` を移動した。
+- **`docs/backlog.md` と `docs/release-notes.md` は `docs/` 直下に残した。**
+- **`docs/README.md` を新規作成し、フォルダ構成の一覧を追加した。**
+- ファイル移動に伴い `README.md` / `docs/backlog.md` / `docs/design/design-decisions.md` / `docs/guide/nestsuite-user-guide.md` / `docs/testing/nestsuite-release-checklist.md` / `docs/design/nestsuite-default-startup-plan.md` の相対リンク・パス参照を修正した。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v1.20.0 — Workspace UI 改善
 
 - **NoteNest Workspace のサンプルバナーから「新規プロジェクト」を押すと空のプロジェクトが作成されるようにした。** 従来は `CreateNew()` を呼び出してサンプルデータが再ロードされるだけで、見た目上なにも変わらないという問題があった。`ProjectLifecycleService.CreateEmpty()` を追加し、`NewProject()` が空の `Project` をロードするように修正した。`IsSampleProject` はファイルパスの有無で自動判定する方式から、ロード時に明示的に指定する方式へ変更した。
