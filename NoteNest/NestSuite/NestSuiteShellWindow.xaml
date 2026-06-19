@@ -4,7 +4,7 @@
         xmlns:views="clr-namespace:NoteNest.Views"
         xmlns:chatnest="clr-namespace:NoteNest.NestSuite.ChatNest"
         xmlns:ideanest="clr-namespace:NoteNest.NestSuite.IdeaNest.Views"
-        Title="NestSuite — NoteNest"
+        Title="NestSuite"
         Height="720" Width="1280"
         MinHeight="500" MinWidth="870"
         WindowStartupLocation="CenterScreen">

@@ -1,6 +1,6 @@
-# NestSuite リリース前確認チェックリスト（v1.19.4）
+# NestSuite リリース前確認チェックリスト（v1.21.0）
 
-NestSuite 統合版のリリース前に確認する項目を整理します。v1.19.3 で `--classic-notenest` を削除したため、v1.19.4 以降は NestSuite を唯一の起動ルートとして確認します。
+NestSuite のリリース前に確認する項目を整理します。v1.19.3 で `--classic-notenest` を削除し、v1.21.0 からアプリ表示名・EXE 名を NestSuite に統一しています。
 
 ---
 
@@ -15,19 +15,19 @@ NestSuite 統合版のリリース前に確認する項目を整理します。v
 
 ## 2. 起動確認（NestSuite 主対象）
 
-- [ ] `NoteNest.exe` → NestSuite として起動する（無題 NoteNest タブ）
-- [ ] `NoteNest.exe sample.notenest` → NestSuite で `.notenest` タブを開く
-- [ ] `NoteNest.exe sample.chatnest` → NestSuite で `.chatnest` タブを開く
-- [ ] `NoteNest.exe sample.ideanest` → NestSuite で `.ideanest` タブを開く
-- [ ] `NoteNest.exe --nestsuite` → NestSuite として起動する（互換フラグ、フラグなしと同じ動作）
-- [ ] `NoteNest.exe --nestsuite sample.notenest` → NestSuite で `.notenest` タブを開く
+- [ ] `NestSuite.exe` → NestSuite として起動する（無題 NoteNest タブ）
+- [ ] `NestSuite.exe sample.notenest` → NestSuite で `.notenest` タブを開く
+- [ ] `NestSuite.exe sample.chatnest` → NestSuite で `.chatnest` タブを開く
+- [ ] `NestSuite.exe sample.ideanest` → NestSuite で `.ideanest` タブを開く
+- [ ] `NestSuite.exe --nestsuite` → NestSuite として起動する（互換フラグ、フラグなしと同じ動作）
+- [ ] `NestSuite.exe --nestsuite sample.notenest` → NestSuite で `.notenest` タブを開く
 
 ### `--classic-notenest` 廃止確認（v1.19.3）
 
 > --classic-notenest は v1.19.3 で削除済み。classic NoteNest が起動しないことを確認する。
 
-- [ ] `NoteNest.exe --classic-notenest` → classic NoteNest が起動**しない**（NestSuite が通常起動する）
-- [ ] `NoteNest.exe --classic-notenest sample.notenest` → クラッシュせず、NestSuite で対象ファイルが開く
+- [ ] `NestSuite.exe --classic-notenest` → classic NoteNest が起動**しない**（NestSuite が通常起動する）
+- [ ] `NestSuite.exe --classic-notenest sample.notenest` → クラッシュせず、NestSuite で対象ファイルが開く
 
 ---
 
@@ -102,7 +102,7 @@ NestSuite 統合版のリリース前に確認する項目を整理します。v
 - [ ] `.notenest` / `.chatnest` / `.ideanest` の 3 形式すべてが復元される
 - [ ] 前回アクティブだったタブが復元後に選択されている
 - [ ] 未保存タブ（無題）は復元されない
-- [ ] `NoteNest.exe sample.notenest` など引数指定起動でも前回タブが復元され、指定ファイルが追加タブとして開く（v1.18.2）
+- [ ] `NestSuite.exe sample.notenest` など引数指定起動でも前回タブが復元され、指定ファイルが追加タブとして開く（v1.18.2）
 - [ ] 引数指定ファイルが復元済みタブと同じ場合は重複タブを作らず既存タブがアクティブになる（v1.18.2）
 - [ ] セッションに記録されたファイルが存在しない場合はスキップして他のファイルを復元する
 - [ ] 復元対象が 1 件もない場合は無題 NoteNest タブが開く

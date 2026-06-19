@@ -100,7 +100,7 @@ public partial class MainViewModel
     {
         get
         {
-            var title = $"NoteNest - {_session.ProjectDisplayName}";
+            var title = $"NestSuite - {_session.ProjectDisplayName}";
             if (_session.IsModified) title += " *";
             title += $" - ver{ApplicationVersion}";
             return title;
