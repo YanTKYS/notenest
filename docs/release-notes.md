@@ -1,3 +1,20 @@
+## v1.21.0 — アプリ名称の NestSuite 化
+
+利用者から見えるアプリ名称を NoteNest から NestSuite に統一した。アプリ機能・保存形式の変更はない。
+
+- **EXE 名を `NestSuite.exe` に変更した。** `NoteNest.csproj` の `AssemblyName` を `NestSuite` に変更し、ビルド成果物が `NestSuite.exe` として出力されるようにした。
+- **ウィンドウタイトルを `NestSuite` に変更した。** `NestSuiteShellWindow.xaml` の `Title` 属性および `MainViewModel.WindowTitle` の prefix を更新した。
+- **About ダイアログから `（試験統合版）` を削除した。** NestSuite は v1.11.0 から既定起動となっており、試験統合版の表記は実態と合わないため削除した。
+- **ファイル関連付けダイアログの案内を `NestSuite.exe` に更新した。** 再登録時の案内文を修正した。ProgId（`NoteNest.notenest` 等）はレジストリ互換のため変更しない。
+- **GitHub Actions リリース成果物名を `NestSuite-$tag-win-x64.zip` に変更した。**
+- **README の主語を NestSuite に変更した。** タイトル・導入説明を NestSuite 前提に書き直し、起動コマンドの `NoteNest.exe` を `NestSuite.exe` に更新した。NoteNest Workspace の機能説明は維持している。
+- **`docs/guide/nestsuite-user-guide.md` の起動例を `NestSuite.exe` に更新した。** `--classic-notenest` セクションは v1.19.3 削除済みの注記に差し替えた。
+- **`docs/operations/file-association.md` の案内を `NestSuite.exe` に更新した。**
+- **`docs/testing/nestsuite-release-checklist.md` の起動確認項目を `NestSuite.exe` に更新した。**
+- Mutex 名・Named Pipe 名は変更しない（シングルインスタンス制御の互換性維持）。
+- ProgId（`NoteNest.notenest` / `NoteNest.chatnest` / `NoteNest.ideanest`）は変更しない（既存レジストリ設定との互換性維持）。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v1.20.1 — docs 構成整理
 
 `docs/` 直下にファイルが増えて煩雑になっていたため、用途別フォルダへ整理した。アプリ本体の機能変更はない。

@@ -52,7 +52,7 @@
             <TextBlock FontSize="11" Margin="0,0,0,2"
                        Text="・ユーザー単位（HKCU）の設定です。管理者権限は不要です。"/>
             <TextBlock FontSize="11" Margin="0,0,0,2"
-                       Text="・NoteNest.exe の配置場所を変えた場合は再登録が必要です。"/>
+                       Text="・NestSuite.exe の配置場所を変えた場合は再登録が必要です。"/>
             <TextBlock FontSize="11" Margin="0,0,0,2"
                        Text="・アプリ起動時に自動登録されるものではありません。"/>
             <TextBlock FontSize="11" Margin="0,0,0,16" TextWrapping="Wrap"

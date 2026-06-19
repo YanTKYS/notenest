@@ -6,42 +6,34 @@ NestSuite は、NoteNest / ChatNest / IdeaNest の 3 ツールを 1 つのシェ
 
 ## 起動方法
 
-### 既定起動（v1.11.0）
+### 起動（v1.21.0）
 
 ```
-NoteNest.exe
-NoteNest.exe sample.notenest
-NoteNest.exe sample.chatnest
-NoteNest.exe sample.ideanest
+NestSuite.exe
+NestSuite.exe sample.notenest
+NestSuite.exe sample.chatnest
+NestSuite.exe sample.ideanest
 ```
 
-- v1.11.0 から、引数なしでも NestSuite として起動します
+- 引数なしで起動すると、無題の NoteNest タブから始まります
 - ファイルパスを指定すると、拡張子に応じて対応するツールのタブを自動的に開きます
-- ファイルを指定しない場合、無題の NoteNest タブから始まります
 - 未対応拡張子や読込失敗時はエラーを表示し、無題 NoteNest タブへフォールバックします
 
-### 従来 NoteNest 単体版（限定的互換ルート）
+### `--classic-notenest`（v1.19.3 で削除済み）
 
-```
-NoteNest.exe --classic-notenest
-NoteNest.exe --classic-notenest sample.notenest
-```
-
-- `--classic-notenest` を付けると従来の NoteNest 単体版（`MainWindow`）として起動します
-- `.notenest` ファイルを指定すると、NoteNest 単体版でそのファイルを開きます
-- ファイルを指定しない場合、スタートダイアログを表示します
-- **v1.12.0 方針：緊急退避ルートとして当面残しますが、恒久的な並行保守対象ではありません。新機能は原則 NestSuite に反映し、`--classic-notenest` には反映しません。v1.13.0 以降で縮退を実施するか判断します。**
+- v1.19.3 で `--classic-notenest` 起動ルートを削除しました。指定しても NestSuite が通常起動します
+- 退避が必要な場合は v1.19.2 以前のリリースを利用してください
 
 ### `--nestsuite`（互換）
 
 ```
-NoteNest.exe --nestsuite
-NoteNest.exe --nestsuite sample.notenest
-NoteNest.exe --nestsuite sample.chatnest
-NoteNest.exe --nestsuite sample.ideanest
+NestSuite.exe --nestsuite
+NestSuite.exe --nestsuite sample.notenest
+NestSuite.exe --nestsuite sample.chatnest
+NestSuite.exe --nestsuite sample.ideanest
 ```
 
-- `--nestsuite` は v1.6.1 互換として維持されています。v1.11.0 以降は既定と同じ動作になります
+- `--nestsuite` は v1.6.1 互換として維持されています。既定と同じ動作になります
 - 既存のスクリプトやショートカットで `--nestsuite` を使っている場合は、引き続きそのまま動作します
 
 ---

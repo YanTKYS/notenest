@@ -10,12 +10,12 @@
 
 ### 現在の方針
 
-- **NestSuite が主起動ルート**です（v1.11.0 以降、`NoteNest.exe` 既定 = NestSuite）
+- **NestSuite が主起動ルート・主アプリ名**です（v1.11.0 以降既定 / v1.21.0 から `NestSuite.exe` に統一）
 - NoteNest / ChatNest / IdeaNest は、NestSuite 上の **Workspace** として動作しています
 - **IdeaNest / ChatNest は単体アプリとしての新規機能開発を原則凍結しています。** 今後は NestSuite Workspace としての改善・不具合修正・統合調整のみを行います
 - **`--classic-notenest` は v1.19.3 で削除しました。** 退避が必要な場合は v1.19.2 以前を使用してください
 - 新機能候補は原則として NestSuite Shell または各 Workspace を対象とします。旧 NoteNest 単体版への反映は行いません
-- **v1.19.x は「NestSuite 安定化フェーズ」** です。新機能追加より、起動・関連付け・タブ・保存・復元の安定性を優先します。各 Workspace 個別改善は当面の優先度を下げています
+- **v1.21.0 でアプリ名称を NestSuite に統一しました。** 内部 namespace・ProgId は互換維持のため変更していません
 
 ---
 

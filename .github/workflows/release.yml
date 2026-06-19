@@ -77,7 +77,7 @@ jobs:
         shell: pwsh
         run: |
           $tag     = "${{ inputs.tag }}"
-          $dirName = "NoteNest-$tag-win-x64"
+          $dirName = "NestSuite-$tag-win-x64"
           $stageDir = Join-Path "stage" $dirName
 
           New-Item -ItemType Directory -Path $stageDir -Force | Out-Null

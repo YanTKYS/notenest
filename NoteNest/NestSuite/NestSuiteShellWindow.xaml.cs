@@ -1550,7 +1550,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     private void MenuAbout_Click(object sender, RoutedEventArgs e)
         => _dialogs.ShowInfo(
-            $"NestSuite（試験統合版）v{MainViewModel.ApplicationVersion}\n\n" +
+            $"NestSuite v{MainViewModel.ApplicationVersion}\n\n" +
             "NoteNest / ChatNest / IdeaNest を搭載\n" +
             "ファイル単位タブで 3 ツールを並行利用できます。",
             "NestSuite について");
