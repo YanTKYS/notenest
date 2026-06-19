@@ -195,16 +195,16 @@ public class ArchitectureBoundaryTests
     private static string FindSolutionRoot()
     {
         var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-        while (!string.IsNullOrEmpty(dir) && !File.Exists(Path.Combine(dir, "NoteNest.sln")))
+        while (!string.IsNullOrEmpty(dir) && !File.Exists(Path.Combine(dir, "NestSuite.sln")))
             dir = Path.GetDirectoryName(dir)!;
         return !string.IsNullOrEmpty(dir)
             ? dir
-            : throw new InvalidOperationException("NoteNest.sln が見つかりません");
+            : throw new InvalidOperationException("NestSuite.sln が見つかりません");
     }
 
     private static IEnumerable<string> GetWorkspaceSourceFiles()
     {
-        var src = Path.Combine(FindSolutionRoot(), "NoteNest");
+        var src = Path.Combine(FindSolutionRoot(), "NestSuite");
 
         // ViewModels: MainViewModel*.cs は AppShell/Workspace 境界ファサードのため除外
         foreach (var f in Directory.GetFiles(Path.Combine(src, "ViewModels"), "*.cs"))
