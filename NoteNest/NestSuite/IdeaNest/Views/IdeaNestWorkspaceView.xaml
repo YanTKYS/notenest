@@ -482,14 +482,17 @@
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
 
-                                        <!-- Body preview (fixed mode): MaxLines で行数制限、TextTrimming で省略表示 -->
-                                        <TextBlock Text="{Binding Body}"
-                                                   TextWrapping="Wrap" Margin="0,2,0,4"
+                                        <!-- Body preview (fixed mode): 論理行数を IdeaBodyTrimConverter で制限して省略表示 -->
+                                        <TextBlock TextWrapping="Wrap" Margin="0,2,0,4"
                                                    FontSize="12"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   MaxLines="{Binding DataContext.BodyPreviewMaxLines, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                    Foreground="{StaticResource IdeaTextPrimaryBrush}"
                                                    Opacity="0.85">
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource IdeaBodyTrim}">
+                                                    <Binding Path="Body"/>
+                                                    <Binding Path="DataContext.BodyPreviewMaxLines" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Visibility" Value="Visible" />

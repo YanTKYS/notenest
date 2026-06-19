@@ -8,6 +8,7 @@
     <conv:IdeaStringIsEmptyToVisibilityConverter x:Key="IdeaStringToVis" />
     <conv:IdeaHexStringToBrushConverter x:Key="IdeaHexToBrush" />
     <conv:IdeaColorNameToBrushConverter x:Key="IdeaColorNameToBrush" />
+    <conv:IdeaBodyTrimConverter x:Key="IdeaBodyTrim" />
 
     <!-- IdeaNest color palette (static light theme) -->
     <SolidColorBrush x:Key="IdeaAppBackgroundBrush" Color="#F6F7F9" />
