@@ -123,7 +123,7 @@ NoteNest.exe "C:\path\to\project.notenest"
 
 - NoteNest は保存時に `.notenest` ファイルと同じフォルダに `.bak` を自動作成します（直前の保存内容のみ）
 - `.notenest` が破損した場合は `.bak` をリネームすることで前回保存時点に復元できます
-- 詳細は [docs/operation-note.md](docs/operation-note.md) を参照してください
+- 詳細は [docs/operations/operation-note.md](docs/operations/operation-note.md) を参照してください
 
 ## `.notenest` ファイルについて
 
@@ -193,7 +193,7 @@ NestSuite は、NoteNest / ChatNest / IdeaNest の 3 ツールを 1 つのシェ
 - ファイルパスを指定すると、そのファイルの拡張子に応じて NoteNest / ChatNest / IdeaNest タブを自動作成します
 - 余分な無題タブはちらつきなく作成されません
 - ファイルメニュー → 「最近使ったファイル」から直近 10 件のファイルにすばやくアクセスできます（v1.14.0）
-- 詳細は [docs/nestsuite-user-guide.md](docs/nestsuite-user-guide.md) を参照してください
+- 詳細は [docs/guide/nestsuite-user-guide.md](docs/guide/nestsuite-user-guide.md) を参照してください
 
 ## v1.14.0 時点の制限
 
@@ -227,10 +227,10 @@ NestSuite は、NoteNest / ChatNest / IdeaNest の 3 ツールを 1 つのシェ
 
 | ドキュメント | 内容 |
 |-------------|------|
-| [docs/nestsuite-user-guide.md](docs/nestsuite-user-guide.md) | NestSuite 利用ガイド（起動・操作・既知制約） |
-| [docs/nestsuite-release-checklist.md](docs/nestsuite-release-checklist.md) | NestSuite リリース前確認チェックリスト |
-| [docs/design-decisions.md](docs/design-decisions.md) | 設計判断の背景と理由 |
+| [docs/guide/nestsuite-user-guide.md](docs/guide/nestsuite-user-guide.md) | NestSuite 利用ガイド（起動・操作・既知制約） |
+| [docs/testing/nestsuite-release-checklist.md](docs/testing/nestsuite-release-checklist.md) | NestSuite リリース前確認チェックリスト |
+| [docs/design/design-decisions.md](docs/design/design-decisions.md) | 設計判断の背景と理由 |
 | [docs/backlog.md](docs/backlog.md) | 今後の実装候補・NestSuite改善候補・対象外機能 |
 | [docs/release-notes.md](docs/release-notes.md) | バージョン別リリースノート |
-| [docs/operation-note.md](docs/operation-note.md) | 運用上の注意・既知の制限 |
-| [docs/test-scenarios.md](docs/test-scenarios.md) | 手動テストシナリオ |
+| [docs/operations/operation-note.md](docs/operations/operation-note.md) | 運用上の注意・既知の制限 |
+| [docs/testing/test-scenarios.md](docs/testing/test-scenarios.md) | 手動テストシナリオ |

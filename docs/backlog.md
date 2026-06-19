@@ -5,8 +5,8 @@
 このファイルは「今後の実装候補」を整理する場所です。完了履歴を積み上げる場所ではありません。
 
 - **実装済み項目**は `docs/release-notes.md` を参照してください
-- **設計判断の背景**は `docs/design-decisions.md` を参照してください
-- **既知の制約**は `docs/nestsuite-known-limitations.md` を参照してください
+- **設計判断の背景**は `docs/design/design-decisions.md` を参照してください
+- **既知の制約**は `docs/design/nestsuite-known-limitations.md` を参照してください
 
 ### 現在の方針
 
@@ -165,7 +165,7 @@ v1.19.2 で縮退準備・方針明文化を開始した。
 3. 廃止への支障報告がないこと（v1.12.x 以降の猶予期間を経ていること）
 4. 移行説明（docs・リリースノート）が完了していること
 
-詳細は `docs/nestsuite-default-startup-plan.md` を参照。
+詳細は `docs/design/nestsuite-default-startup-plan.md` を参照。
 
 ---
 
