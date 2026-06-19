@@ -1,3 +1,14 @@
+## v1.19.2 — classic-notenest 縮退準備・方針明文化
+
+- **`--classic-notenest` は削除しない。** 緊急退避用の限定互換ルートとして引き続き利用できる。
+- **classic-notenest を通常利用・通常保守の対象から外した。** 今後の改善・不具合修正・テストの主対象は NestSuite と各 Workspace（NoteNest / ChatNest / IdeaNest）とする。
+- **classic-notenest の新規 UI 改善・使い勝手改善は原則行わない。** classic 固有の不具合修正も原則対象外とする。
+- **例外：classic 側の挙動が NestSuite 設定・保存・起動に副作用を与える場合は、最小限の修正を行う。**（v1.19.1 で実施した「classic 終了時に NestSuite ウィンドウサイズ設定を上書きしない」修正がその例）
+- **docs / test-scenarios / release checklist で classic 確認を起動確認中心に縮小した。** 詳細操作確認は通常の総点検対象から外した。
+- **v1.19.3 以降で実際の縮退（コード削除）を進める予定。** 縮退フェーズと条件は `docs/backlog.md` の「classic-notenest 縮退」セクションを参照。
+- コード変更はバージョン番号更新のみ。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v1.19.1 — NestSuite UI 軽微修正
 
 - **IdeaNest Workspace で M サイズカード（252px）が最小画面幅でも 3 列表示されるようにした。** NestSuite ウィンドウの `MinWidth` を 800px から 860px に変更した。M カード 3 列が必要とするビューポート幅（カード 252px × 3 ＋ 余白）に対して適切な下限を設定した。

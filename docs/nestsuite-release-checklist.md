@@ -1,4 +1,4 @@
-# NestSuite リリース前確認チェックリスト（v1.19.1）
+# NestSuite リリース前確認チェックリスト（v1.19.2）
 
 NestSuite 統合版のリリース前に確認する項目を整理します。v1.13.0 より、NestSuite を主対象とし、`--classic-notenest` の確認は限定的互換ルートのスモーク確認として扱います。
 
@@ -8,7 +8,7 @@ NestSuite 統合版のリリース前に確認する項目を整理します。v
 
 - [ ] `dotnet build` が通る
 - [ ] `dotnet test` が通る（全テスト）
-- [ ] `ApplicationVersionTests` でバージョンが正しく表示されることを確認（v1.19.1）
+- [ ] `ApplicationVersionTests` でバージョンが正しく表示されることを確認（v1.19.2）
 - [ ] `NoteNest保存スキーマが 1.4.1` のままであることを確認
 
 ---
@@ -22,10 +22,13 @@ NestSuite 統合版のリリース前に確認する項目を整理します。v
 - [ ] `NoteNest.exe --nestsuite` → NestSuite として起動する（互換フラグ、フラグなしと同じ動作）
 - [ ] `NoteNest.exe --nestsuite sample.notenest` → NestSuite で `.notenest` タブを開く
 
-### `--classic-notenest` スモーク確認（限定的互換ルート）
+### `--classic-notenest` 緊急退避ルート確認（v1.19.2 以降は起動確認のみ）
 
-- [ ] `NoteNest.exe --classic-notenest` → NoteNest 単体版として起動できる（起動不能でない）
+> classic-notenest は通常利用・通常保守の対象外。詳細操作確認は不要。起動できることと NestSuite 設定への副作用がないことのみ確認する。
+
+- [ ] `NoteNest.exe --classic-notenest` → 緊急退避用 classic NoteNest として起動できる（起動不能でない）
 - [ ] `NoteNest.exe --classic-notenest sample.notenest` → 指定ファイルを開ける
+- [ ] classic NoteNest を終了しても NestSuite のウィンドウサイズ・タブ復元設定が変化しない
 
 ---
 

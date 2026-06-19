@@ -186,8 +186,8 @@ NestSuite は、NoteNest / ChatNest / IdeaNest の 3 ツールを 1 つのシェ
 | `NoteNest.exe sample.notenest` | NestSuite を起動し `.notenest` タブを開く |
 | `NoteNest.exe sample.chatnest` | NestSuite を起動し `.chatnest` タブを開く |
 | `NoteNest.exe sample.ideanest` | NestSuite を起動し `.ideanest` タブを開く |
-| `NoteNest.exe --classic-notenest` | 従来 NoteNest 単体版を起動（互換ルート） |
-| `NoteNest.exe --classic-notenest sample.notenest` | 従来 NoteNest 単体版でファイルを開く |
+| `NoteNest.exe --classic-notenest` | 従来 NoteNest 単体版を起動（**緊急退避用限定互換ルート**、通常利用対象外） |
+| `NoteNest.exe --classic-notenest sample.notenest` | 従来 NoteNest 単体版でファイルを開く（緊急退避用） |
 | `NoteNest.exe --nestsuite` | NestSuite を起動（v1.6.1 互換、既定と同じ動作） |
 | `NoteNest.exe --nestsuite sample.chatnest` | NestSuite を起動しファイルを開く（互換） |
 
@@ -210,7 +210,7 @@ NestSuite は、NoteNest / ChatNest / IdeaNest の 3 ツールを 1 つのシェ
 | NestSuite タブ復元 | 未対応（将来検討） |
 | NestSuite 最近使ったファイル | 実装済み（v1.14.0、3ツール横断・最大10件） |
 | ファイル関連付けの自動設定 | 未対応（手動設定が必要） |
-| `--classic-notenest`（旧NoteNest単体版）| v1.12.0 方針：緊急退避ルートとして当面維持。新機能は原則反映しない。v1.13.0 以降で縮退を検討 |
+| `--classic-notenest`（旧NoteNest単体版）| v1.19.2 方針：緊急退避用の限定互換ルートとして維持。通常利用・通常保守の対象外。新規 UI 改善・使い勝手改善は行わない。v1.19.3 で削除予定 |
 
 ## 対象外機能
 
