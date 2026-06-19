@@ -151,8 +151,8 @@ NestSuite 統合版のリリース前に確認する項目を整理します。v
 ## 7. ドキュメント確認
 
 - [ ] README に NestSuite の起動方法が記載されている
-- [ ] `docs/nestsuite-user-guide.md` が存在する
-- [ ] `docs/nestsuite-known-limitations.md` が存在する
+- [ ] `docs/guide/nestsuite-user-guide.md` が存在する
+- [ ] `docs/design/nestsuite-known-limitations.md` が存在する
 - [ ] `docs/release-notes.md` に最新バージョンエントリが記載されている
 
 ---

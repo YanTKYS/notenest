@@ -72,7 +72,7 @@ v1.11.0 で `NoteNest.exe` の既定起動を NestSuite に切り替え、NoteNe
 | `App_Startup` の分岐変更 | `--classic-notenest` フラグ時のみ `MainWindow` へ。それ以外は `NestSuiteShellWindow` |
 | `StartupArgParser` 拡張 | `IsClassicMode(string[] args)` を追加。`--classic-notenest` を判定する |
 | ファイル関連付けの動作確認 | `.notenest` ダブルクリック → NestSuite が起動しファイルタブが開くことを確認 |
-| `docs/nestsuite-user-guide.md` 更新 | 起動方法の説明を新ルートに合わせて更新 |
+| `docs/guide/nestsuite-user-guide.md` 更新 | 起動方法の説明を新ルートに合わせて更新 |
 | `docs/nestsuite-default-startup-plan.md` 更新 | 実装後の実際の動作を反映 |
 
 ### 変更案（`App_Startup`）
