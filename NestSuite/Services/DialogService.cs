@@ -1,11 +1,11 @@
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
-using NoteNest.Dialogs;
-using NoteNest.Models;
-using NoteNest.ViewModels;
+using NestSuite.Dialogs;
+using NestSuite.Models;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Services;
+namespace NestSuite.Services;
 
 /// <summary>
 /// NestSuite および各 Workspace が利用するダイアログの生成、Owner 設定、ファイル選択を一箇所に集約します。

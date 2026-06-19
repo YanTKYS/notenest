@@ -1,15 +1,15 @@
-using NoteNest.Models;
-using NoteNest.ViewModels;
+using NestSuite.Models;
+using NestSuite.ViewModels;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 public class ApplicationVersionTests
 {
     [Fact]
     public void ApplicationVersion_UsesAssemblyInformationalVersion()
     {
-        Assert.Equal("1.21.3", MainViewModel.ApplicationVersion);
+        Assert.Equal("1.21.4", MainViewModel.ApplicationVersion);
     }
 
     [Fact]
@@ -17,13 +17,13 @@ public class ApplicationVersionTests
     {
         var viewModel = new MainViewModel();
 
-        Assert.EndsWith(" - ver1.21.3", viewModel.WindowTitle);
+        Assert.EndsWith(" - ver1.21.4", viewModel.WindowTitle);
     }
 
     [Fact]
     public void ApplicationAndSchemaVersionsAreManagedBySeparateSources()
     {
-        Assert.Equal("1.21.3", MainViewModel.ApplicationVersion);
+        Assert.Equal("1.21.4", MainViewModel.ApplicationVersion);
         Assert.Equal("1.4.1", Project.CurrentSchemaVersion);
     }
 }

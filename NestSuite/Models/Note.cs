@@ -1,4 +1,4 @@
-namespace NoteNest.Models;
+namespace NestSuite.Models;
 
 public class Note
 {

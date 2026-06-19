@@ -1,4 +1,4 @@
-namespace NoteNest.Models;
+namespace NestSuite.Models;
 
 public enum ExportTarget { Project, CurrentNotebook, CurrentNote }
 public enum ExportFormat { Text, Markdown, Html }

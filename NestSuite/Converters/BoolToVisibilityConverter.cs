@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace NoteNest.Converters;
+namespace NestSuite.Converters;
 
 public class BoolToVisibilityConverter : IValueConverter
 {

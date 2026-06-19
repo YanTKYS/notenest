@@ -1,4 +1,4 @@
-<Window x:Class="NoteNest.NestSuite.FileAssociation.FileAssociationDialog"
+<Window x:Class="NestSuite.NestSuite.FileAssociation.FileAssociationDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="ファイル関連付けの設定"

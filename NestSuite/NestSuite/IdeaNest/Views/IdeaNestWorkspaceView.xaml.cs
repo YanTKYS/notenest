@@ -7,9 +7,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using NoteNest.NestSuite.IdeaNest.ViewModels;
+using NestSuite.NestSuite.IdeaNest.ViewModels;
 
-namespace NoteNest.NestSuite.IdeaNest.Views;
+namespace NestSuite.NestSuite.IdeaNest.Views;
 
 public partial class IdeaNestWorkspaceView : UserControl
 {

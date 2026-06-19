@@ -1,8 +1,8 @@
 using System.Windows;
 using System.Windows.Controls;
-using NoteNest.ViewModels;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Views;
+namespace NestSuite.Views;
 
 /// <summary>
 /// v1.5.x で導入した AppShell と Workspace View の間のダイアログ操作橋渡しインターフェース。

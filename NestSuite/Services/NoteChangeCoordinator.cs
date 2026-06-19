@@ -1,6 +1,6 @@
-using NoteNest.ViewModels;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Services;
+namespace NestSuite.Services;
 
 /// <summary>ノート変更に伴う派生表示の更新と意味的通知を担当します。</summary>
 public sealed class NoteChangeCoordinator

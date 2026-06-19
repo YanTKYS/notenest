@@ -1,8 +1,8 @@
 using System.IO;
-using NoteNest.Models;
-using NoteNest.ViewModels;
+using NestSuite.Models;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Services;
+namespace NestSuite.Services;
 
 /// <summary>プロジェクトの新規作成・読込・保存と、セッション／ワークスペース同期を扱います。</summary>
 public sealed class ProjectLifecycleService

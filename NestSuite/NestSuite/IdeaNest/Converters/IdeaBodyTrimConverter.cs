@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
 
-namespace NoteNest.NestSuite.IdeaNest.Converters;
+namespace NestSuite.NestSuite.IdeaNest.Converters;
 
 public class IdeaBodyTrimConverter : IMultiValueConverter
 {

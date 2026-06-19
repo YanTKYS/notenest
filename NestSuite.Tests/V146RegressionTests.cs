@@ -1,9 +1,9 @@
-using NoteNest.Models;
-using NoteNest.Services;
-using NoteNest.ViewModels;
+using NestSuite.Models;
+using NestSuite.Services;
+using NestSuite.ViewModels;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>v1.4.6 回帰確認：v1.4.x 各変更後の主要フローが一体として動作することを確認します。</summary>
 public sealed class V146RegressionTests : IDisposable

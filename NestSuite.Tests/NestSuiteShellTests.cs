@@ -1,13 +1,13 @@
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using NoteNest;
-using NoteNest.NestSuite;
-using NoteNest.NestSuite.ChatNest;
-using NoteNest.Views;
+using NestSuite;
+using NestSuite.NestSuite;
+using NestSuite.NestSuite.ChatNest;
+using NestSuite.Views;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.7.0〜v1.7.3: NestSuite 統合母体の型境界・ツール定義モデル・タブ管理・レジストリ・契約を確認するテスト。

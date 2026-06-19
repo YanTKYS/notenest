@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace NoteNest.NestSuite.IdeaNest.Converters;
+namespace NestSuite.NestSuite.IdeaNest.Converters;
 
 public class IdeaColorNameToBrushConverter : IValueConverter
 {

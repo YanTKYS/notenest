@@ -1,7 +1,7 @@
 using System.Windows;
-using NoteNest.ViewModels;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Services;
+namespace NestSuite.Services;
 
 /// <summary>NoteNestWorkspaceView のドラッグ操作中だけ必要な一時状態を所有します。</summary>
 public sealed class DragDropState

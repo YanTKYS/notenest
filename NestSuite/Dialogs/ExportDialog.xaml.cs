@@ -1,7 +1,7 @@
 using System.Windows;
-using NoteNest.Models;
+using NestSuite.Models;
 
-namespace NoteNest.Dialogs;
+namespace NestSuite.Dialogs;
 
 public partial class ExportDialog : Window
 {

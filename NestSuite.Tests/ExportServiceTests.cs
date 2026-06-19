@@ -1,10 +1,10 @@
 using System.IO;
 using System.Text;
-using NoteNest.Models;
-using NoteNest.Services;
+using NestSuite.Models;
+using NestSuite.Services;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 public class ExportServiceTests : IDisposable
 {

@@ -1,9 +1,9 @@
-using NoteNest.Models;
-using NoteNest.Services;
-using NoteNest.ViewModels;
+using NestSuite.Models;
+using NestSuite.Services;
+using NestSuite.ViewModels;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 public class MarkerPanelViewModelTests
 {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NoteNest.NestSuite.IdeaNest.Models;
+using NestSuite.NestSuite.IdeaNest.Models;
 
-namespace NoteNest.NestSuite.IdeaNest.ViewModels;
+namespace NestSuite.NestSuite.IdeaNest.ViewModels;
 
 /// <summary>
 /// Owns card-list display settings: card size, card height mode, sort/shuffle order.

@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using NoteNest.NestSuite.IdeaNest.Models;
-using NoteNest.NestSuite.IdeaNest.Services;
-using NoteNest.NestSuite.IdeaNest.ViewModels;
+using NestSuite.NestSuite.IdeaNest.Models;
+using NestSuite.NestSuite.IdeaNest.Services;
+using NestSuite.NestSuite.IdeaNest.ViewModels;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 public class IdeaNestWorkspaceViewModelTests
 {

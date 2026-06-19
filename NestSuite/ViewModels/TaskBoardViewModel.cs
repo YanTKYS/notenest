@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using NoteNest.Models;
+using NestSuite.Models;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 /// <summary>タスクグループとタスクのライフサイクルを所有します。</summary>
 public sealed class TaskBoardViewModel

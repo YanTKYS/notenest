@@ -1,4 +1,4 @@
-namespace NoteNest.NestSuite;
+namespace NestSuite.NestSuite;
 
 /// <summary>
 /// v1.6.4 NestSuite ツール定義モデル。

@@ -1,4 +1,4 @@
-namespace NoteNest;
+namespace NestSuite;
 
 /// <summary>
 /// 起動引数解析。App_Startup から呼び出す。

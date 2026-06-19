@@ -1,4 +1,4 @@
-namespace NoteNest.NestSuite.ChatNest;
+namespace NestSuite.NestSuite.ChatNest;
 
 /// <summary>
 /// ChatNest の発言者種別。参照ソース ChatNest v0.4.1 の Models/Message.cs より取り込み。

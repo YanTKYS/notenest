@@ -1,4 +1,4 @@
-namespace NoteNest.NestSuite;
+namespace NestSuite.NestSuite;
 
 /// <summary>
 /// v1.9.0: 同一ツール複数ファイル対応に向けた「ファイルを開くときの方針」を

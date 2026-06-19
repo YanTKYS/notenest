@@ -1,7 +1,7 @@
 using System.ComponentModel;
-using NoteNest.ViewModels;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Services;
+namespace NestSuite.Services;
 
 /// <summary>エディタ操作を永続化対象の所有者へ伝播し、表示用プロパティ名を変換します。</summary>
 public sealed class EditorChangeCoordinator

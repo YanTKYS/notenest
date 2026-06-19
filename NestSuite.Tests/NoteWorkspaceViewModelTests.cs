@@ -1,8 +1,8 @@
-using NoteNest.Models;
-using NoteNest.ViewModels;
+using NestSuite.Models;
+using NestSuite.ViewModels;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 public class NoteWorkspaceViewModelTests
 {

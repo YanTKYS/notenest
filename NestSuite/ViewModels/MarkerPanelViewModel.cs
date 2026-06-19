@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
-using NoteNest.Services;
+using NestSuite.Services;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 /// <summary>マーカー抽出結果、フィルター、並び順を所有します。</summary>
 public sealed class MarkerPanelViewModel : BaseViewModel

@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using NoteNest.NestSuite.IdeaNest.Models;
+using NestSuite.NestSuite.IdeaNest.Models;
 
-namespace NoteNest.NestSuite.IdeaNest.Services;
+namespace NestSuite.NestSuite.IdeaNest.Services;
 
 public static class IdeaNestWorkspaceService
 {

@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-namespace NoteNest.NestSuite.ChatNest;
+namespace NestSuite.NestSuite.ChatNest;
 
 /// <summary>
 /// ChatNest Workspace ビュー。参照ソース ChatNest v0.4.1

@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
-using NoteNest.Models;
+using NestSuite.Models;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 public class NotebookViewModel : BaseViewModel
 {

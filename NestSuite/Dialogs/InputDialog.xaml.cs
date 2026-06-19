@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Input;
 
-namespace NoteNest.Dialogs;
+namespace NestSuite.Dialogs;
 
 public partial class InputDialog : Window
 {

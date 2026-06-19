@@ -1,7 +1,7 @@
-using NoteNest.Models;
-using NoteNest.ViewModels;
+using NestSuite.Models;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Services;
+namespace NestSuite.Services;
 
 /// <summary>保存モデルと責務別 ViewModel 間の変換を担当します。</summary>
 public sealed class ProjectDocumentService

@@ -2,9 +2,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using NoteNest.ViewModels;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Views;
+namespace NestSuite.Views;
 
 public partial class NoteNestWorkspaceView
 {

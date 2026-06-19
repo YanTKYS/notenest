@@ -1,7 +1,7 @@
-<UserControl x:Class="NoteNest.Views.NoteNestWorkspaceView"
+<UserControl x:Class="NestSuite.Views.NoteNestWorkspaceView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:NoteNest.ViewModels"
+             xmlns:vm="clr-namespace:NestSuite.ViewModels"
              TextElement.Foreground="{DynamicResource AppFg}">
 
     <!-- ═══ Main 3-pane layout ═══ -->

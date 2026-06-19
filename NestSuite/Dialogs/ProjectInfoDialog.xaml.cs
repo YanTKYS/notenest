@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace NoteNest.Dialogs;
+namespace NestSuite.Dialogs;
 
 public partial class ProjectInfoDialog : Window
 {

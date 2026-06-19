@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace NoteNest.NestSuite.IdeaNest.Views;
+namespace NestSuite.NestSuite.IdeaNest.Views;
 
 public enum ConfirmResult
 {

@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
-namespace NoteNest.NestSuite.FileAssociation;
+namespace NestSuite.NestSuite.FileAssociation;
 
 /// <summary>
 /// HKCU\Software\Classes への NestSuite ファイル関連付け登録・解除・状態確認。

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
-using NoteNest.NestSuite.IdeaNest.ViewModels;
+using NestSuite.NestSuite.IdeaNest.ViewModels;
 
-namespace NoteNest.NestSuite.IdeaNest.Views;
+namespace NestSuite.NestSuite.IdeaNest.Views;
 
 public partial class PreviewIdeaWindow : Window
 {

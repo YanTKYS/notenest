@@ -1,8 +1,8 @@
 using System.IO;
-using NoteNest.NestSuite.ChatNest;
+using NestSuite.NestSuite.ChatNest;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.7.4: ChatNestFileService の保存・読込動作を確認するテスト。

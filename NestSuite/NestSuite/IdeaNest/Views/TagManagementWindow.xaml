@@ -1,4 +1,4 @@
-<Window x:Class="NoteNest.NestSuite.IdeaNest.Views.TagManagementWindow"
+<Window x:Class="NestSuite.NestSuite.IdeaNest.Views.TagManagementWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="タグ管理"

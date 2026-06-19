@@ -1,7 +1,7 @@
-using NoteNest.NestSuite;
+using NestSuite.NestSuite;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.14.0: NestSuite 横断最近ファイルサービスのユニットテスト。

@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 public class BaseViewModel : INotifyPropertyChanged
 {

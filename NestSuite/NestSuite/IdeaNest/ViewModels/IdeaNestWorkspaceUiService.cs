@@ -1,7 +1,7 @@
 using System;
 using System.Windows;
 
-namespace NoteNest.NestSuite.IdeaNest.ViewModels;
+namespace NestSuite.NestSuite.IdeaNest.ViewModels;
 
 /// <summary>Centralizes the WPF host-dependent operations used by the IdeaNest workspace.</summary>
 public sealed class IdeaNestWorkspaceUiService

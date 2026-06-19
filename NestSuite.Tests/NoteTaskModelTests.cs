@@ -1,9 +1,9 @@
 using System.Text.Json;
-using NoteNest.Models;
-using NoteNest.Services;
+using NestSuite.Models;
+using NestSuite.Services;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 public class NoteTaskModelTests : IDisposable
 {

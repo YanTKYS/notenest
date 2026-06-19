@@ -1,6 +1,6 @@
-using NoteNest.Models;
+using NestSuite.Models;
 
-namespace NoteNest.Services;
+namespace NestSuite.Services;
 
 public class SampleDataService
 {

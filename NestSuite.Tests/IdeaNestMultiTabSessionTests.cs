@@ -1,9 +1,9 @@
-using NoteNest.NestSuite;
-using NoteNest.NestSuite.IdeaNest.ViewModels;
-using NoteNest.NestSuite.IdeaNest.Models;
+using NestSuite.NestSuite;
+using NestSuite.NestSuite.IdeaNest.ViewModels;
+using NestSuite.NestSuite.IdeaNest.Models;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.9.7: IdeaNest 複数ファイルタブ対応の Session 独立性テスト。

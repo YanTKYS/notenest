@@ -1,9 +1,9 @@
-using NoteNest.Models;
-using NoteNest.NestSuite;
-using NoteNest.NestSuite.ChatNest;
+using NestSuite.Models;
+using NestSuite.NestSuite;
+using NestSuite.NestSuite.ChatNest;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.9.4: NoteNest 複数ファイルタブ対応の設計固定テスト。

@@ -1,4 +1,4 @@
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 public partial class MainViewModel
 {

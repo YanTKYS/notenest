@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace NoteNest.NestSuite.IdeaNest.Views;
+namespace NestSuite.NestSuite.IdeaNest.Views;
 
 public partial class IdeaPromptWindow : Window
 {

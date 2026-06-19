@@ -1,8 +1,8 @@
 using System.Windows.Threading;
 using System.ComponentModel;
-using NoteNest.Services;
+using NestSuite.Services;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 public partial class MainViewModel : BaseViewModel, IDisposable
 {

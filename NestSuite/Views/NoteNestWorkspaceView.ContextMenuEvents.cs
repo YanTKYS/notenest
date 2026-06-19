@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace NoteNest.Views;
+namespace NestSuite.Views;
 
 public partial class NoteNestWorkspaceView
 {

@@ -1,7 +1,7 @@
-using NoteNest.Models;
-using NoteNest.Services;
+using NestSuite.Models;
+using NestSuite.Services;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 public class NoteViewModel : BaseViewModel
 {

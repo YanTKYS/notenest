@@ -1,9 +1,9 @@
 using System.Reflection;
-using NoteNest.Services;
-using NoteNest.ViewModels;
+using NestSuite.Services;
+using NestSuite.ViewModels;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 public class DialogServiceBoundaryTests
 {

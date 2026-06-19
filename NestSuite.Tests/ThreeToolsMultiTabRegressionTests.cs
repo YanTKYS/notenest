@@ -1,10 +1,10 @@
-using NoteNest.NestSuite;
-using NoteNest.NestSuite.ChatNest;
-using NoteNest.NestSuite.IdeaNest.ViewModels;
-using NoteNest.ViewModels;
+using NestSuite.NestSuite;
+using NestSuite.NestSuite.ChatNest;
+using NestSuite.NestSuite.IdeaNest.ViewModels;
+using NestSuite.ViewModels;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.9.8: 3ツール（NoteNest / ChatNest / IdeaNest）複数ファイルタブ対応後の回帰確認テスト。

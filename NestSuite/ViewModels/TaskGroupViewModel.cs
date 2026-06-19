@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 public class TaskGroupViewModel : BaseViewModel
 {
