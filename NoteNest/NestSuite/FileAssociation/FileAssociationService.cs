@@ -27,16 +27,38 @@ public sealed class FileAssociationService
     private const int ShcneAssocChanged = 0x08000000;
 
     /// <summary>指定拡張子の HKCU\Software\Classes 上の状態を返す。</summary>
-    public FileAssociationStatus GetStatus(string ext)
+    public FileAssociationStatus GetStatus(string ext, string currentExePath)
     {
         var progId = GetProgId(ext);
         using var key = Registry.CurrentUser.OpenSubKey($@"Software\Classes\{ext}");
         if (key == null) return FileAssociationStatus.NotRegistered;
         var value = key.GetValue(null) as string;
         if (string.IsNullOrEmpty(value)) return FileAssociationStatus.NotRegistered;
-        return string.Equals(value, progId, StringComparison.OrdinalIgnoreCase)
+        if (!string.Equals(value, progId, StringComparison.OrdinalIgnoreCase))
+            return FileAssociationStatus.OtherApp;
+
+        // ProgId は一致する。コマンドが現在の EXE を指しているか確認する。
+        using var cmdKey = Registry.CurrentUser.OpenSubKey($@"Software\Classes\{progId}\shell\open\command");
+        var cmd = cmdKey?.GetValue(null) as string;
+        if (string.IsNullOrEmpty(cmd)) return FileAssociationStatus.StaleRegistration;
+
+        // コマンド形式: "C:\path\to\NestSuite.exe" "%1" — 先頭のパスを取り出す
+        var trimmed = cmd.Trim();
+        string registeredExe;
+        if (trimmed.StartsWith('"'))
+        {
+            var end = trimmed.IndexOf('"', 1);
+            registeredExe = end > 0 ? trimmed[1..end] : trimmed;
+        }
+        else
+        {
+            var sp = trimmed.IndexOf(' ');
+            registeredExe = sp > 0 ? trimmed[..sp] : trimmed;
+        }
+
+        return string.Equals(registeredExe, currentExePath, StringComparison.OrdinalIgnoreCase)
             ? FileAssociationStatus.Registered
-            : FileAssociationStatus.OtherApp;
+            : FileAssociationStatus.StaleRegistration;
     }
 
     /// <summary>
@@ -109,9 +131,10 @@ public sealed class FileAssociationService
 
 public enum FileAssociationStatus
 {
-    Registered,    // 登録済み (この機能による ProgId が設定されている)
-    NotRegistered, // 未登録 (HKCU にエントリなし)
-    OtherApp,      // 他のアプリに関連付け済み (HKCU に別の ProgId が設定されている)
+    Registered,          // 登録済み (この機能による ProgId + 現在の EXE が設定されている)
+    NotRegistered,       // 未登録 (HKCU にエントリなし)
+    OtherApp,            // 他のアプリに関連付け済み (HKCU に別の ProgId が設定されている)
+    StaleRegistration,   // 再登録が必要 (ProgId は一致するが EXE パスが現在と異なる)
 }
 
 public enum UnregisterResult
