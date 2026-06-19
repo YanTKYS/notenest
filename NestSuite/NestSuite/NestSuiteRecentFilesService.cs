@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text.Json;
 
-namespace NestSuite.NestSuite;
+namespace NestSuite;
 
 public class NestSuiteRecentFilesService
 {

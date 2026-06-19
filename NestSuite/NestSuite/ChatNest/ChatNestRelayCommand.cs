@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace NestSuite.NestSuite.ChatNest;
+namespace NestSuite.ChatNest;
 
 /// <summary>
 /// ChatNest Workspace 用の RelayCommand。参照ソース ChatNest v0.4.1 より取り込み。

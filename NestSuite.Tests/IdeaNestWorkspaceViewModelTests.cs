@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using NestSuite.NestSuite.IdeaNest.Models;
-using NestSuite.NestSuite.IdeaNest.Services;
-using NestSuite.NestSuite.IdeaNest.ViewModels;
+using NestSuite.IdeaNest.Models;
+using NestSuite.IdeaNest.Services;
+using NestSuite.IdeaNest.ViewModels;
 using Xunit;
 
 namespace NestSuite.Tests;

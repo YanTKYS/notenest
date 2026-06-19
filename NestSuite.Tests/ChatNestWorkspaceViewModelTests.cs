@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using NestSuite.NestSuite.ChatNest;
+using NestSuite.ChatNest;
 using Xunit;
 
 namespace NestSuite.Tests;

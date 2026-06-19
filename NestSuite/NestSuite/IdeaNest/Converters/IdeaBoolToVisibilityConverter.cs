@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace NestSuite.NestSuite.IdeaNest.Converters;
+namespace NestSuite.IdeaNest.Converters;
 
 public class IdeaBoolToVisibilityConverter : IValueConverter
 {

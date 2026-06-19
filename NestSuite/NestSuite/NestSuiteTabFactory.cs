@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace NestSuite.NestSuite;
+namespace NestSuite;
 
 /// <summary>
 /// <see cref="NestSuiteDocumentTab"/> を生成するファクトリ（設計レベルの骨格）。

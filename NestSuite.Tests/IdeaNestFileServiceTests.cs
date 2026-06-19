@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using System.Reflection;
-using NestSuite.NestSuite.IdeaNest.Models;
-using NestSuite.NestSuite.IdeaNest.Services;
+using NestSuite.IdeaNest.Models;
+using NestSuite.IdeaNest.Services;
 using Xunit;
 using System.Text.Json;
 

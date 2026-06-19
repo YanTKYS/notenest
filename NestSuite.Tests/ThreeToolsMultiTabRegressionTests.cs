@@ -1,6 +1,6 @@
-using NestSuite.NestSuite;
-using NestSuite.NestSuite.ChatNest;
-using NestSuite.NestSuite.IdeaNest.ViewModels;
+using NestSuite;
+using NestSuite.ChatNest;
+using NestSuite.IdeaNest.ViewModels;
 using NestSuite.ViewModels;
 using Xunit;
 

@@ -1,4 +1,4 @@
-namespace NestSuite.NestSuite;
+namespace NestSuite;
 
 /// <summary>
 /// NestSuite に登録された内蔵ツールの定義・一覧・統合状態を管理する。

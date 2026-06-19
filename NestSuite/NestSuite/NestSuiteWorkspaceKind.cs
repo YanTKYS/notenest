@@ -1,4 +1,4 @@
-namespace NestSuite.NestSuite;
+namespace NestSuite;
 
 /// <summary>
 /// NestSuite 上で扱う Workspace の種別。

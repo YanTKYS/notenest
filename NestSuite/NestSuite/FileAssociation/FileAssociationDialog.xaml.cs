@@ -2,7 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 
-namespace NestSuite.NestSuite.FileAssociation;
+namespace NestSuite.FileAssociation;
 
 public partial class FileAssociationDialog : Window
 {

@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace NestSuite.NestSuite.ChatNest;
+namespace NestSuite.ChatNest;
 
 /// <summary>
 /// 発言者ごとの吹き出し背景色。参照ソース ChatNest v0.4.1 Converters より取り込み。

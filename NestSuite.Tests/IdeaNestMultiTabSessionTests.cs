@@ -1,6 +1,6 @@
-using NestSuite.NestSuite;
-using NestSuite.NestSuite.IdeaNest.ViewModels;
-using NestSuite.NestSuite.IdeaNest.Models;
+using NestSuite;
+using NestSuite.IdeaNest.ViewModels;
+using NestSuite.IdeaNest.Models;
 using Xunit;
 
 namespace NestSuite.Tests;

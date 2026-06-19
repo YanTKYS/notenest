@@ -6,12 +6,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using NestSuite.NestSuite.IdeaNest.Commands;
-using NestSuite.NestSuite.IdeaNest.Models;
-using NestSuite.NestSuite.IdeaNest.Services;
-using NestSuite.NestSuite.IdeaNest.Views;
+using NestSuite.IdeaNest.Commands;
+using NestSuite.IdeaNest.Models;
+using NestSuite.IdeaNest.Services;
+using NestSuite.IdeaNest.Views;
 
-namespace NestSuite.NestSuite.IdeaNest.ViewModels;
+namespace NestSuite.IdeaNest.ViewModels;
 
 public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
 {

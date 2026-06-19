@@ -1,4 +1,4 @@
-namespace NestSuite.NestSuite;
+namespace NestSuite;
 
 /// <summary>
 /// v1.9.1: <see cref="NestSuiteWorkspaceSession"/> のコレクションを TabId をキーに管理するクラス。

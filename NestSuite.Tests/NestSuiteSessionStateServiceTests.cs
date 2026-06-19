@@ -1,4 +1,4 @@
-using NestSuite.NestSuite;
+using NestSuite;
 using Xunit;
 
 namespace NestSuite.Tests;

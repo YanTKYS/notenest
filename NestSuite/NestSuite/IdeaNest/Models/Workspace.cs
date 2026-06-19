@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace NestSuite.NestSuite.IdeaNest.Models;
+namespace NestSuite.IdeaNest.Models;
 
 public class Workspace
 {

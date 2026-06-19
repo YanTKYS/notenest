@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace NestSuite.NestSuite.ChatNest;
+namespace NestSuite.ChatNest;
 
 /// <summary>
 /// 発言者選択ラジオボタンと <see cref="Speaker"/> を双方向バインドする Converter。

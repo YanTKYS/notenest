@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace NestSuite.NestSuite.IdeaNest.Converters;
+namespace NestSuite.IdeaNest.Converters;
 
 public class IdeaHexStringToBrushConverter : IValueConverter
 {

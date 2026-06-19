@@ -5,15 +5,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using NestSuite.NestSuite.ChatNest;
-using NestSuite.NestSuite.FileAssociation;
-using NestSuite.NestSuite.IdeaNest.ViewModels;
-using NestSuite.NestSuite.IdeaNest.Services;
+using NestSuite.ChatNest;
+using NestSuite.FileAssociation;
+using NestSuite.IdeaNest.ViewModels;
+using NestSuite.IdeaNest.Services;
 using NestSuite.Services;
 using NestSuite.ViewModels;
 using NestSuite.Views;
 
-namespace NestSuite.NestSuite;
+namespace NestSuite;
 
 /// <summary>
 /// NestSuite 統合母体（ファイル単位タブモデル対応）。

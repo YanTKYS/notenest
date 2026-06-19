@@ -2,7 +2,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace NestSuite.NestSuite.ChatNest;
+namespace NestSuite.ChatNest;
 
 /// <summary>
 /// .chatnest ファイルの保存・読込を担当するサービス。

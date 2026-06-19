@@ -1,4 +1,4 @@
-namespace NestSuite.NestSuite;
+namespace NestSuite;
 
 public class NestSuiteSessionState
 {

@@ -2,8 +2,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using NestSuite;
-using NestSuite.NestSuite;
-using NestSuite.NestSuite.ChatNest;
+using NestSuite.ChatNest;
 using NestSuite.Views;
 using Xunit;
 
@@ -160,7 +159,7 @@ public class NestSuiteShellTests
         var prop = typeof(NestSuiteShellWindow)
             .GetProperty("ViewModel", AllInstance);
         Assert.NotNull(prop);
-        Assert.Equal(typeof(NoteNest.ViewModels.MainViewModel), prop!.PropertyType);
+        Assert.Equal(typeof(NestSuite.ViewModels.MainViewModel), prop!.PropertyType);
     }
 
     // ── NestSuiteToolRegistry ─────────────────────────────────────────────
@@ -375,7 +374,7 @@ public class NestSuiteShellTests
             .FirstOrDefault(f => f.Name == "IdeaNestWorkspaceView");
         Assert.NotNull(field);
         Assert.Equal(
-            typeof(NoteNest.NestSuite.IdeaNest.Views.IdeaNestWorkspaceView),
+            typeof(NestSuite.IdeaNest.Views.IdeaNestWorkspaceView),
             field!.FieldType);
     }
 
@@ -387,7 +386,7 @@ public class NestSuiteShellTests
         var field = typeof(NestSuiteShellWindow)
             .GetFields(AllInstance)
             .FirstOrDefault(f => f.FieldType ==
-                typeof(NoteNest.NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel));
+                typeof(NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel));
         Assert.Null(field);
     }
 
@@ -442,7 +441,7 @@ public class NestSuiteShellTests
     {
         // v1.8.1: DirtyRequested イベントが削除されていることを確認
         // （PropertyChanged 経路への一本化が完了していることの保証）
-        var evt = typeof(NoteNest.NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel)
+        var evt = typeof(NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel)
             .GetEvent("DirtyRequested",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         Assert.Null(evt);
@@ -452,7 +451,7 @@ public class NestSuiteShellTests
     public void IdeaNestWorkspaceViewModel_HasMarkDirtyMethod()
     {
         // v1.8.1: MarkDirty が HasChanges=true を設定するメソッドとして宣言されていることを確認
-        var method = typeof(NoteNest.NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel)
+        var method = typeof(NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel)
             .GetMethod("MarkDirty",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
         Assert.NotNull(method);
@@ -462,11 +461,11 @@ public class NestSuiteShellTests
     public void IdeaNestWorkspaceViewModel_HasLoadFromWorkspaceMethod()
     {
         // v1.8.1: LoadFromWorkspace がタブリセット時に使われるメソッドとして宣言されていることを確認
-        var method = typeof(NoteNest.NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel)
+        var method = typeof(NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel)
             .GetMethod("LoadFromWorkspace",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly,
                 null,
-                [typeof(NoteNest.NestSuite.IdeaNest.Models.Workspace)],
+                [typeof(NestSuite.IdeaNest.Models.Workspace)],
                 null);
         Assert.NotNull(method);
     }
@@ -805,7 +804,7 @@ public class NestSuiteShellTests
             .GetMethod("CreateNoteNestViewModel",
                 BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
         Assert.NotNull(method);
-        Assert.Equal(typeof(NoteNest.ViewModels.MainViewModel), method!.ReturnType);
+        Assert.Equal(typeof(NestSuite.ViewModels.MainViewModel), method!.ReturnType);
         Assert.Empty(method.GetParameters());
     }
 
@@ -910,7 +909,7 @@ public class NestSuiteShellTests
                 BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
         Assert.NotNull(method);
         Assert.Equal(
-            typeof(NoteNest.NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel),
+            typeof(NestSuite.IdeaNest.ViewModels.IdeaNestWorkspaceViewModel),
             method!.ReturnType);
         Assert.Empty(method.GetParameters());
     }
@@ -996,7 +995,7 @@ public class NestSuiteShellTests
     public void MainViewModel_HasSaveToPathMethod_ReturnsBool()
     {
         // v1.9.8 fix: Shell が重複パス検出後にパス指定で保存するため MainViewModel.SaveToPath を追加
-        var method = typeof(NoteNest.ViewModels.MainViewModel)
+        var method = typeof(NestSuite.ViewModels.MainViewModel)
             .GetMethod("SaveToPath",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly,
                 null,
@@ -1255,7 +1254,7 @@ public class NestSuiteShellTests
     public void DialogService_HasSelectNestSuiteOpenPathsMethod()
     {
         // v1.16.0: SelectNestSuiteOpenPaths が IReadOnlyList<string> を返すメソッドとして存在することを確認
-        var method = typeof(NoteNest.Services.DialogService)
+        var method = typeof(NestSuite.Services.DialogService)
             .GetMethod("SelectNestSuiteOpenPaths",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
         Assert.NotNull(method);
@@ -1267,7 +1266,7 @@ public class NestSuiteShellTests
     public void DialogService_DoesNotHaveSingleSelectNestSuiteOpenPathMethod()
     {
         // v1.16.0: 旧 SelectNestSuiteOpenPath（単一選択）が削除されていることを確認
-        var method = typeof(NoteNest.Services.DialogService)
+        var method = typeof(NestSuite.Services.DialogService)
             .GetMethod("SelectNestSuiteOpenPath",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
         Assert.Null(method);

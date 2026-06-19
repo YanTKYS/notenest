@@ -1,4 +1,4 @@
-namespace NestSuite.NestSuite;
+namespace NestSuite;
 
 /// <summary>
 /// NestSuite でのタブの最小モデル。1 つのファイル／作業単位を表す不変レコード。

@@ -1,5 +1,5 @@
 using System.IO;
-using NestSuite.NestSuite.ChatNest;
+using NestSuite.ChatNest;
 using Xunit;
 
 namespace NestSuite.Tests;

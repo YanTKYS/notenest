@@ -1,4 +1,4 @@
-namespace NestSuite.NestSuite.IdeaNest.Models;
+namespace NestSuite.IdeaNest.Models;
 
 public static class IdeaNestSchema
 {

@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Windows.Threading;
-using NestSuite.NestSuite;
-using NestSuite.NestSuite.ChatNest;
+using NestSuite;
+using NestSuite.ChatNest;
 using NestSuite.ViewModels;
 using Xunit;
 

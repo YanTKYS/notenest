@@ -1,7 +1,7 @@
-<UserControl x:Class="NestSuite.NestSuite.IdeaNest.Views.IdeaNestWorkspaceView"
+<UserControl x:Class="NestSuite.IdeaNest.Views.IdeaNestWorkspaceView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:NestSuite.NestSuite.IdeaNest.ViewModels"
+        xmlns:vm="clr-namespace:NestSuite.IdeaNest.ViewModels"
         Background="{StaticResource IdeaAppBackgroundBrush}"
         TextOptions.TextFormattingMode="Display" UseLayoutRounding="True">
     <UserControl.InputBindings>

@@ -1,5 +1,4 @@
 using System.Windows;
-using NestSuite.NestSuite;
 using NestSuite.Services;
 
 namespace NestSuite;

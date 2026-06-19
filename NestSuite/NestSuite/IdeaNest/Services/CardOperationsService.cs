@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
-using NestSuite.NestSuite.IdeaNest.Models;
-using NestSuite.NestSuite.IdeaNest.ViewModels;
+using NestSuite.IdeaNest.Models;
+using NestSuite.IdeaNest.ViewModels;
 
-namespace NestSuite.NestSuite.IdeaNest.Services;
+namespace NestSuite.IdeaNest.Services;
 
 /// <summary>
 /// WPF-free card mutation logic.

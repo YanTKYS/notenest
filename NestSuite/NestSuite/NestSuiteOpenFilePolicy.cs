@@ -1,4 +1,4 @@
-namespace NestSuite.NestSuite;
+namespace NestSuite;
 
 /// <summary>
 /// v1.9.0: 同一ツール複数ファイル対応に向けた「ファイルを開くときの方針」を
