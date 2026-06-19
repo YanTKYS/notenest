@@ -64,23 +64,24 @@ public partial class MainWindow
             _uiSettings.FindReplaceLeft,
             _uiSettings.FindReplaceTop);
 
-        _uiSettingsService.Save(new UiSettings
-        {
-            LastSearchText = findReplaceState.LastSearchText,
-            LastReplaceText = findReplaceState.LastReplaceText,
-            FindReplaceLeft = findReplaceState.Left,
-            FindReplaceTop = findReplaceState.Top,
-            ShowLineNumbers = ViewModel.ShowLineNumbers,
-            MarkerSortOrderIndex = ViewModel.MarkerSortOrderIndex,
-            Theme = _uiSettings.Theme,
-            WindowWidth = _lastNormalWidth,
-            WindowHeight = _lastNormalHeight,
-            IsWindowMaximized = WindowState == WindowState.Maximized,
-            LeftPaneWidth = WorkspaceView.LeftPaneWidth,
-            RightPaneWidth = WorkspaceView.ActualRightPaneWidth,
-            IsRightPaneCollapsed = WorkspaceView.IsRightPaneCollapsed,
-            IsAutoSaveEnabled = ViewModel.IsAutoSaveEnabled,
-        });
+        // NestSuite 用設定（NestSuiteWindowWidth/Height/IsWindowMaximized）を上書きしないよう
+        // 既存設定を読み込んでから classic 専用項目のみ更新する
+        var saved = _uiSettingsService.Load();
+        saved.LastSearchText       = findReplaceState.LastSearchText;
+        saved.LastReplaceText      = findReplaceState.LastReplaceText;
+        saved.FindReplaceLeft      = findReplaceState.Left;
+        saved.FindReplaceTop       = findReplaceState.Top;
+        saved.ShowLineNumbers      = ViewModel.ShowLineNumbers;
+        saved.MarkerSortOrderIndex = ViewModel.MarkerSortOrderIndex;
+        saved.Theme                = _uiSettings.Theme;
+        saved.WindowWidth          = _lastNormalWidth;
+        saved.WindowHeight         = _lastNormalHeight;
+        saved.IsWindowMaximized    = WindowState == WindowState.Maximized;
+        saved.LeftPaneWidth        = WorkspaceView.LeftPaneWidth;
+        saved.RightPaneWidth       = WorkspaceView.ActualRightPaneWidth;
+        saved.IsRightPaneCollapsed = WorkspaceView.IsRightPaneCollapsed;
+        saved.IsAutoSaveEnabled    = ViewModel.IsAutoSaveEnabled;
+        _uiSettingsService.Save(saved);
         WorkspaceView.CloseFindReplace();
     }
 }
