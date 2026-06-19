@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using NestSuite.NestSuite.IdeaNest.Commands;
 using NestSuite.NestSuite.IdeaNest.Models;
 using NestSuite.NestSuite.IdeaNest.Services;
+using NestSuite.NestSuite.IdeaNest.Views;
 
 namespace NestSuite.NestSuite.IdeaNest.ViewModels;
 
@@ -250,7 +251,7 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
     {
         var draft = new Idea();
         var vm = new EditIdeaViewModel(draft);
-        var dlg = new NoteNest.NestSuite.IdeaNest.Views.EditIdeaWindow
+        var dlg = new EditIdeaWindow
         {
             Title = "新規アイデア",
             DataContext = vm,
@@ -269,8 +270,8 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
         var index = cards.IndexOf(card);
         if (index < 0) index = 0;
 
-        NoteNest.NestSuite.IdeaNest.Views.PreviewIdeaWindow? dlg = null;
-        dlg = new NoteNest.NestSuite.IdeaNest.Views.PreviewIdeaWindow(
+        PreviewIdeaWindow? dlg = null;
+        dlg = new PreviewIdeaWindow(
             cards,
             index,
             onEdit: c => EditIdea(c, dlg),
@@ -294,7 +295,7 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
     {
         if (card == null) return;
         var vm = new EditIdeaViewModel(card.Model);
-        var dlg = new NoteNest.NestSuite.IdeaNest.Views.EditIdeaWindow
+        var dlg = new EditIdeaWindow
         {
             Title = "アイデア編集",
             DataContext = vm,
@@ -308,14 +309,14 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
     private void DeleteIdea(IdeaCardViewModel? card)
     {
         if (card == null) return;
-        var ok = NoteNest.NestSuite.IdeaNest.Views.IdeaConfirmWindow.ShowOkCancel(
+        var ok = IdeaConfirmWindow.ShowOkCancel(
             _ui.Owner,
             "このカードを削除しますか？",
             $"「{card.DisplayTitle}」を削除します。削除すると元に戻せません。\n\n" +
             "不要な場合は、削除ではなくアーカイブ (📥) も検討してください。",
             primaryText: "削除",
             cancelText: "キャンセル");
-        if (ok != NoteNest.NestSuite.IdeaNest.Views.ConfirmResult.Primary) return;
+        if (ok != ConfirmResult.Primary) return;
         _cardOps.CommitDelete(card);
     }
 
@@ -415,7 +416,7 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
 
     private void OpenTagManagement()
     {
-        var dlg = new NoteNest.NestSuite.IdeaNest.Views.TagManagementWindow(this)
+        var dlg = new TagManagementWindow(this)
         {
             Owner = _ui.Owner,
         };
