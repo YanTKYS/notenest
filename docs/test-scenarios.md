@@ -3203,3 +3203,50 @@ v1.19.2 では classic-notenest 縮退の準備として、方針明文化と確
 
 1. `ApplicationVersionTests` でアプリバージョンが `1.19.2` であることを確認する（自動）。
 2. 全テスト（`dotnet test`）がパスすることを確認する（自動）。
+
+---
+
+## §85 v1.19.3 classic-notenest 削除・NestSuite 一本化チェックリスト
+
+v1.19.3 で `--classic-notenest` 起動ルートを削除し、NestSuite 起動に一本化した。
+
+### 起動確認
+
+- [ ] 引数なし（`NoteNest.exe`）で NestSuite が起動する
+- [ ] `NoteNest.exe --nestsuite` でも NestSuite が起動する（互換フラグ）
+- [ ] `NoteNest.exe --classic-notenest` で classic NoteNest が**起動しない**（NestSuite が通常起動する）
+- [ ] `NoteNest.exe --classic-notenest sample.notenest` でクラッシュせず、NestSuite で `sample.notenest` が開く
+- [ ] `NoteNest.exe sample.notenest` で NestSuite の NoteNest Workspace が開く
+
+### NoteNest Workspace 確認
+
+- [ ] `.notenest` ファイルを NestSuite で開ける
+- [ ] NoteNest Workspace でテキスト編集・保存（Ctrl+S）ができる
+- [ ] 未保存タブを閉じると確認ダイアログが表示される
+- [ ] 右ペイン折り畳み・再表示が動作する
+
+### 関連付け・タブ復元確認
+
+- [ ] `.notenest` 関連付け起動で NestSuite が起動し NoteNest Workspace が開く
+- [ ] NestSuite 起動済み時に `.notenest` をダブルクリックすると既存ウィンドウにタブ追加される
+- [ ] NestSuite 未起動時に `.notenest` をダブルクリックすると前回タブ復元後に対象ファイルが開く
+- [ ] `.chatnest` / `.ideanest` 関連付け起動が壊れていない
+- [ ] タブ並び替え・タブ復元が v1.19.2 時点と同様に動作する
+
+### IdeaNest 最小幅補正確認（MinWidth=870）
+
+- [ ] NestSuite を最小幅にした状態で IdeaNest の M サイズカードが 3 列表示される
+- [ ] 高さの最小値が変わっていない（MinHeight=500）
+- [ ] S サイズ・L サイズカード表示が極端に崩れていない
+- [ ] NoteNest / ChatNest の表示に副作用がない
+
+### docs 整合確認
+
+- [ ] `README.md` に `--classic-notenest` を通常利用として案内する記述が残っていない
+- [ ] `docs/release-notes.md` に v1.19.3 の classic 起動ルート削除が記載されている
+- [ ] `docs/backlog.md` で v1.19.3 が「完了」になっている
+
+### 自動確認
+
+1. `ApplicationVersionTests` でアプリバージョンが `1.19.3` であることを確認する（自動）。
+2. 全テスト（`dotnet test`）がパスすることを確認する（自動）。

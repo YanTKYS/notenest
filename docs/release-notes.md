@@ -1,3 +1,13 @@
+## v1.19.3 — classic-notenest 起動ルート削除・NestSuite 一本化
+
+- **`--classic-notenest` による旧 NoteNest 単体起動ルートを削除した。** `NoteNest.exe` の起動は NestSuite に一本化した。
+- **`--classic-notenest` を指定しても classic NoteNest は起動しない。** 未知フラグとして無視され、NestSuite が通常起動する。`--classic-notenest sample.notenest` のようにファイルパスを併記した場合は、NestSuite で対象ファイルを開く。
+- **`.notenest` ファイルは引き続き NestSuite 上の NoteNest Workspace で利用できる。** NoteNest Workspace としての編集・保存・タブ操作・関連付け起動・タブ復元はすべて維持されている。
+- **旧 classic 起動に退避が必要な場合は v1.19.2 以前のリリースを利用する。**
+- **削除したコード：** `MainWindow.xaml` / `MainWindow.*.cs`（12 ファイル）、`Dialogs/StartDialog.xaml` / `StartDialog.xaml.cs`、`StartupArgParser.IsClassicMode()`、`DialogService.ShowStartupDialog()`。NoteNest Workspace 共通部品（`MainViewModel`・サービス・ビュー）は削除していない。
+- **IdeaNest M サイズカード最小幅補正（v1.19.1 追加補正）：** `NestSuiteShellWindow` の `MinWidth` を 860 → 870 に変更した。最小画面幅でも M カード 3 列表示が安定する。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v1.19.2 — classic-notenest 縮退準備・方針明文化
 
 - **`--classic-notenest` は削除しない。** 緊急退避用の限定互換ルートとして引き続き利用できる。

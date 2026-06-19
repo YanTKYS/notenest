@@ -12,26 +12,9 @@ public partial class App : Application
     {
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-        // v1.11.0: --classic-notenest 指定時のみ従来 NoteNest 単体版（互換ルート）を起動
-        if (StartupArgParser.IsClassicMode(e.Args))
-        {
-            var startupPath = StartupArgParser.GetFilePath(e.Args);
-            if (startupPath == null)
-            {
-                var uiSettings = new UiSettingsService().Load();
-                new ThemeService().Apply(uiSettings.Theme);
-                startupPath = DialogService.ShowStartupDialog();
-            }
-            var window = new MainWindow(startupPath);
-            MainWindow = window;
-            ShutdownMode = ShutdownMode.OnMainWindowClose;
-            window.Show();
-            return;
-        }
-
         // v1.11.0: 既定起動は NestSuite。--nestsuite フラグも互換として維持（同じ動作）。
+        // v1.19.3: --classic-notenest は廃止。未知フラグは無視して NestSuite を起動する。
         // ファイルパス指定時は拡張子に応じて NoteNest / ChatNest / IdeaNest タブを開く。
-        // LoadInitialFile を Show() より前に呼ぶことで起動時ちらつきを防ぐ（v1.10.2）。
         var nestSuiteFilePath = StartupArgParser.GetFilePath(e.Args);
 
         // v1.18.1: シングルインスタンス — 2 つ目以降のプロセスはファイルを転送して終了する
