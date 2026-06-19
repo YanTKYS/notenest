@@ -98,6 +98,7 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
     public bool IsCardHeightFixed => CardDisplay.IsCardHeightFixed;
     public bool IsCardHeightAuto  => CardDisplay.IsCardHeightAuto;
     public bool IsShuffleMode     => CardDisplay.IsShuffleMode;
+    public int  BodyPreviewMaxLines => CardDisplay.BodyPreviewMaxLines;
 
     public WorkspaceSettings Settings => _workspace.Settings;
 
