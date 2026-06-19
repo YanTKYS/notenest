@@ -154,8 +154,8 @@ v1.19.2 で縮退準備・方針明文化を開始した。
 | フェーズ | 内容 |
 |---------|------|
 | v1.19.2（完了） | 縮退準備・方針明文化。docs / test-scenarios / checklist で classic 確認を起動確認中心に縮小 |
-| v1.19.3 | 縮退実施。`--classic-notenest` ルート・`MainWindow` / `StartupDialog` の削除 |
-| v1.19.4 | 縮退後の回帰・総点検 |
+| v1.19.3（完了） | 縮退実施。`--classic-notenest` ルート・`MainWindow` / `StartupDialog` の削除。NestSuite 起動に一本化 |
+| v1.19.4 | 削除後の回帰・総点検 |
 
 ### v1.19.3 縮退実施条件（すべて揃っていること）
 

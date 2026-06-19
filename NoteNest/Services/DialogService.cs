@@ -8,7 +8,7 @@ using NoteNest.ViewModels;
 namespace NoteNest.Services;
 
 /// <summary>
-/// MainWindow が利用するダイアログの生成、Owner 設定、ファイル選択を一箇所に集約します。
+/// NestSuite および各 Workspace が利用するダイアログの生成、Owner 設定、ファイル選択を一箇所に集約します。
 /// </summary>
 public sealed class DialogService
 {
@@ -16,13 +16,6 @@ public sealed class DialogService
     private FindReplaceDialog? _findReplaceDialog;
 
     public DialogService(Window owner) => _owner = owner;
-
-    public static string? ShowStartupDialog()
-    {
-        var dialog = new StartDialog();
-        dialog.ShowDialog();
-        return dialog.SelectedPath;
-    }
 
     public string? ShowInput(string title, string prompt, string initialText = "")
     {

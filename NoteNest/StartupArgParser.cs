@@ -3,14 +3,13 @@ namespace NoteNest;
 /// <summary>
 /// 起動引数解析。App_Startup から呼び出す。
 ///
-/// <para><b>引数仕様（v1.11.0）</b></para>
+/// <para><b>引数仕様（v1.19.3）</b></para>
 /// <list type="bullet">
-///   <item>引数なし                     → NestSuite 起動（無題 NoteNest タブ）</item>
-///   <item>ファイルパス                 → NestSuite 起動し、拡張子に応じてタブを開く</item>
-///   <item>--classic-notenest          → 従来 NoteNest 単体版（互換ルート）を起動</item>
-///   <item>--classic-notenest + パス   → 従来 NoteNest 単体版でファイルを開く</item>
-///   <item>--nestsuite                 → NestSuite 起動（v1.6.1 互換。既定と同じ動作）</item>
-///   <item>--nestsuite + パス          → NestSuite 起動し、拡張子に応じてタブを開く</item>
+///   <item>引数なし         → NestSuite 起動（無題 NoteNest タブ）</item>
+///   <item>ファイルパス     → NestSuite 起動し、拡張子に応じてタブを開く</item>
+///   <item>--nestsuite      → NestSuite 起動（v1.6.1 互換。既定と同じ動作）</item>
+///   <item>--nestsuite + パス → NestSuite 起動し、拡張子に応じてタブを開く</item>
+///   <item>その他のフラグ   → 無視して NestSuite 起動（--classic-notenest は v1.19.3 で廃止）</item>
 /// </list>
 /// </summary>
 public static class StartupArgParser
@@ -23,16 +22,9 @@ public static class StartupArgParser
         args.Contains("--nestsuite", StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// --classic-notenest フラグが含まれているか（大文字小文字を区別しない）。
-    /// true のとき、App_Startup は従来の NoteNest 単体版（MainWindow）を起動する。
-    /// </summary>
-    public static bool IsClassicMode(string[] args) =>
-        args.Contains("--classic-notenest", StringComparer.OrdinalIgnoreCase);
-
-    /// <summary>
     /// 引数リストからファイルパス候補を返す。
     /// '-' で始まらない最初の引数をファイルパス候補として返す。見つからない場合は null。
-    /// 拡張子・存在確認は呼び出し側（LoadInitialFile / OpenStartupFile）が担当する。
+    /// 拡張子・存在確認は呼び出し側（LoadInitialFile）が担当する。
     /// </summary>
     public static string? GetFilePath(string[] args) =>
         args.FirstOrDefault(a => !a.StartsWith('-'));

@@ -34,8 +34,8 @@ namespace NoteNest.NestSuite;
 /// 依存しない方針は MainWindow と同様に維持する。</para>
 ///
 /// <para><b>起動方法</b><br/>
-/// v1.6.1 以降は、開発・検証用途として <c>--nestsuite</c> 引数から起動できる。
-/// 既定起動では従来どおり NoteNest 単体版 MainWindow を使用する。</para>
+/// v1.11.0 以降は既定起動が NestSuite。<c>--nestsuite</c> フラグは互換として維持する。
+/// v1.19.3 で <c>--classic-notenest</c> による単体版起動ルートを削除した。</para>
 /// </summary>
 public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 {
