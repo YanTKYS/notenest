@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    .notenest / .chatnest / .ideanest を NoteNest.exe に関連付けます（ユーザー単位）。
+    .notenest / .chatnest / .ideanest を NestSuite.exe に関連付けます（ユーザー単位）。
 
 .DESCRIPTION
     HKCU\Software\Classes にファイル関連付けを登録します。管理者権限は不要です。
@@ -9,26 +9,26 @@
     このスクリプトは IT 担当者向けの補助手段です。
 
 .PARAMETER ExePath
-    NoteNest.exe のフルパス。省略時はスクリプトと同じディレクトリの NoteNest.exe を使用。
+    NestSuite.exe のフルパス。省略時はスクリプトと同じディレクトリの NestSuite.exe を使用。
 
 .EXAMPLE
     .\register-nestsuite-file-association.ps1
-    .\register-nestsuite-file-association.ps1 -ExePath "C:\Apps\NoteNest\NoteNest.exe"
+    .\register-nestsuite-file-association.ps1 -ExePath "C:\Apps\NestSuite\NestSuite.exe"
 
 .NOTES
     - 登録後はエクスプローラーを再起動するか、一度ログアウト・ログインしてください。
-    - NoteNest.exe を別の場所に移動した場合は再登録が必要です。
+    - NestSuite.exe を別の場所に移動した場合は再登録が必要です。
     - 関連付けが反映されない場合は Windows の「設定 → 既定のアプリ」を確認してください。
 #>
 [CmdletBinding(SupportsShouldProcess)]
 param(
-    [string]$ExePath = (Join-Path $PSScriptRoot "..\NoteNest\bin\Release\net8.0-windows\NoteNest.exe")
+    [string]$ExePath = (Join-Path $PSScriptRoot "..\NoteNest\bin\Release\net8.0-windows\NestSuite.exe")
 )
 
 $resolved = Resolve-Path $ExePath -ErrorAction SilentlyContinue
 if ($resolved) { $ExePath = $resolved.Path }
 if (-not $ExePath -or -not (Test-Path $ExePath)) {
-    Write-Error "NoteNest.exe が見つかりません。-ExePath でフルパスを指定してください。"
+    Write-Error "NestSuite.exe が見つかりません。-ExePath でフルパスを指定してください。"
     exit 1
 }
 
