@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using NoteNest.NestSuite.ChatNest;
+using NestSuite.ChatNest;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.7.0: ChatNest 統合検証用 Workspace ViewModel の最小動作確認。

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NoteNest.NestSuite.IdeaNest.Models;
+using NestSuite.IdeaNest.Models;
 
-namespace NoteNest.NestSuite.IdeaNest.ViewModels;
+namespace NestSuite.IdeaNest.ViewModels;
 
 public class IdeaCardViewModel : IdeaNestViewModelBase
 {

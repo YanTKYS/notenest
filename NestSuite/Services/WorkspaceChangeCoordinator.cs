@@ -1,7 +1,7 @@
 using System.ComponentModel;
-using NoteNest.ViewModels;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Services;
+namespace NestSuite.Services;
 
 /// <summary>責務別 Coordinator の意味的通知を集約し、MainViewModel へ単一の通知経路を提供します。</summary>
 public sealed class WorkspaceChangeCoordinator

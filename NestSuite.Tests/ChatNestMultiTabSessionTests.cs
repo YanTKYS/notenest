@@ -1,8 +1,8 @@
-using NoteNest.NestSuite;
-using NoteNest.NestSuite.ChatNest;
+using NestSuite;
+using NestSuite.ChatNest;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.9.2: ChatNest 複数ファイルタブ対応の最小実装を確認するテスト。

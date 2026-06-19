@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 public sealed class RecentFileViewModel
 {

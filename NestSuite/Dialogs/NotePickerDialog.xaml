@@ -1,4 +1,4 @@
-<Window x:Class="NoteNest.Dialogs.NotePickerDialog"
+<Window x:Class="NestSuite.Dialogs.NotePickerDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="ノートリンク挿入"

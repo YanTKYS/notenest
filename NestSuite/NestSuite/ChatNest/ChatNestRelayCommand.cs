@@ -1,10 +1,10 @@
 using System.Windows.Input;
 
-namespace NoteNest.NestSuite.ChatNest;
+namespace NestSuite.ChatNest;
 
 /// <summary>
 /// ChatNest Workspace 用の RelayCommand。参照ソース ChatNest v0.4.1 より取り込み。
-/// NoteNest 本体の <see cref="NoteNest.ViewModels.RelayCommand"/> とは異なり、
+/// NestSuite 本体の <see cref="NestSuite.ViewModels.RelayCommand"/> とは異なり、
 /// 明示的な <see cref="RaiseCanExecuteChanged"/> を提供する（ChatNest VM の入力可否更新で使用）。
 /// ChatNest モジュール内に閉じた実装として保持する。
 /// </summary>

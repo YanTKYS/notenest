@@ -1,11 +1,11 @@
 using System.Text.Json.Serialization;
 using System.Reflection;
-using NoteNest.NestSuite.IdeaNest.Models;
-using NoteNest.NestSuite.IdeaNest.Services;
+using NestSuite.IdeaNest.Models;
+using NestSuite.IdeaNest.Services;
 using Xunit;
 using System.Text.Json;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.8.2: IdeaNestFileService 定数の確認および

@@ -1,3 +1,18 @@
+## v1.21.4 — namespace の NestSuite 化
+
+C# / XAML の名前空間を `NoteNest` から `NestSuite` へ移行した。アプリ機能・保存形式・互換性に関わる内部識別子の変更はない。
+
+- **C# namespace を `NoteNest` → `NestSuite` に移行した。** 全 C# ファイルの `namespace NoteNest` / `namespace NoteNest.XXX` 宣言を `namespace NestSuite` / `namespace NestSuite.XXX` に変更した。
+- **using ディレクティブを `using NoteNest.XXX` → `using NestSuite.XXX` に移行した。** 全ファイルのインポート文を新しい namespace に更新した。
+- **XAML の `x:Class` / `clr-namespace` を更新した。** 全 XAML ファイルの `x:Class="NoteNest...."` および `clr-namespace:NoteNest` を `NestSuite` に置き換えた。
+- **`NestSuite.csproj` の `RootNamespace` を `NoteNest` → `NestSuite` に変更した。**
+- **テストプロジェクトの namespace を `NoteNest.Tests` → `NestSuite.Tests` に移行した。**
+- ProgId（`NoteNest.notenest` / `NoteNest.chatnest` / `NoteNest.ideanest`）は変更しない（既存レジストリ互換）。
+- Mutex 名 / Named Pipe 名（`NoteNest_NestSuite_...`）は変更しない（シングルインスタンス互換）。
+- `%AppData%\NoteNest\` のデータフォルダパスは変更しない（既存設定・タブ復元データ互換）。
+- UiSettings キー・AppSettings キー・タブ復元設定は変更しない（設定互換）。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v1.21.3 — 構造変更後の回帰確認
 
 v1.21.2 のソリューション・プロジェクト名変更後、ビルド・テスト・GitHub Actions・各 Workspace 基本操作に副作用がないことを確認した版。アプリ機能・保存形式の変更はない。

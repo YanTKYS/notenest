@@ -1,8 +1,8 @@
 using System.Reflection;
-using NoteNest.Views;
+using NestSuite.Views;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.5.5: 共有ヘルパーの検索先を MainWindow → NoteNestWorkspaceView へ更新。

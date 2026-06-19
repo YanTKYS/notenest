@@ -1,6 +1,6 @@
-using NoteNest.Models;
+using NestSuite.Models;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 public class TaskViewModel : BaseViewModel
 {

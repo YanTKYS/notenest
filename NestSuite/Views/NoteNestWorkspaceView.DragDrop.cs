@@ -1,8 +1,8 @@
 using System.Windows;
 using System.Windows.Input;
-using NoteNest.ViewModels;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Views;
+namespace NestSuite.Views;
 
 public partial class NoteNestWorkspaceView
 {

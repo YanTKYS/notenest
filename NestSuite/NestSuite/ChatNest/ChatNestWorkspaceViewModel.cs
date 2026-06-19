@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-namespace NoteNest.NestSuite.ChatNest;
+namespace NestSuite.ChatNest;
 
 /// <summary>
 /// ChatNest Workspace の ViewModel。参照ソース ChatNest v0.4.1

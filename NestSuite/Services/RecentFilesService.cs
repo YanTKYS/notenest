@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text.Json;
 
-namespace NoteNest.Services;
+namespace NestSuite.Services;
 
 public class RecentFilesService
 {

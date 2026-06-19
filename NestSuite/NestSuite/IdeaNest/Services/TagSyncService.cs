@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using NoteNest.NestSuite.IdeaNest.ViewModels;
+using NestSuite.IdeaNest.ViewModels;
 
-namespace NoteNest.NestSuite.IdeaNest.Services;
+namespace NestSuite.IdeaNest.Services;
 
 /// <summary>
 /// WPF-free tag aggregation logic.

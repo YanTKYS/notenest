@@ -1,4 +1,4 @@
-namespace NoteNest.NestSuite.IdeaNest.ViewModels;
+namespace NestSuite.IdeaNest.ViewModels;
 
 public class SortOptionViewModel
 {

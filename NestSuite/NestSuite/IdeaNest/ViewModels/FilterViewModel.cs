@@ -1,7 +1,7 @@
 using System;
-using NoteNest.NestSuite.IdeaNest.Models;
+using NestSuite.IdeaNest.Models;
 
-namespace NoteNest.NestSuite.IdeaNest.ViewModels;
+namespace NestSuite.IdeaNest.ViewModels;
 
 /// <summary>
 /// Owns filter state for the card list: search text, selected tag, selected color,

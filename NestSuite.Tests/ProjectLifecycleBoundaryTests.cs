@@ -1,8 +1,8 @@
 using System.Reflection;
-using NoteNest.Services;
+using NestSuite.Services;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 public class ProjectLifecycleBoundaryTests
 {

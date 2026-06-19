@@ -1,9 +1,9 @@
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using NoteNest.Models;
+using NestSuite.Models;
 
-namespace NoteNest.Services;
+namespace NestSuite.Services;
 
 public class ProjectFileService
 {

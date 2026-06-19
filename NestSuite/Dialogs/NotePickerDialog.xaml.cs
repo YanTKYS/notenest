@@ -1,8 +1,8 @@
 using System.Windows;
 using System.Windows.Input;
-using NoteNest.ViewModels;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Dialogs;
+namespace NestSuite.Dialogs;
 
 public record NotePickerItem(string NotebookTitle, NoteViewModel Note)
 {

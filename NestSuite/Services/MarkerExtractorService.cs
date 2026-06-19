@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace NoteNest.Services;
+namespace NestSuite.Services;
 
 public class MarkerInfo
 {

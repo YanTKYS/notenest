@@ -1,7 +1,7 @@
-using NoteNest.NestSuite;
+using NestSuite;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.15.0: NestSuite セッション状態サービスのユニットテスト。

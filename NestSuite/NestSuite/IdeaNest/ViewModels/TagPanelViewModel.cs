@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using NoteNest.NestSuite.IdeaNest.Models;
+using NestSuite.IdeaNest.Models;
 
-namespace NoteNest.NestSuite.IdeaNest.ViewModels;
+namespace NestSuite.IdeaNest.ViewModels;
 
 /// <summary>
 /// Owns the tag panel's display state: open/closed, tag search text,

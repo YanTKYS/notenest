@@ -1,11 +1,11 @@
 using System.Reflection;
 using System.Windows.Threading;
-using NoteNest.NestSuite;
-using NoteNest.NestSuite.ChatNest;
-using NoteNest.ViewModels;
+using NestSuite;
+using NestSuite.ChatNest;
+using NestSuite.ViewModels;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.9.5〜v1.9.6: NoteNest 複数ファイルタブ対応の Session 独立性テスト。

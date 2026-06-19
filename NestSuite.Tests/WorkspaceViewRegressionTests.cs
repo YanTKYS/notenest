@@ -1,8 +1,8 @@
 using System.Reflection;
-using NoteNest.Views;
+using NestSuite.Views;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.5.6: NoteNestWorkspaceView 切り出し後の公開 API 境界と

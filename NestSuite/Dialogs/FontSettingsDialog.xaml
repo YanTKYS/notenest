@@ -1,4 +1,4 @@
-<Window x:Class="NoteNest.Dialogs.FontSettingsDialog"
+<Window x:Class="NestSuite.Dialogs.FontSettingsDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="フォント設定"

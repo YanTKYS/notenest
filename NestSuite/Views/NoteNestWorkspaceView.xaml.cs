@@ -1,9 +1,9 @@
 using System.Windows;
 using System.Windows.Controls;
-using NoteNest.Services;
-using NoteNest.ViewModels;
+using NestSuite.Services;
+using NestSuite.ViewModels;
 
-namespace NoteNest.Views;
+namespace NestSuite.Views;
 
 public partial class NoteNestWorkspaceView : UserControl
 {

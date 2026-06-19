@@ -1,9 +1,9 @@
 using System.Reflection;
-using NoteNest.Services;
-using NoteNest.ViewModels;
+using NestSuite.Services;
+using NestSuite.ViewModels;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 public class DialogServiceBoundaryTests
 {
@@ -11,7 +11,7 @@ public class DialogServiceBoundaryTests
     public void MainWindowAndMainViewModelDoNotOwnConcreteDialogTypes()
     {
         // v1.19.3: MainWindow 削除により NestSuiteShellWindow で確認
-        var mainWindowFields = typeof(NoteNest.NestSuite.NestSuiteShellWindow).GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+        var mainWindowFields = typeof(NestSuite.NestSuiteShellWindow).GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
         var mainViewModelMembers = typeof(MainViewModel).GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
         Assert.DoesNotContain(mainWindowFields, field => field.FieldType.Namespace == "NoteNest.Dialogs");

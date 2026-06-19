@@ -1,6 +1,6 @@
-using NoteNest.Services;
+using NestSuite.Services;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 public class MarkerViewModel : BaseViewModel
 {

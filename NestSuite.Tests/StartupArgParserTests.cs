@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.6.3: 起動引数解析の単体テスト。UI なし・WPF 不要。

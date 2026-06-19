@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 public class RelayCommand : ICommand
 {

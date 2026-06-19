@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows.Input;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 /// <summary>
 /// XAML と MainWindow の既存契約を維持するためのファサードです。

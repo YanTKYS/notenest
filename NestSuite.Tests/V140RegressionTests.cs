@@ -1,10 +1,10 @@
 using System.Text.Json;
-using NoteNest.Models;
-using NoteNest.Services;
-using NoteNest.ViewModels;
+using NestSuite.Models;
+using NestSuite.Services;
+using NestSuite.ViewModels;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>v1.3.x の責務分離後も、主要な利用フローが一体として動作することを確認します。</summary>
 public sealed class V140RegressionTests : IDisposable

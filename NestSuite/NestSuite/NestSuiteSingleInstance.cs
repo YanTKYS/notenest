@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NoteNest.NestSuite;
+namespace NestSuite;
 
 /// <summary>
 /// v1.18.1: NestSuite のシングルインスタンス制御。

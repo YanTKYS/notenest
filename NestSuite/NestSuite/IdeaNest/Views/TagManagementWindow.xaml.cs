@@ -1,8 +1,8 @@
 using System.Windows;
 using System.Windows.Controls;
-using NoteNest.NestSuite.IdeaNest.ViewModels;
+using NestSuite.IdeaNest.ViewModels;
 
-namespace NoteNest.NestSuite.IdeaNest.Views;
+namespace NestSuite.IdeaNest.Views;
 
 public partial class TagManagementWindow : Window
 {

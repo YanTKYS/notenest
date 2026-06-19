@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using NoteNest.NestSuite.IdeaNest.Models;
-using NoteNest.NestSuite.IdeaNest.Services;
+using NestSuite.IdeaNest.Models;
+using NestSuite.IdeaNest.Services;
 
-namespace NoteNest.NestSuite.IdeaNest.ViewModels;
+namespace NestSuite.IdeaNest.ViewModels;
 
 public class EditIdeaViewModel : IdeaNestViewModelBase
 {

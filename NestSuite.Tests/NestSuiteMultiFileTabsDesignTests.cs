@@ -1,7 +1,7 @@
-using NoteNest.NestSuite;
+using NestSuite;
 using Xunit;
 
-namespace NoteNest.Tests;
+namespace NestSuite.Tests;
 
 /// <summary>
 /// v1.9.0: 同一ツール複数ファイル対応の設計整理に伴う設計固定テスト。

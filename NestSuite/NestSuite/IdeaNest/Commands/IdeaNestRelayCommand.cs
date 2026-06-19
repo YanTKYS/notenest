@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Input;
 
-namespace NoteNest.NestSuite.IdeaNest.Commands;
+namespace NestSuite.IdeaNest.Commands;
 
 public class IdeaNestRelayCommand : ICommand
 {

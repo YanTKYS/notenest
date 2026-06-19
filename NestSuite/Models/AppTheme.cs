@@ -1,3 +1,3 @@
-namespace NoteNest.Models;
+namespace NestSuite.Models;
 
 public enum AppTheme { Light, Dark }

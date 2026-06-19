@@ -1,8 +1,7 @@
 using System.Windows;
-using NoteNest.NestSuite;
-using NoteNest.Services;
+using NestSuite.Services;
 
-namespace NoteNest;
+namespace NestSuite;
 
 public partial class App : Application
 {

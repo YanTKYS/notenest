@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using NoteNest.NestSuite.IdeaNest.ViewModels;
+using NestSuite.IdeaNest.ViewModels;
 
-namespace NoteNest.NestSuite.IdeaNest.Services;
+namespace NestSuite.IdeaNest.Services;
 
 /// <summary>
 /// WPF-free tag rename / delete / merge logic.

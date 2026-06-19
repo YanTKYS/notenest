@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 /// <summary>現在開いているプロジェクトの識別情報、保存状態、最近使ったファイルを所有します。</summary>
 public sealed class ProjectSessionViewModel : BaseViewModel

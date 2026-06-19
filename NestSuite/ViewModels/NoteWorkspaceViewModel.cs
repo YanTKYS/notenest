@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using NoteNest.Models;
+using NestSuite.Models;
 
-namespace NoteNest.ViewModels;
+namespace NestSuite.ViewModels;
 
 /// <summary>ノートブックとノートのコレクション、およびコレクション内で完結する操作を所有します。</summary>
 public sealed class NoteWorkspaceViewModel
