@@ -234,17 +234,17 @@ public class NestSuiteShellTests
     [Fact]
     public void NestSuiteToolRegistry_IdeaNestDef_IsIntegrated()
     {
-        // v1.8.0: IdeaNest 統合検証段階として IsIntegrated=true、StatusText="統合検証"
+        // v2.1.3: IdeaNest は正式統合済み
         Assert.True(NestSuiteToolRegistry.IdeaNestDef.IsIntegrated);
-        Assert.Equal("統合検証", NestSuiteToolRegistry.IdeaNestDef.StatusText);
+        Assert.Equal("統合済み", NestSuiteToolRegistry.IdeaNestDef.StatusText);
     }
 
     [Fact]
     public void NestSuiteToolRegistry_ChatNestDef_IsIntegrated()
     {
-        // v1.7.0: ChatNest 統合検証段階。StatusText で検証段階であることを示す
+        // v2.1.3: ChatNest は正式統合済み
         Assert.True(NestSuiteToolRegistry.ChatNestDef.IsIntegrated);
-        Assert.Equal("統合検証", NestSuiteToolRegistry.ChatNestDef.StatusText);
+        Assert.Equal("統合済み", NestSuiteToolRegistry.ChatNestDef.StatusText);
     }
 
     [Fact]
@@ -420,9 +420,9 @@ public class NestSuiteShellTests
     [Fact]
     public void NestSuiteToolRegistry_IdeaNestDef_StatusText_IsIntegrationTest()
     {
-        // v1.8.1: IdeaNest が統合検証段階（IsIntegrated=true / StatusText="統合検証"）であることを確認
+        // v2.1.3: IdeaNest は正式統合済み（StatusText="統合済み"）
         Assert.True(NestSuiteToolRegistry.IdeaNestDef.IsIntegrated);
-        Assert.Equal("統合検証", NestSuiteToolRegistry.IdeaNestDef.StatusText);
+        Assert.Equal("統合済み", NestSuiteToolRegistry.IdeaNestDef.StatusText);
     }
 
     [Fact]
