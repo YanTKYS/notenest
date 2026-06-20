@@ -888,6 +888,108 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         e.Handled = true;
     }
 
+    // ── v2.4.0 SH-2: タブコンテキストメニュー ────────────────────────────
+
+    private void TabContextClose_Click(object sender, RoutedEventArgs e)
+    {
+        if (GetTabFromContextMenuItem(sender) is { } tab)
+            CloseTab(tab);
+    }
+
+    private void TabContextCloseOthers_Click(object sender, RoutedEventArgs e)
+    {
+        if (GetTabFromContextMenuItem(sender) is { } keepTab)
+            CloseOtherTabs(keepTab);
+    }
+
+    private void TabContextCloseRight_Click(object sender, RoutedEventArgs e)
+    {
+        if (GetTabFromContextMenuItem(sender) is { } pivotTab)
+            CloseTabsToRight(pivotTab);
+    }
+
+    private static NestSuiteDocumentTab? GetTabFromContextMenuItem(object sender)
+    {
+        if (sender is MenuItem mi &&
+            mi.Parent is ContextMenu cm &&
+            cm.PlacementTarget is FrameworkElement el &&
+            el.DataContext is NestSuiteDocumentTab tab)
+            return tab;
+        return null;
+    }
+
+    /// <summary>v2.4.0 SH-2: keepTab 以外のすべてのタブを順に閉じる。未保存確認を各タブで行う。</summary>
+    private void CloseOtherTabs(NestSuiteDocumentTab keepTab)
+    {
+        foreach (var tab in _tabs.Where(t => t.Id != keepTab.Id).ToList())
+            CloseTab(tab);
+    }
+
+    /// <summary>v2.4.0 SH-2: pivotTab より右側（インデックスが大きい）のタブを順に閉じる。未保存確認を各タブで行う。</summary>
+    private void CloseTabsToRight(NestSuiteDocumentTab pivotTab)
+    {
+        var idx = _tabs.IndexOf(pivotTab);
+        if (idx < 0) return;
+        foreach (var tab in _tabs.Skip(idx + 1).ToList())
+            CloseTab(tab);
+    }
+
+    // ── v2.4.0 SH-3: 中クリックでタブを閉じる ────────────────────────────
+
+    /// <summary>v2.4.0 SH-3: 中ボタンクリックで対象タブを閉じる。未保存確認を通す。</summary>
+    private void TabStrip_PreviewMouseButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton != MouseButton.Middle) return;
+        var tab = GetTabFromVisualTree(e.OriginalSource as DependencyObject);
+        if (tab == null) return;
+        CloseTab(tab);
+        e.Handled = true;
+    }
+
+    // ── v2.4.0 SH-4: タブ切替キーボードショートカット ───────────────────
+
+    /// <summary>
+    /// v2.4.0 SH-4: Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1〜9 でタブを切り替える。
+    /// NoteNest の Ctrl+Enter / Escape など既存ショートカットは e.Handled = false のままにして
+    /// WPF の通常ルーティングへ流す。
+    /// </summary>
+    protected override void OnPreviewKeyDown(KeyEventArgs e)
+    {
+        base.OnPreviewKeyDown(e);
+        if (e.Handled) return;
+
+        var ctrl  = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+        var shift = (Keyboard.Modifiers & ModifierKeys.Shift)   == ModifierKeys.Shift;
+
+        if (ctrl && e.Key == Key.Tab)
+        {
+            NavigateTab(forward: !shift);
+            e.Handled = true;
+            return;
+        }
+
+        if (ctrl && !shift && e.Key >= Key.D1 && e.Key <= Key.D9)
+        {
+            var targetIndex = e.Key - Key.D1;
+            if (targetIndex < _tabs.Count)
+                ActivateTab(_tabs[targetIndex]);
+            e.Handled = true;
+        }
+    }
+
+    /// <summary>v2.4.0 SH-4: タブを前後方向に循環移動する。</summary>
+    private void NavigateTab(bool forward)
+    {
+        if (_tabs.Count == 0) return;
+        if (_selectedTab == null) { ActivateTab(_tabs[0]); return; }
+        var idx = _tabs.IndexOf(_selectedTab);
+        if (idx < 0) return;
+        var newIdx = forward
+            ? (idx + 1) % _tabs.Count
+            : (idx - 1 + _tabs.Count) % _tabs.Count;
+        ActivateTab(_tabs[newIdx]);
+    }
+
     /// <summary>
     /// 指定タブを閉じる。
     /// 未保存の場合は確認ダイアログを表示し、キャンセル時はタブを残す。
