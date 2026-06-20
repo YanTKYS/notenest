@@ -11,6 +11,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+            <conv:WorkspaceKindToAccentBrushConverter x:Key="KindToAccent"/>
 
             <!-- CheckBox: custom template so glyph colors use DynamicResource -->
             <Style TargetType="CheckBox">
