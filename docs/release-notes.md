@@ -1,3 +1,11 @@
+## v2.3.1 — ChatNest / IdeaNest ViewModel ライフサイクル整理（TD-1）
+
+- **ChatNestWorkspaceViewModel に `IDisposable` を実装した（TD-1）。** `DispatcherTimer`（コピーステータス消去用）の停止・`MessageViewModel.PropertyChanged` の全解除・`Messages.CollectionChanged` の解除を `Dispose()` で行う。二重 Dispose 対策（`_disposed` フラグ）を持つ。
+- **IdeaNestWorkspaceViewModel に `IDisposable` を実装した（TD-1）。** `DispatcherTimer`（ステータス消去用）の停止・サブ ViewModel（`CardDisplay` / `Filter` / `TagPanel`）の `PropertyChanged` 購読解除を `Dispose()` で行う。二重 Dispose 対策（`_disposed` フラグ）を持つ。
+- **NestSuiteShellWindow: タブクローズ時に ChatNest / IdeaNest ViewModel の `Dispose()` を呼ぶようにした（TD-1）。** `ConfirmAndResetChatNest` / `ConfirmAndResetIdeaNest` にそれぞれ `vm.Dispose()` を追加した。`NoteNest` の `ConfirmAndResetNoteNest` と同じ前例に揃えた。
+- **NestSuiteShellWindow: アプリ終了時（`OnClosed`）に残存する IDisposable ViewModel をすべて Dispose するようにした（TD-1）。** タブを個別に閉じずにウィンドウを閉じた場合でも、幽霊タイマー・GC リークが残らないようにした。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v2.3.0 — ChatNest Workspace 改善（自動スクロール・削除確認ダイアログ・インライン編集）
 
 - **ChatNest: 発言追加時に最新発言へ自動スクロールするようにした（CH-3）。** 最下部付近（閾値 100 px）にいるときは自動スクロールし、遡り閲覧中は「↓ 最新へ」ボタンを表示して最新位置へ戻れるようにした。

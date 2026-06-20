@@ -20,7 +20,7 @@ namespace NestSuite.ChatNest;
 /// <see cref="Messages"/> の型を <see cref="ObservableCollection{MessageViewModel}"/> に変更した。<br/>
 /// ファイル保存用に <see cref="MessageModels"/> を提供する。</para>
 /// </summary>
-public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
+public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
 {
     private string _inputText = string.Empty;
     private Speaker _selectedSpeaker = Speaker.自分;
@@ -29,6 +29,7 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
     private bool _isDeleteConfirmVisible;
     private MessageViewModel? _confirmingDeleteTarget;
     private DispatcherTimer? _copyStatusTimer;
+    private bool _disposed;
 
     private readonly ChatNestRelayCommand _postCommand;
     private readonly ChatNestRelayCommand _copyNestSuiteCommand;
@@ -108,17 +109,7 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
         _copyNestSuiteCommand = new ChatNestRelayCommand(ExecuteCopyNestSuite, () => Messages.Count > 0);
         _copyMarkdownCommand  = new ChatNestRelayCommand(ExecuteCopyMarkdown,   () => Messages.Count > 0);
 
-        Messages.CollectionChanged += (_, e) =>
-        {
-            if (e.OldItems != null)
-                foreach (MessageViewModel vm in e.OldItems)
-                    vm.PropertyChanged -= OnMessageViewModelPropertyChanged;
-            if (e.NewItems != null)
-                foreach (MessageViewModel vm in e.NewItems)
-                    vm.PropertyChanged += OnMessageViewModelPropertyChanged;
-            _copyNestSuiteCommand.RaiseCanExecuteChanged();
-            _copyMarkdownCommand.RaiseCanExecuteChanged();
-        };
+        Messages.CollectionChanged += OnMessagesCollectionChanged;
     }
 
     public void CycleSpeaker(bool forward)
@@ -233,6 +224,18 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
         WorkspaceModified?.Invoke(this, EventArgs.Empty);
     }
 
+    private void OnMessagesCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems != null)
+            foreach (MessageViewModel vm in e.OldItems)
+                vm.PropertyChanged -= OnMessageViewModelPropertyChanged;
+        if (e.NewItems != null)
+            foreach (MessageViewModel vm in e.NewItems)
+                vm.PropertyChanged += OnMessageViewModelPropertyChanged;
+        _copyNestSuiteCommand.RaiseCanExecuteChanged();
+        _copyMarkdownCommand.RaiseCanExecuteChanged();
+    }
+
     private void OnMessageViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(MessageViewModel.IsEditing) or nameof(MessageViewModel.EditingText))
@@ -303,6 +306,16 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
         InputText = string.Empty;
         IsDirty = true;
         WorkspaceModified?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _copyStatusTimer?.Stop();
+        foreach (var m in Messages)
+            m.PropertyChanged -= OnMessageViewModelPropertyChanged;
+        Messages.CollectionChanged -= OnMessagesCollectionChanged;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
