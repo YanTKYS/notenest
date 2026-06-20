@@ -157,6 +157,7 @@
                              SelectionChanged="TabStrip_SelectionChanged"
                              PreviewMouseLeftButtonDown="TabStrip_PreviewMouseLeftButtonDown"
                              PreviewMouseMove="TabStrip_PreviewMouseMove"
+                             PreviewMouseButtonDown="TabStrip_PreviewMouseButtonDown"
                              DragOver="TabStrip_DragOver"
                              Drop="TabStrip_Drop">
                         <ListBox.ItemsPanel>
@@ -176,7 +177,16 @@
                             <DataTemplate>
                                 <!-- v1.9.9: ツールチップにツール種別・ファイルパス・保存状態を表示 -->
                                 <!-- v2.2.0 SH-7: 上部 3px に Workspace 種別カラーアクセントを追加 -->
+                                <!-- v2.4.0 SH-2: 右クリックコンテキストメニュー -->
                                 <Grid ToolTip="{Binding TooltipText}">
+                                    <Grid.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="このタブを閉じる(_C)"   Click="TabContextClose_Click"/>
+                                            <Separator/>
+                                            <MenuItem Header="他のタブを閉じる(_O)"   Click="TabContextCloseOthers_Click"/>
+                                            <MenuItem Header="右側のタブを閉じる(_R)" Click="TabContextCloseRight_Click"/>
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="3"/>
                                         <RowDefinition Height="*"/>

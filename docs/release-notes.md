@@ -1,3 +1,10 @@
+## v2.4.0 — タブ操作改善（コンテキストメニュー・中クリック・キーボードショートカット）
+
+- **NestSuite Shell: タブを右クリックするとコンテキストメニューが表示されるようにした（SH-2）。** 「このタブを閉じる」「他のタブを閉じる」「右側のタブを閉じる」の 3 項目を選択できる。いずれの操作でも未保存確認ダイアログを通す。
+- **NestSuite Shell: タブを中クリック（ホイールクリック）で閉じられるようにした（SH-3）。** 既存の「×」ボタンと同様に未保存確認を行う。
+- **NestSuite Shell: タブ切替キーボードショートカットを追加した（SH-4）。** `Ctrl+Tab` で次のタブへ、`Ctrl+Shift+Tab` で前のタブへ循環移動する。`Ctrl+1`〜`Ctrl+9` で番号指定のタブへ直接移動できる。既存の `Ctrl+S` / `Ctrl+Enter` / `Esc` 等の Workspace 内ショートカットには影響しない。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v2.3.2 — 無効状態ボタンのカーソル・視覚フィードバック統一（SH-11）
 
 - **無効状態ボタンで `Hand` カーソルが表示されないようにした（SH-11）。** `IconButton`（NoteNest）・`FlatButton` / `CopyButton`（ChatNest）・`IdeaIconButtonStyle` / `IdeaSecondaryButtonStyle` / `IdeaPrimaryButtonStyle` / `IdeaFloatingAddButtonStyle`（IdeaNest）の各スタイルに `IsEnabled=False` トリガーを追加し、無効時は `Cursor="Arrow"` に切り替えるようにした。
