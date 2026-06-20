@@ -7,6 +7,7 @@ namespace NestSuite.IdeaNest.ViewModels;
 public class EditIdeaViewModel : IdeaNestViewModelBase
 {
     public Idea Original { get; }
+    public bool IsExistingCard { get; }
 
     private string _title;
     private string _body;
@@ -15,9 +16,10 @@ public class EditIdeaViewModel : IdeaNestViewModelBase
     private bool _isPinned;
     private bool _isArchived;
 
-    public EditIdeaViewModel(Idea idea)
+    public EditIdeaViewModel(Idea idea, bool isExistingCard = true)
     {
         Original = idea;
+        IsExistingCard = isExistingCard;
         _title = idea.Title;
         _body = idea.Body;
         _tagsText = string.Join(", ", idea.Tags);
