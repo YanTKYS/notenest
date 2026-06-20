@@ -13,7 +13,7 @@ using NestSuite.IdeaNest.Views;
 
 namespace NestSuite.IdeaNest.ViewModels;
 
-public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
+public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase, IDisposable
 {
     private Workspace _workspace = new();
     private CardOperationsService _cardOps = null!;
@@ -22,6 +22,7 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
     private string _statusMessage = string.Empty;
     private readonly IdeaNestWorkspaceUiService _ui;
     private bool _hasChanges;
+    private bool _disposed;
 
     public CardDisplayViewModel CardDisplay { get; }
     public FilterViewModel Filter { get; }
@@ -185,13 +186,13 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
     {
         _ui = ui;
         CardDisplay = new CardDisplayViewModel(RefreshVisible, OnCardDisplayChanged);
-        CardDisplay.PropertyChanged += (_, e) => OnPropertyChanged(e.PropertyName);
+        CardDisplay.PropertyChanged += OnSubVmPropertyChanged;
 
         Filter = new FilterViewModel(RefreshVisible, OnFilterChanged);
-        Filter.PropertyChanged += (_, e) => OnPropertyChanged(e.PropertyName);
+        Filter.PropertyChanged += OnSubVmPropertyChanged;
 
         TagPanel = new TagPanelViewModel(OnTagPanelChanged, tag => SelectedTag = tag);
-        TagPanel.PropertyChanged += (_, e) => OnPropertyChanged(e.PropertyName);
+        TagPanel.PropertyChanged += OnSubVmPropertyChanged;
 
         // No-op export commands
         ExportMarkdownCommand   = new IdeaNestRelayCommand(_ => { });
@@ -234,6 +235,19 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
         MarkDirty,
         RefreshTags,
         RefreshVisible);
+
+    private void OnSubVmPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        => OnPropertyChanged(e.PropertyName);
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _statusClearTimer?.Stop();
+        CardDisplay.PropertyChanged -= OnSubVmPropertyChanged;
+        Filter.PropertyChanged     -= OnSubVmPropertyChanged;
+        TagPanel.PropertyChanged   -= OnSubVmPropertyChanged;
+    }
 
     private void RaiseCountAndEmptyStateChanged()
     {

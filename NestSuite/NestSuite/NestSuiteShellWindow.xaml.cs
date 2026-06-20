@@ -166,6 +166,12 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     protected override void OnClosed(EventArgs e)
     {
         ((IWorkspaceDialogHost)this).CloseFindReplace();
+        // v2.3.1 TD-1: ウィンドウ終了時に残存する IDisposable VM を Dispose する
+        foreach (var s in _sessionManager.Sessions)
+        {
+            if (s.WorkspaceViewModel is IDisposable disposable)
+                disposable.Dispose();
+        }
         base.OnClosed(e);
     }
 
@@ -606,9 +612,13 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             return false;
 
         // v1.9.7: ViewModel はタブごとの独立インスタンス。PropertyChanged 購読を解除する。
+        // v2.3.1 TD-1: Dispose でタイマー停止・イベント解除する
         if (_sessionManager.TryGet(tab.Id, out var session) &&
             session?.WorkspaceViewModel is IdeaNestWorkspaceViewModel vm)
+        {
             vm.PropertyChanged -= OnIdeaNestPropertyChanged;
+            vm.Dispose();
+        }
 
         return true;
     }
@@ -977,9 +987,13 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             return false;
 
         // v1.9.2: ViewModel はタブごとの独立インスタンス。Clear() は不要。イベント購読を解除する
+        // v2.3.1 TD-1: Dispose でタイマー停止・イベント解除する
         if (_sessionManager.TryGet(tab.Id, out var session) &&
             session?.WorkspaceViewModel is ChatNestWorkspaceViewModel vm)
+        {
             vm.PropertyChanged -= OnChatNestPropertyChanged;
+            vm.Dispose();
+        }
 
         return true;
     }
