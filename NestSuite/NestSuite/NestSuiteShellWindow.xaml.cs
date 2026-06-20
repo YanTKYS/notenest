@@ -918,20 +918,30 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         return null;
     }
 
-    /// <summary>v2.4.0 SH-2: keepTab 以外のすべてのタブを順に閉じる。未保存確認を各タブで行う。</summary>
+    /// <summary>
+    /// v2.4.0 SH-2: keepTab 以外のすべてのタブを順に閉じる。未保存確認を各タブで行う。
+    /// いずれかのタブでユーザーがキャンセルした場合、そのタブ以降の処理を中断する。
+    /// </summary>
     private void CloseOtherTabs(NestSuiteDocumentTab keepTab)
     {
         foreach (var tab in _tabs.Where(t => t.Id != keepTab.Id).ToList())
-            CloseTab(tab);
+        {
+            if (!CloseTab(tab)) break;
+        }
     }
 
-    /// <summary>v2.4.0 SH-2: pivotTab より右側（インデックスが大きい）のタブを順に閉じる。未保存確認を各タブで行う。</summary>
+    /// <summary>
+    /// v2.4.0 SH-2: pivotTab より右側（インデックスが大きい）のタブを順に閉じる。未保存確認を各タブで行う。
+    /// いずれかのタブでユーザーがキャンセルした場合、そのタブ以降の処理を中断する。
+    /// </summary>
     private void CloseTabsToRight(NestSuiteDocumentTab pivotTab)
     {
         var idx = _tabs.IndexOf(pivotTab);
         if (idx < 0) return;
         foreach (var tab in _tabs.Skip(idx + 1).ToList())
-            CloseTab(tab);
+        {
+            if (!CloseTab(tab)) break;
+        }
     }
 
     // ── v2.4.0 SH-3: 中クリックでタブを閉じる ────────────────────────────
@@ -992,15 +1002,16 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     /// <summary>
     /// 指定タブを閉じる。
-    /// 未保存の場合は確認ダイアログを表示し、キャンセル時はタブを残す。
+    /// 未保存の場合は確認ダイアログを表示し、キャンセル時はタブを残して false を返す。
     /// 閉じた後は右隣または左隣のタブをアクティブ化する。
     /// タブが 0 件になった場合は無題 NoteNest タブを自動作成する。
     ///
     /// <para>NoteNest: <see cref="ConfirmAndResetNoteNest"/> で確認後 PropertyChanged 購読解除・Dispose。</para>
     /// <para>ChatNest: <see cref="ConfirmAndResetChatNest"/> で確認後 PropertyChanged 購読解除。</para>
     /// <para>IdeaNest: <see cref="ConfirmAndResetIdeaNest"/> で確認後 PropertyChanged 購読解除。</para>
+    /// <returns>タブを閉じた場合 true、ユーザーがキャンセルした場合 false。</returns>
     /// </summary>
-    private void CloseTab(NestSuiteDocumentTab tab)
+    private bool CloseTab(NestSuiteDocumentTab tab)
     {
         // Id で検索して最新のタブを取得（Button.Tag バインドが古いレコードを持つ場合に備える）
         var idx = -1;
@@ -1013,20 +1024,20 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
                 break;
             }
         }
-        if (idx < 0) return;
+        if (idx < 0) return false;
 
         switch (tab.WorkspaceKind)
         {
             case NestSuiteWorkspaceKind.NoteNest:
-                if (!ConfirmAndResetNoteNest(tab)) return;
+                if (!ConfirmAndResetNoteNest(tab)) return false;
                 break;
 
             case NestSuiteWorkspaceKind.ChatNest:
-                if (!ConfirmAndResetChatNest(tab)) return;
+                if (!ConfirmAndResetChatNest(tab)) return false;
                 break;
 
             case NestSuiteWorkspaceKind.IdeaNest:
-                if (!ConfirmAndResetIdeaNest(tab)) return;
+                if (!ConfirmAndResetIdeaNest(tab)) return false;
                 break;
         }
 
@@ -1048,6 +1059,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             var nextIdx = Math.Min(idx, _tabs.Count - 1);
             ActivateTab(_tabs[nextIdx]);
         }
+        return true;
     }
 
     /// <summary>
