@@ -1,3 +1,14 @@
+## v2.0.1 — リポジトリ名変更前の docs リンク整理
+
+v2.0.0 正式リリース後、GitHub リポジトリ名を `nestsuite` へ変更する前提で docs を整理した。アプリ本体の機能変更・保存形式の変更はない。
+
+- **v2.0.1 リリース後に GitHub リポジトリ名を `notenest` → `nestsuite` へ変更予定。** 変更後の確認手順を `docs/operations/repository-rename.md` に追加した。
+- **README の git clone コマンドを `cd nestsuite` に更新した。** リポジトリ名変更後に clone すると `nestsuite/` ディレクトリが作成されるため、事前に合わせた。
+- **docs/guide/nestsuite-user-guide.md の既知の制約を現状に更新した。** タブ復元（v1.15.0）・複数ファイル一括オープン（v1.16.0）・ファイル関連付けアプリ内操作（v1.18.0）が実装済みであることを反映した。
+- **docs/operations/operation-note.md の stale な記述を更新した。** 複数ウィンドウ→シングルインスタンスの説明、--classic-notenest 削除済みの表記、ファイル関連付けの登録手順を現状に合わせた。
+- **docs 内のリンクを確認した。** 相対リンクを使用しており、リポジトリ名変更後も破綻しない。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v2.0.0 — NestSuite 正式リリース
 
 v1.21.x でのプロジェクト名・ソリューション名・EXE 名・C# namespace の NestSuite 化が完了したことを受け、バージョン体系を整理した。アプリ機能・保存形式・ファイル互換性に変更はない。

@@ -19,12 +19,13 @@
 - **v1.21.2 でソリューション名・プロジェクト名・フォルダ名を NestSuite に統一しました**（`NestSuite.sln` / `NestSuite/NestSuite.csproj` / `NestSuite.Tests/`）
 - **v1.21.4 で C# / XAML の namespace を `NoteNest` → `NestSuite` に移行しました。** ProgId・Mutex 名・Pipe 名・AppData パス・設定キーは互換維持のため変更していません
 - **v2.0.0 で NestSuite 正式リリースとして位置づけを整理しました。** v1.21.x での名称・EXE・プロジェクト・namespace 移行完了を受けたバージョン整理です。アプリ機能・保存形式に変更はありません
+- **v2.0.1 リリース後に GitHub リポジトリ名を `notenest` → `nestsuite` へ変更予定です。** 変更前に docs・リンク・ワークフローを整理しました（v2.0.1）
 
 ### 将来の検討事項
 
 以下は現時点では対応しませんが、将来的に検討する可能性のある事項です。
 
-- **リポジトリ名変更**（現在は `notenest`）は将来検討
+- **リポジトリ名変更**（`notenest` → `nestsuite`）は v2.0.1 リリース後に実施予定（[repository-rename.md](operations/repository-rename.md) 参照）
 - **`.nestsuite` 統合形式**（全 Workspace を 1 ファイルに収める形式）は将来検討
 - **設定キー・ProgId など互換性識別子の整理**（`NoteNest_*` 系の Mutex 名・Pipe 名・AppData パス等）は必要性が出た場合に検討
 

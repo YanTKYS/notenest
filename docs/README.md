@@ -47,6 +47,7 @@
 |----------|------|
 | `file-association.md` | ファイル関連付けの設定手順 |
 | `operation-note.md` | 運用上の注意・既知の制限 |
+| `repository-rename.md` | リポジトリ名変更手順（v2.0.1 リリース後に実施） |
 
 ## migration/
 
