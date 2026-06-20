@@ -1,6 +1,6 @@
-# NestSuite リリース前確認チェックリスト（v2.0.0）
+# NestSuite リリース前確認チェックリスト（v2.0.1）
 
-NestSuite のリリース前に確認する項目を整理します。v1.19.3 で `--classic-notenest` を削除し、v1.21.0 からアプリ表示名・EXE 名を NestSuite に統一しています。v2.0.0 で NestSuite 正式リリースとして位置づけを整理しました。
+NestSuite のリリース前に確認する項目を整理します。v1.19.3 で `--classic-notenest` を削除し、v1.21.0 からアプリ表示名・EXE 名を NestSuite に統一しています。v2.0.0 で NestSuite 正式リリース、v2.0.1 でリポジトリ名変更前の docs 整理を行いました。
 
 ---
 

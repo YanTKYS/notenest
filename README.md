@@ -53,7 +53,7 @@ NestSuite は、**NoteNest / IdeaNest / ChatNest** の 3 つの Workspace を 1 
 
 ### ファイル管理
 - `.notenest` 形式での保存・読込（`Ctrl+S`）
-- 複数起動対応（別プロジェクトを別ウィンドウで同時利用可能）
+- 複数ファイルのタブ管理（シングルインスタンスで複数ファイルをタブで並行利用）
 - 未保存変更の確認ダイアログ・タイトルバーへの `*` 表示
 - 保存済みプロジェクトの自動保存（5分間隔、設定で切替）
 - 最近使ったファイル履歴のクリア、プロジェクト情報表示
@@ -103,7 +103,7 @@ NestSuite は、**NoteNest / IdeaNest / ChatNest** の 3 つの Workspace を 1 
 
 ```
 git clone <repository-url>
-cd notenest
+cd nestsuite
 dotnet build NestSuite.sln -c Release
 dotnet run --project NestSuite/NestSuite.csproj
 ```
@@ -214,7 +214,7 @@ NestSuite.exe "C:\path\to\project.notenest"
 
 ## 対象外機能
 
-以下は NoteNest の設計方針から意図的に対象外としています。
+以下は NestSuite の設計方針から意図的に対象外としています。
 
 | 機能 | 理由 |
 |------|------|
