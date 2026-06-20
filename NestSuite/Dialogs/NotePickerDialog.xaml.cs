@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using NestSuite.ViewModels;
 
@@ -12,17 +13,29 @@ public record NotePickerItem(string NotebookTitle, NoteViewModel Note)
 public partial class NotePickerDialog : Window
 {
     public NoteViewModel? SelectedNote { get; private set; }
+    private readonly List<NotePickerItem> _allItems;
 
     public NotePickerDialog(IEnumerable<NotePickerItem> items)
     {
+        _allItems = items.ToList();
         InitializeComponent();
-        NoteList.ItemsSource = items.ToList();
+        NoteList.ItemsSource = _allItems;
         Loaded += (_, _) =>
         {
-            NoteList.Focus();
+            NoteFilterBox.Focus();
             if (NoteList.Items.Count > 0)
                 NoteList.SelectedIndex = 0;
         };
+    }
+
+    private void NoteFilter_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        var filterText = NoteFilterBox.Text;
+        NoteList.ItemsSource = string.IsNullOrEmpty(filterText)
+            ? _allItems
+            : _allItems.Where(i => i.Note.Title.Contains(filterText, StringComparison.OrdinalIgnoreCase)).ToList();
+        if (NoteList.Items.Count > 0)
+            NoteList.SelectedIndex = 0;
     }
 
     private void OK_Click(object sender, RoutedEventArgs e)
@@ -32,8 +45,7 @@ public partial class NotePickerDialog : Window
         // Warn when an existing project file contains duplicate note titles.
         // New projects can't have duplicates (ViewModel enforces uniqueness on add/rename),
         // but old .notenest files may. The inserted link [[title]] resolves to the first match.
-        var items = (List<NotePickerItem>)NoteList.ItemsSource;
-        bool hasDuplicate = items.Count(i =>
+        bool hasDuplicate = _allItems.Count(i =>
             string.Equals(i.Note.Title, item.Note.Title, StringComparison.OrdinalIgnoreCase)) > 1;
         if (hasDuplicate)
         {

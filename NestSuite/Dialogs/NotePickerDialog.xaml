@@ -10,7 +10,9 @@
     <Grid Margin="14">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="8"/>
+            <RowDefinition Height="6"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="6"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="12"/>
             <RowDefinition Height="Auto"/>
@@ -18,12 +20,36 @@
 
         <TextBlock Grid.Row="0" Text="リンク先のノートを選択してください:" FontSize="13"/>
 
-        <ListBox Grid.Row="2" x:Name="NoteList"
+        <!-- L2: ノートタイトル絞り込み TextBox -->
+        <Grid Grid.Row="2">
+            <TextBox x:Name="NoteFilterBox"
+                     FontSize="12" Padding="6,4"
+                     TextChanged="NoteFilter_TextChanged"/>
+            <TextBlock Text="ノートを絞り込む..."
+                       IsHitTestVisible="False"
+                       FontSize="12"
+                       Foreground="Gray"
+                       Margin="8,0,0,0"
+                       VerticalAlignment="Center">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=NoteFilterBox}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
+
+        <ListBox Grid.Row="4" x:Name="NoteList"
                  DisplayMemberPath="DisplayText"
                  FontSize="13"
                  MouseDoubleClick="NoteList_MouseDoubleClick"/>
 
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="OK" Width="80" Margin="0,0,8,0" IsDefault="True"
                     Click="OK_Click"
                     Background="#2B5CE6" Foreground="White" BorderThickness="0" Padding="6,4"/>

@@ -24,6 +24,7 @@ public partial class NoteNestWorkspaceView : UserControl
     public NoteNestWorkspaceView()
     {
         InitializeComponent();
+        InitNoteFilter();
     }
 
     // ── Public API for AppShell（NestSuiteShellWindow）──────────────────────
