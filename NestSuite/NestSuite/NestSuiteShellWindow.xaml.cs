@@ -376,10 +376,8 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             foreach (var (id, item) in _toolMenuItems)
                 item.IsChecked = id == toolId;
 
-            // ステータスバー更新（NoteNest は名前のみ、他は状態テキストを併記）
-            NestSuiteModeSuffix.Text = isNoteNest
-                ? $"  /  {tool.DisplayName}"
-                : $"  /  {tool.DisplayName} — {tool.StatusText}";
+            // ステータスバー更新
+            NestSuiteModeSuffix.Text = $"  /  {tool.DisplayName}";
         }
         finally
         {
