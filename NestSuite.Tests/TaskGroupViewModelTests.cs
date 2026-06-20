@@ -57,27 +57,26 @@ public class TaskGroupViewModelTests
     }
 
     [Fact]
-    public void VisibleTasks_HideCompletedFalse_ShowsAll()
+    public void IncompleteTasks_And_CompletedTasks_CoverAllTasks()
     {
         var group = new TaskGroupViewModel("Today", "today");
         group.AddTask(Task("A", completed: true));
         group.AddTask(Task("B", completed: false));
 
-        Assert.Equal(2, group.VisibleTasks.Count());
+        Assert.Equal(2, group.IncompleteTasks.Count() + group.CompletedTasks.Count());
     }
 
     [Fact]
-    public void VisibleTasks_HideCompletedTrue_ExcludesCompleted()
+    public void IncompleteTasks_ExcludesCompleted()
     {
         var group = new TaskGroupViewModel("Today", "today");
         group.AddTask(Task("A", completed: true));
         group.AddTask(Task("B", completed: false));
-        group.HideCompleted = true;
 
-        var visible = group.VisibleTasks.ToList();
+        var incomplete = group.IncompleteTasks.ToList();
 
-        Assert.Single(visible);
-        Assert.Equal("B", visible[0].Title);
+        Assert.Single(incomplete);
+        Assert.Equal("B", incomplete[0].Title);
     }
 
     [Fact]
