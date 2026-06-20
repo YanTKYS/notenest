@@ -756,7 +756,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         var vm = (ChatNestWorkspaceViewModel)session.WorkspaceViewModel;
         try
         {
-            ChatNestFileService.Save(path, vm.Messages);
+            ChatNestFileService.Save(path, vm.MessageModels);
             vm.MarkSaved();
             UpdateChatNestTabPath(session, path);
             _recentFiles.Add(path);
