@@ -201,7 +201,7 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
         CopyNoteNestCommand     = new IdeaNestRelayCommand(_ => { });
 
         AddIdeaCommand         = new IdeaNestRelayCommand(_ => AddIdea());
-        EditIdeaCommand        = new IdeaNestRelayCommand(p => EditIdea(p as IdeaCardViewModel));
+        EditIdeaCommand        = new IdeaNestRelayCommand(p => PreviewIdea(p as IdeaCardViewModel));
         PreviewIdeaCommand     = new IdeaNestRelayCommand(p => PreviewIdea(p as IdeaCardViewModel));
         RandomPreviewCommand   = new IdeaNestRelayCommand(_ => RandomPreview(), _ => VisibleCards.Count > 0);
         DeleteIdeaCommand      = new IdeaNestRelayCommand(p => DeleteIdea(p as IdeaCardViewModel));
@@ -249,18 +249,18 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
 
     private void AddIdea()
     {
-        var draft = new Idea();
-        var vm = new EditIdeaViewModel(draft);
-        var dlg = new EditIdeaWindow
+        var dlg = new PreviewIdeaWindow(
+            onCommitAdd: vm =>
+            {
+                var draft = new Idea();
+                vm.ApplyTo(draft);
+                return _cardOps.CommitAdd(draft);
+            },
+            onCommitEdit: c => _cardOps.CommitEdit(c))
         {
-            Title = "新規アイデア",
-            DataContext = vm,
             Owner = _ui.Owner,
         };
-        if (dlg.ShowDialog() != true) return;
-
-        vm.ApplyTo(draft);
-        _cardOps.CommitAdd(draft);
+        dlg.ShowDialog();
     }
 
     private void PreviewIdea(IdeaCardViewModel? card)
@@ -285,21 +285,6 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase
         if (VisibleCards.Count == 0) return;
         var card = VisibleCards[new Random().Next(VisibleCards.Count)];
         PreviewIdea(card);
-    }
-
-    private void EditIdea(IdeaCardViewModel? card, Window? owner = null)
-    {
-        if (card == null) return;
-        var vm = new EditIdeaViewModel(card.Model);
-        var dlg = new EditIdeaWindow
-        {
-            Title = "アイデア編集",
-            DataContext = vm,
-            Owner = owner ?? _ui.Owner,
-        };
-        if (dlg.ShowDialog() != true) return;
-        vm.ApplyTo(card.Model);
-        _cardOps.CommitEdit(card);
     }
 
     private void DeleteIdea(IdeaCardViewModel? card)
