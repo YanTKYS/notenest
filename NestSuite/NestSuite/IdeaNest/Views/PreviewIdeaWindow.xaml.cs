@@ -60,7 +60,7 @@ public partial class PreviewIdeaWindow : Window
     {
         _hasEdits = false;
         var idea = freshIdea ?? CurrentCard.Model;
-        _editVm = new EditIdeaViewModel(idea);
+        _editVm = new EditIdeaViewModel(idea, isExistingCard: freshIdea == null);
         _editVm.PropertyChanged += OnEditVmPropertyChanged;
         DataContext = _editVm;
     }

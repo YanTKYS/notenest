@@ -72,8 +72,9 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!-- Dates row -->
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                <!-- Dates row (hidden in new-card mode) -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8"
+                            Visibility="{Binding IsExistingCard, Converter={StaticResource IdeaBoolToVis}}">
                     <TextBlock Text="作成: " Foreground="{StaticResource IdeaTextSecondaryBrush}" FontSize="11" />
                     <TextBlock Text="{Binding CreatedAtText}" Foreground="{StaticResource IdeaTextSecondaryBrush}" FontSize="11" />
                     <TextBlock Text="  /  更新: " Foreground="{StaticResource IdeaTextSecondaryBrush}" FontSize="11" />
