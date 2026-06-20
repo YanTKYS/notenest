@@ -1161,6 +1161,15 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     private void MenuNewChatNest_Click(object sender, RoutedEventArgs e)  => NewChatNestSession();
     private void MenuNewIdeaNest_Click(object sender, RoutedEventArgs e)  => NewIdeaNestSession();
 
+    /// <summary>v2.2.0 SH-5: 「＋」ボタンクリック時に NoteNest/IdeaNest/ChatNest 選択メニューを表示する。</summary>
+    private void TabAddButton_Click(object sender, RoutedEventArgs e)
+    {
+        var btn = (Button)sender;
+        btn.ContextMenu!.PlacementTarget = btn;
+        btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+        btn.ContextMenu.IsOpen = true;
+    }
+
     private void MenuOpen_Click(object sender, RoutedEventArgs e) => OpenNestSuiteFile();
 
     /// <summary>

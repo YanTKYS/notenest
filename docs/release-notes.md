@@ -1,3 +1,10 @@
+## v2.2.0 — タブ新規追加ボタン・Workspace 種別カラーアクセント
+
+- **NestSuite Shell: タブストリップ右端に「＋」ボタンを追加した（SH-5）。** クリックするとメニューが開き「新規 NoteNest / 新規 IdeaNest / 新規 ChatNest」を選択できる。ファイルメニューの「新規」サブメニューと同じ動作。
+- **NestSuite Shell: 各タブ上部に Workspace 種別を示す 3px カラーアクセントを追加した（SH-7）。** NoteNest＝青 (#4A90D9)、IdeaNest＝橙 (#E8A020)、ChatNest＝緑 (#4CAF50) で色分けし、タブストリップ上で種別を視覚的に区別できる。
+- **NestSuite Shell: タブの未保存マークを `*` から `●` に変更した。** Workspace カラーアクセントと混同しない amber/orange 系の単独記号で視認性を向上した。
+- NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v2.1.3 — フッター表示の文言整理
 
 - **ChatNest / IdeaNest Workspace のフッターから「統合検証」表記を削除した。** v2.0.0 で正式リリース済みのため、開発段階の文言を利用者向けUIから除去した。フッターにはツール名（`ChatNest` / `IdeaNest`）のみ表示する。
