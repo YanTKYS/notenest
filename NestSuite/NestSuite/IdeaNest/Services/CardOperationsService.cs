@@ -41,11 +41,12 @@ public class CardOperationsService
         _now = now ?? (() => DateTime.Now);
     }
 
-    public bool CommitAdd(Idea draft)
+    public IdeaCardViewModel? CommitAdd(Idea draft)
     {
         var title = draft.Title?.Trim() ?? string.Empty;
         var body  = draft.Body?.Trim()  ?? string.Empty;
-        if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(body)) return false;
+        var hasTags = draft.Tags?.Count > 0;
+        if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(body) && !hasTags) return null;
 
         if (string.IsNullOrEmpty(title))
         {
@@ -58,11 +59,12 @@ public class CardOperationsService
         draft.UpdatedAt = ts;
 
         _ideas.Add(draft);
-        _allCards.Add(new IdeaCardViewModel(draft));
+        var card = new IdeaCardViewModel(draft);
+        _allCards.Add(card);
         _onDirty();
         _onRefreshTags();
         _onRefreshVisible();
-        return true;
+        return card;
     }
 
     public bool CommitAddFromText(string body)
@@ -89,7 +91,7 @@ public class CardOperationsService
             bodyText = body;
         }
 
-        return CommitAdd(new Idea { Title = title, Body = bodyText });
+        return CommitAdd(new Idea { Title = title, Body = bodyText }) != null;
     }
 
     public bool CommitAddFromFileContent(string fileName, string body)
@@ -97,7 +99,7 @@ public class CardOperationsService
         // v1.16.6: 空ファイル（本文が空白のみ）はカード作成しない
         if (string.IsNullOrWhiteSpace(body)) return false;
         var title = string.IsNullOrWhiteSpace(fileName) ? string.Empty : fileName;
-        return CommitAdd(new Idea { Title = title, Body = body ?? string.Empty });
+        return CommitAdd(new Idea { Title = title, Body = body ?? string.Empty }) != null;
     }
 
     public void CommitEdit(IdeaCardViewModel card)

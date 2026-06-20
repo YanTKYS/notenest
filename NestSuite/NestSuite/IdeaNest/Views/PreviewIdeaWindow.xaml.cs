@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using NestSuite.IdeaNest.Models;
 using NestSuite.IdeaNest.ViewModels;
 
 namespace NestSuite.IdeaNest.Views;
@@ -11,12 +12,16 @@ public partial class PreviewIdeaWindow : Window
 {
     private readonly IReadOnlyList<IdeaCardViewModel> _cards;
     private readonly Action<IdeaCardViewModel> _onCommitEdit;
+    private readonly Func<EditIdeaViewModel, IdeaCardViewModel?>? _onCommitAdd;
+    private readonly bool _isNew;
     private int _currentIndex;
     private EditIdeaViewModel _editVm = null!;
     private bool _hasEdits;
+    private IdeaCardViewModel? _addedCard;
 
     private IdeaCardViewModel CurrentCard => _cards[_currentIndex];
 
+    // Existing-card mode
     public PreviewIdeaWindow(
         IReadOnlyList<IdeaCardViewModel> cards,
         int initialIndex,
@@ -26,16 +31,36 @@ public partial class PreviewIdeaWindow : Window
         _cards = cards;
         _onCommitEdit = onCommitEdit;
         _currentIndex = initialIndex;
+        _isNew = false;
         LoadCard();
         UpdateButtonStates();
         PreviewKeyDown += OnPreviewKeyDown;
         Closed += OnWindowClosed;
     }
 
-    private void LoadCard()
+    // New-card mode
+    public PreviewIdeaWindow(
+        Func<EditIdeaViewModel, IdeaCardViewModel?> onCommitAdd,
+        Action<IdeaCardViewModel> onCommitEdit)
+    {
+        InitializeComponent();
+        _cards = Array.Empty<IdeaCardViewModel>();
+        _onCommitAdd = onCommitAdd;
+        _onCommitEdit = onCommitEdit;
+        _currentIndex = 0;
+        _isNew = true;
+        LoadCard(new Idea());
+        UpdateButtonStates();
+        Title = "新規アイデア";
+        PreviewKeyDown += OnPreviewKeyDown;
+        Closed += OnWindowClosed;
+    }
+
+    private void LoadCard(Idea? freshIdea = null)
     {
         _hasEdits = false;
-        _editVm = new EditIdeaViewModel(CurrentCard.Model);
+        var idea = freshIdea ?? CurrentCard.Model;
+        _editVm = new EditIdeaViewModel(idea);
         _editVm.PropertyChanged += OnEditVmPropertyChanged;
         DataContext = _editVm;
     }
@@ -44,12 +69,36 @@ public partial class PreviewIdeaWindow : Window
     {
         if (!_hasEdits) return;
         _hasEdits = false;
-        _editVm.ApplyTo(CurrentCard.Model);
-        _onCommitEdit(CurrentCard);
+
+        if (_isNew)
+        {
+            if (_addedCard != null)
+            {
+                // Card was already created via Ctrl+S; commit further edits
+                _editVm.ApplyTo(_addedCard.Model);
+                _onCommitEdit(_addedCard);
+            }
+            else if (HasContent())
+            {
+                _addedCard = _onCommitAdd!(_editVm);
+            }
+            // else: no meaningful content → don't create empty card
+        }
+        else
+        {
+            _editVm.ApplyTo(CurrentCard.Model);
+            _onCommitEdit(CurrentCard);
+        }
     }
+
+    private bool HasContent() =>
+        !string.IsNullOrWhiteSpace(_editVm.Title)
+        || !string.IsNullOrWhiteSpace(_editVm.Body)
+        || !string.IsNullOrWhiteSpace(_editVm.TagsText);
 
     private void NavigateTo(int index)
     {
+        if (_isNew) return;
         if (index < 0 || index >= _cards.Count) return;
         CommitCurrentEdit();
         _editVm.PropertyChanged -= OnEditVmPropertyChanged;
@@ -101,8 +150,16 @@ public partial class PreviewIdeaWindow : Window
     {
         PinButton.Content = _editVm.IsPinned ? "📌 ピン留め解除" : "📌 ピン留め";
         ArchiveButton.Content = _editVm.IsArchived ? "📤 アーカイブ解除" : "📥 アーカイブ";
-        PrevButton.IsEnabled = _currentIndex > 0;
-        NextButton.IsEnabled = _currentIndex < _cards.Count - 1;
+        if (_isNew)
+        {
+            PrevButton.IsEnabled = false;
+            NextButton.IsEnabled = false;
+        }
+        else
+        {
+            PrevButton.IsEnabled = _currentIndex > 0;
+            NextButton.IsEnabled = _currentIndex < _cards.Count - 1;
+        }
     }
 
     private void OnPrevClick(object sender, RoutedEventArgs e) => NavigateTo(_currentIndex - 1);

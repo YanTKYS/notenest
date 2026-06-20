@@ -392,9 +392,6 @@
                                                       Command="{Binding DataContext.CopyCardMarkdownCommand, Source={x:Reference CardArea}}"
                                                       CommandParameter="{Binding}" />
                                             <Separator />
-                                            <MenuItem Header="編集(_E)"
-                                                      Command="{Binding DataContext.EditIdeaCommand, Source={x:Reference CardArea}}"
-                                                      CommandParameter="{Binding}" />
                                             <MenuItem Header="ピン留め切替(_P)"
                                                       Command="{Binding DataContext.TogglePinCommand, Source={x:Reference CardArea}}"
                                                       CommandParameter="{Binding}" />
@@ -443,10 +440,6 @@
                                             <Button Content="📌" ToolTip="ピン留め切替"
                                                     Style="{StaticResource IdeaIconButtonStyle}"
                                                     Command="{Binding DataContext.TogglePinCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}" />
-                                            <Button Content="✎" ToolTip="編集"
-                                                    Style="{StaticResource IdeaIconButtonStyle}"
-                                                    Command="{Binding DataContext.EditIdeaCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     CommandParameter="{Binding}" />
                                             <Button Content="📥" ToolTip="アーカイブ切替"
                                                     Style="{StaticResource IdeaIconButtonStyle}"
