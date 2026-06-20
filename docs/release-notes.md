@@ -1,3 +1,18 @@
+## v2.0.0 — NestSuite 正式リリース
+
+v1.21.x でのプロジェクト名・ソリューション名・EXE 名・C# namespace の NestSuite 化が完了したことを受け、バージョン体系を整理した。アプリ機能・保存形式・ファイル互換性に変更はない。
+
+- **NestSuite が正式アプリ名として確立した。** v1.11.0 から既定起動、v1.21.0 で EXE 名・表示名、v1.21.2 でソリューション・プロジェクト構成、v1.21.4 で C# namespace の移行が完了し、v2.0.0 でバージョン体系を整理した。
+- **`.notenest` / `.chatnest` / `.ideanest` ファイルは従来どおり利用できる。** ファイル形式・保存スキーマに変更はない。
+- **NoteNest 保存スキーマ `1.4.1` を維持している。** 既存の `.notenest` ファイルはそのまま読み込める。
+- **既存設定・タブ復元データは引き継がれる。** `%AppData%\NoteNest\` のデータフォルダパスに変更はない。
+- **ファイル関連付けを再登録すると NestSuite.exe として動作する。** ヘルプメニュー → 「ファイル関連付けの設定...」から登録・解除できる（v1.18.0）。
+- NoteNest は NestSuite 上の Workspace 名として継続する。
+- ProgId（`NoteNest.notenest` / `NoteNest.chatnest` / `NoteNest.ideanest`）は変更しない（既存レジストリ互換）。
+- Mutex 名 / Named Pipe 名（`NoteNest_NestSuite_...`）は変更しない（シングルインスタンス互換）。
+- `%AppData%\NoteNest\` のデータフォルダパスは変更しない（既存設定・タブ復元データ互換）。
+- リポジトリ名は変更しない。
+
 ## v1.21.4 — namespace の NestSuite 化
 
 C# / XAML の名前空間を `NoteNest` から `NestSuite` へ移行した。アプリ機能・保存形式・互換性に関わる内部識別子の変更はない。
