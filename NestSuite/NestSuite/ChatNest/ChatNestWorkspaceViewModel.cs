@@ -12,16 +12,13 @@ namespace NestSuite.ChatNest;
 /// ChatNest Workspace の ViewModel。参照ソース ChatNest v0.4.1
 /// ViewModels/ChatNestWorkspaceViewModel.cs より、Workspace 部分を中心に取り込み。
 ///
-/// <para><b>v1.7.0 の位置づけ</b><br/>
-/// NestSuite 上で 2 つ目の Workspace として ChatNest を表示できるか検証するための最小実装。
-/// メッセージ一覧・入力欄・発言者切替・投稿・削除を提供する。
-/// 保存／読込（.chatnest ファイル）はメモリ内のみとし、永続化は次段階へ回す。</para>
-///
-/// <para><b>MessageBox 暫定許容</b><br/>
-/// 発言削除確認に <c>MessageBox</c> を直接使用する。これは ChatNest 参照ソースの挙動を
-/// 維持した暫定対応であり、本ファイルは ArchitectureBoundaryTests の走査対象外
-/// （NestSuite 配下）に置く。IWorkspaceDialogHost 相当への委譲は次段階の課題。
-/// 詳細は docs/design-decisions.md を参照。</para>
+/// <para><b>v2.3.0 変更点</b><br/>
+/// CH-3: 発言追加時の自動スクロールを <see cref="ChatNestWorkspaceView"/> 側で制御。<br/>
+/// CH-4: 発言削除確認を <see cref="IsDeleteConfirmVisible"/> ＋ <see cref="ConfirmDeleteCommand"/> で制御し、
+///        MessageBox を廃止した。<br/>
+/// CH-6: 発言編集を <see cref="MessageViewModel"/> に委譲し、インライン編集を実現した。<br/>
+/// <see cref="Messages"/> の型を <see cref="ObservableCollection{MessageViewModel}"/> に変更した。<br/>
+/// ファイル保存用に <see cref="MessageModels"/> を提供する。</para>
 /// </summary>
 public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
 {
@@ -29,14 +26,19 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
     private Speaker _selectedSpeaker = Speaker.自分;
     private bool _isDirty;
     private string _copyStatusText = string.Empty;
+    private bool _isDeleteConfirmVisible;
+    private MessageViewModel? _confirmingDeleteTarget;
     private DispatcherTimer? _copyStatusTimer;
 
     private readonly ChatNestRelayCommand _postCommand;
     private readonly ChatNestRelayCommand _copyNestSuiteCommand;
     private readonly ChatNestRelayCommand _copyMarkdownCommand;
 
-    public ObservableCollection<Message> Messages { get; } = new();
+    public ObservableCollection<MessageViewModel> Messages { get; } = new();
     public Speaker[] Speakers { get; } = Enum.GetValues<Speaker>();
+
+    /// <summary>v2.3.0: ファイル保存用に Message モデルシーケンスを返す。</summary>
+    public IEnumerable<Message> MessageModels => Messages.Select(m => m.Model);
 
     public string InputText
     {
@@ -63,9 +65,8 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// 破棄確認の対象となる未保存状態。投稿・削除による <see cref="IsDirty"/> に加え、
-    /// 投稿前の入力欄テキスト（空白のみを除く）も対象に含める。ChatNest は保存手段を
-    /// 持たないため、終了時にこの値が真なら破棄確認を表示する想定。
+    /// 破棄確認の対象となる未保存状態。投稿・削除・編集による <see cref="IsDirty"/> に加え、
+    /// 投稿前の入力欄テキスト（空白のみを除く）も対象に含める。
     /// </summary>
     public bool HasUnsavedChanges => IsDirty || !string.IsNullOrWhiteSpace(InputText);
 
@@ -76,22 +77,34 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
         private set { _copyStatusText = value; OnPropertyChanged(); }
     }
 
-    public ICommand PostCommand => _postCommand;
-    public ICommand DeleteMessageCommand { get; }
+    /// <summary>v2.3.0 CH-4: 発言削除確認ダイアログの表示状態。</summary>
+    public bool IsDeleteConfirmVisible
+    {
+        get => _isDeleteConfirmVisible;
+        private set { _isDeleteConfirmVisible = value; OnPropertyChanged(); }
+    }
 
-    // v1.16.5: クリップボードコピーコマンド
+    public ICommand PostCommand => _postCommand;
+
+    /// <summary>v2.3.0 CH-4: 削除確認ダイアログで「削除」を選択した時のコマンド。</summary>
+    public ICommand ConfirmDeleteCommand { get; }
+
+    /// <summary>v2.3.0 CH-4: 削除確認ダイアログで「キャンセル」を選択した時のコマンド。</summary>
+    public ICommand CancelDeleteCommand { get; }
+
     public ICommand CopyNestSuiteCommand => _copyNestSuiteCommand;
-    public ICommand CopyMarkdownCommand => _copyMarkdownCommand;
+    public ICommand CopyMarkdownCommand  => _copyMarkdownCommand;
 
     public event EventHandler? WorkspaceModified;
 
     public ChatNestWorkspaceViewModel()
     {
         _postCommand = new ChatNestRelayCommand(Post, () => !string.IsNullOrWhiteSpace(InputText));
-        DeleteMessageCommand = new ChatNestRelayCommand<Message>(DeleteMessage);
+        ConfirmDeleteCommand = new ChatNestRelayCommand(ExecuteConfirmDelete);
+        CancelDeleteCommand  = new ChatNestRelayCommand(ExecuteCancelDelete);
 
         _copyNestSuiteCommand = new ChatNestRelayCommand(ExecuteCopyNestSuite, () => Messages.Count > 0);
-        _copyMarkdownCommand = new ChatNestRelayCommand(ExecuteCopyMarkdown, () => Messages.Count > 0);
+        _copyMarkdownCommand  = new ChatNestRelayCommand(ExecuteCopyMarkdown,   () => Messages.Count > 0);
 
         Messages.CollectionChanged += (_, _) =>
         {
@@ -124,13 +137,12 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
         Messages.Clear();
         InputText = string.Empty;
         foreach (var m in messages)
-            Messages.Add(m);
+            Messages.Add(CreateMessageViewModel(m));
         IsDirty = false;
     }
 
     /// <summary>
     /// v1.16.7: NoteNest への貼り付けに適した形式を生成する。
-    /// 先頭に [NOTE] マーカーと転記日時を付け、発言者を ## 見出しで表現する。
     /// 連続する同一発言者のメッセージは 1 ブロックに集約する。
     /// </summary>
     public string BuildNestSuiteText()
@@ -159,7 +171,6 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// v1.16.5: Markdown 形式のエクスポートテキストを生成する。
-    /// 発言者名を ## 見出しとして本文を続ける。
     /// 連続する同一発言者のメッセージは 1 ブロックに集約する。
     /// </summary>
     public string BuildMarkdownText()
@@ -183,6 +194,49 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
             sb.AppendLine();
         }
         return sb.ToString().TrimEnd();
+    }
+
+    // ── プライベート: MessageViewModel ファクトリ ─────────────────────────
+
+    private MessageViewModel CreateMessageViewModel(Message model)
+        => new(model, HandleBeginEditRequest, HandleDeleteRequest, HandleEditCommitted);
+
+    private void HandleBeginEditRequest(MessageViewModel vm)
+    {
+        // 他のメッセージを編集中の場合はキャンセルしてから開始する
+        var current = Messages.FirstOrDefault(m => m.IsEditing && !ReferenceEquals(m, vm));
+        current?.CancelEditCommand.Execute(null);
+        vm.BeginEditInternal();
+    }
+
+    private void HandleDeleteRequest(MessageViewModel vm)
+    {
+        _confirmingDeleteTarget = vm;
+        IsDeleteConfirmVisible = true;
+    }
+
+    private void HandleEditCommitted(MessageViewModel _)
+    {
+        IsDirty = true;
+        WorkspaceModified?.Invoke(this, EventArgs.Empty);
+    }
+
+    // ── コマンド実装 ───────────────────────────────────────────────────────
+
+    private void ExecuteConfirmDelete()
+    {
+        if (_confirmingDeleteTarget == null) return;
+        Messages.Remove(_confirmingDeleteTarget);
+        _confirmingDeleteTarget = null;
+        IsDeleteConfirmVisible = false;
+        IsDirty = true;
+        WorkspaceModified?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void ExecuteCancelDelete()
+    {
+        _confirmingDeleteTarget = null;
+        IsDeleteConfirmVisible = false;
     }
 
     private void ExecuteCopyNestSuite()
@@ -227,23 +281,10 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged
     {
         var text = InputText.Trim();
         if (string.IsNullOrEmpty(text)) return;
-        Messages.Add(new Message { Speaker = SelectedSpeaker, Text = text });
+        Messages.Add(CreateMessageViewModel(new Message { Speaker = SelectedSpeaker, Text = text }));
         InputText = string.Empty;
         IsDirty = true;
         WorkspaceModified?.Invoke(this, EventArgs.Empty);
-    }
-
-    private void DeleteMessage(Message? message)
-    {
-        if (message == null) return;
-        // v1.7.0 暫定許容: 発言削除確認に MessageBox を直接使用（NestSuite 配下のため境界テスト対象外）
-        if (MessageBox.Show("この発言を削除しますか？", "削除の確認",
-                MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK)
-        {
-            Messages.Remove(message);
-            IsDirty = true;
-            WorkspaceModified?.Invoke(this, EventArgs.Empty);
-        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

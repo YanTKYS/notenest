@@ -50,33 +50,6 @@
             <Setter Property="Padding" Value="20,9"/>
         </Style>
 
-        <Style x:Key="MiniDeleteButton" TargetType="Button">
-            <Setter Property="Width" Value="16"/>
-            <Setter Property="Height" Value="16"/>
-            <Setter Property="FontSize" Value="9"/>
-            <Setter Property="Foreground" Value="#D0D0D0"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="bg" Background="Transparent" CornerRadius="3"
-                                Width="16" Height="16">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bg" Property="Background" Value="#FFE8E8"/>
-                                <Setter Property="Foreground" Value="#E53935"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
         <!-- v1.16.5: コピーボタン用スタイル -->
         <Style x:Key="CopyButton" TargetType="Button">
             <Setter Property="FontFamily" Value="Yu Gothic UI, Meiryo UI, sans-serif"/>
@@ -140,14 +113,23 @@
             </Setter>
         </Style>
 
-        <!-- Message bubble template — meta（発言者・時刻・削除）＋ 本文吹き出し -->
-        <DataTemplate x:Key="MessageTemplate" DataType="{x:Type cn:Message}">
+        <!-- v2.3.0: DataType を MessageViewModel に変更。削除ボタン廃止・右クリックメニュー追加・インライン編集追加 -->
+        <DataTemplate x:Key="MessageTemplate" DataType="{x:Type cn:MessageViewModel}">
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="{Binding Speaker, Converter={StaticResource SpeakerAlign}}"
                         VerticalAlignment="Top"
                         Margin="16,2"
                         MaxWidth="580">
 
+                <!-- CH-4/CH-6: 右クリックで編集・削除を選択する -->
+                <StackPanel.ContextMenu>
+                    <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                        <MenuItem Header="編集" Command="{Binding BeginEditCommand}"/>
+                        <MenuItem Header="削除" Command="{Binding RequestDeleteCommand}"/>
+                    </ContextMenu>
+                </StackPanel.ContextMenu>
+
+                <!-- メタ情報（発言者・時刻） -->
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Top"
                             Margin="0,5,7,0">
@@ -161,25 +143,66 @@
                                Foreground="#C0C0C0"
                                Margin="5,0,3,0"
                                VerticalAlignment="Center"/>
-                    <Button Style="{StaticResource MiniDeleteButton}"
-                            Content="✕"
-                            ToolTip="この発言を削除"
-                            VerticalAlignment="Center"
-                            Command="{Binding DataContext.DeleteMessageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                            CommandParameter="{Binding}"/>
                 </StackPanel>
 
+                <!-- 吹き出し -->
                 <Border Background="{Binding Speaker, Converter={StaticResource SpeakerBg}}"
                         BorderBrush="{Binding Speaker, Converter={StaticResource SpeakerAccent}}"
                         BorderThickness="3,0,0,0"
                         CornerRadius="8"
                         Padding="10,6"
                         MaxWidth="460">
-                    <TextBlock Text="{Binding Text}"
-                               TextWrapping="Wrap"
-                               FontSize="13"
-                               LineHeight="20"
-                               Foreground="#212121"/>
+                    <Grid>
+                        <!-- 通常表示: 本文テキスト -->
+                        <TextBlock Text="{Binding Text}"
+                                   TextWrapping="Wrap"
+                                   FontSize="13"
+                                   LineHeight="20"
+                                   Foreground="#212121">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <!-- CH-6: 編集モード（IsEditing=true のとき表示） -->
+                        <StackPanel Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}">
+                            <TextBox Text="{Binding EditingText, UpdateSourceTrigger=PropertyChanged}"
+                                     TextWrapping="Wrap"
+                                     AcceptsReturn="True"
+                                     MinHeight="52"
+                                     MaxHeight="120"
+                                     VerticalScrollBarVisibility="Auto"
+                                     FontSize="13"
+                                     Padding="4,4"
+                                     BorderThickness="1"
+                                     BorderBrush="#1976D2"
+                                     Background="White"
+                                     Foreground="#212121"
+                                     PreviewKeyDown="EditBox_PreviewKeyDown"
+                                     IsVisibleChanged="EditBox_IsVisibleChanged"/>
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Right"
+                                        Margin="0,6,0,0">
+                                <Button Content="キャンセル"
+                                        Style="{StaticResource CopyButton}"
+                                        Margin="0,0,6,0"
+                                        Command="{Binding CancelEditCommand}"/>
+                                <Button Content="確定"
+                                        Style="{StaticResource FlatButton}"
+                                        Background="#1976D2"
+                                        Foreground="White"
+                                        Padding="12,6"
+                                        Command="{Binding CommitEditCommand}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </Border>
 
             </StackPanel>
@@ -198,7 +221,8 @@
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
                       Padding="0,8,0,8"
-                      Background="Transparent">
+                      Background="Transparent"
+                      ScrollChanged="ChatScrollViewer_ScrollChanged">
             <ItemsControl ItemsSource="{Binding Messages}"
                           ItemTemplate="{StaticResource MessageTemplate}"
                           VirtualizingPanel.IsVirtualizing="False">
@@ -239,6 +263,21 @@
                        HorizontalAlignment="Center"
                        Margin="0,6,0,0"/>
         </StackPanel>
+
+        <!-- CH-3: 最新へボタン（過去発言を読んでいるときのみ表示） -->
+        <Button x:Name="ScrollToBottomButton"
+                Grid.Row="0"
+                Content="↓ 最新へ"
+                Visibility="Collapsed"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="0,0,16,12"
+                Style="{StaticResource FlatButton}"
+                Background="#1976D2"
+                Foreground="White"
+                FontSize="12"
+                Padding="12,6"
+                Click="ScrollToBottomButton_Click"/>
 
         <!-- ========== INPUT AREA ========== -->
         <Border Grid.Row="1"
@@ -372,5 +411,44 @@
                 </Grid>
             </Grid>
         </Border>
+
+        <!-- CH-4: 発言削除確認ダイアログ（オーバーレイ）-->
+        <Grid Grid.Row="0" Grid.RowSpan="2"
+              Visibility="{Binding IsDeleteConfirmVisible, Converter={StaticResource BoolToVis}}">
+            <!-- 半透明バックドロップ -->
+            <Border Background="#80000000"/>
+            <!-- ダイアログカード -->
+            <Border Background="White"
+                    CornerRadius="12"
+                    Padding="24"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    MaxWidth="300">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000" Opacity="0.18" BlurRadius="20" ShadowDepth="4"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="この発言を削除しますか？"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="#212121"
+                               Margin="0,0,0,16"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="キャンセル"
+                                Style="{StaticResource CopyButton}"
+                                Padding="14,7"
+                                Margin="0,0,8,0"
+                                Command="{Binding CancelDeleteCommand}"/>
+                        <Button Content="削除"
+                                Style="{StaticResource FlatButton}"
+                                Background="#E53935"
+                                Foreground="White"
+                                Padding="14,7"
+                                Command="{Binding ConfirmDeleteCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
     </Grid>
 </UserControl>
