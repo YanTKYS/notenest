@@ -44,11 +44,15 @@
             </Grid>
 
             <!-- Tags (editable, comma-separated) -->
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBlock Text="タグ: "
+            <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="タグ: "
                            Foreground="{StaticResource IdeaTextSecondaryBrush}"
                            FontSize="12" VerticalAlignment="Center" Margin="2,0,2,0" />
-                <TextBox x:Name="TagsBox"
+                <TextBox Grid.Column="1" x:Name="TagsBox"
                          Text="{Binding TagsText, UpdateSourceTrigger=PropertyChanged}"
                          Foreground="{StaticResource IdeaTextSecondaryBrush}"
                          FontSize="12"
@@ -58,7 +62,7 @@
                          Background="Transparent"
                          BorderThickness="0"
                          Padding="0" />
-            </StackPanel>
+            </Grid>
 
             <!-- Footer: dates + color picker + action buttons -->
             <Grid DockPanel.Dock="Bottom" Margin="0,10,0,0">
