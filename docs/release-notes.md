@@ -1,3 +1,10 @@
+## v2.6.1 — TempNest 初期改善（SH-16 / TN-1 / TD-9）
+
+- **起動時のちらつきを抑制した（SH-16）。** `TabStrip.ItemsSource = _tabs` の設定を Temp タブ追加前に移動し、空の `ObservableCollection` をバインドしてから `Add()` することで、WPF の自動選択による一時的な TempNest 表示を抑制した。
+- **TempNest の各スロットにプレースホルダーテキストを追加した（TN-1）。** WPF 標準 TextBox には `PlaceholderText` がないため、空文字列に対する `DataTrigger` で表示制御した `TextBlock` を `TextBox` に重ねる方式を採用した。タイトル欄には「タイトル」、本文欄には「一時メモ」を `MutedFg` 色で表示する。入力中・入力後はプレースホルダーが隠れ、クリック操作に干渉しない（`IsHitTestVisible="False"`）。
+- **`TempNestWorkspaceViewModel` に `IDisposable` を実装した（TD-9）。** `_saveTimer.Stop()` と各スロットの `Changed` イベント購読解除を `Dispose` メソッドに集約した。`OnClosed` の `IDisposable` ループ（TD-1 実装済み）が自動的に `Dispose` を呼ぶため、リソース解放が他の Workspace ViewModel と統一された。
+- **NoteNest 保存スキーマ `1.4.1` を維持している（v2.6.1）。** IdeaNest / ChatNest への影響はない。
+
 ## v2.6.0 — TempNest 固定タブ最小実装
 
 - **NestSuite Shell に固定ピン留めの「Temp」タブを追加した（v2.6.0）。** ファイル型 Workspace ではなく、内部 JSON（`%APPDATA%\NoteNest\tempnest.json`）で管理される一時メモ領域。常にタブストリップの左端に固定され、閉じることができない。

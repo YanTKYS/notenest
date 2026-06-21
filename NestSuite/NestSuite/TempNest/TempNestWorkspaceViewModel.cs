@@ -3,9 +3,10 @@ using NestSuite.ViewModels;
 
 namespace NestSuite.TempNest;
 
-public class TempNestWorkspaceViewModel : BaseViewModel
+public class TempNestWorkspaceViewModel : BaseViewModel, IDisposable
 {
     private readonly DispatcherTimer _saveTimer;
+    private bool _disposed;
 
     public TempNestSlotViewModel Slot1 { get; } = new();
     public TempNestSlotViewModel Slot2 { get; } = new();
@@ -48,5 +49,14 @@ public class TempNestWorkspaceViewModel : BaseViewModel
         {
             Slot1.ToSlot(), Slot2.ToSlot(), Slot3.ToSlot(), Slot4.ToSlot()
         });
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _saveTimer.Stop();
+        foreach (var slot in Slots)
+            slot.Changed -= OnSlotChanged;
     }
 }

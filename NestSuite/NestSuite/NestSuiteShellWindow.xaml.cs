@@ -81,12 +81,15 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         //          こうすることで「有セッション＋引数ファイル」→ [復元タブ + 引数タブ]、
         //          「無セッション＋引数ファイル」→ [引数タブのみ] となり、
         //          無題タブが不要に混入しない。
+        // v2.6.1: ItemsSource を先に空コレクションで設定する（SH-16 ちらつき抑制）
+        //         ObservableCollection に後から Add しても WPF の自動選択が発生しない
+        TabStrip.ItemsSource = _tabs;
+
         // v2.6.0: Temp タブは常に存在する固定ピン留めタブ（左端）
         var tempTab = NestSuiteTabFactory.CreateTempTab();
         _tabs.Add(tempTab);
         _sessionManager.Add(CreateSessionForTab(tempTab));
 
-        TabStrip.ItemsSource = _tabs;
         if (!TryRestoreSession() && NestSuiteStartupTabPolicy.ShouldCreateInitialTab(initialFilePath))
         {
             // セッション復元なし・初期ファイルなし → Temp タブをアクティブ化（無題 NoteNest は作成しない）
