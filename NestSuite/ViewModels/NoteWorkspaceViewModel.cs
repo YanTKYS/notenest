@@ -91,6 +91,35 @@ public sealed class NoteWorkspaceViewModel
         return true;
     }
 
+    public NoteViewModel? DuplicateNote(NoteViewModel source)
+    {
+        var notebook = FindNotebookOf(source);
+        if (notebook == null) return null;
+        var newTitle = GenerateCopyTitle(source.Title);
+        var model = new Note
+        {
+            Title   = newTitle,
+            Content = source.Content,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+        };
+        var copy = new NoteViewModel(model);
+        notebook.Notes.Add(copy);
+        notebook.Model.Notes.Add(model);
+        return copy;
+    }
+
+    private string GenerateCopyTitle(string originalTitle)
+    {
+        var candidate = $"{originalTitle} のコピー";
+        if (!NoteNameExists(candidate)) return candidate;
+        for (var n = 2; ; n++)
+        {
+            var numbered = $"{originalTitle} のコピー {n}";
+            if (!NoteNameExists(numbered)) return numbered;
+        }
+    }
+
     public bool MoveNoteUp(NoteViewModel note) => MoveNote(note, -1);
     public bool MoveNoteDown(NoteViewModel note) => MoveNote(note, 1);
     public bool MoveNotebookUp(NotebookViewModel notebook) => MoveNotebook(notebook, -1);

@@ -47,6 +47,15 @@ public partial class MainViewModel
         if (SelectedNote == note) ClearEditor();
     }
 
+    public NoteViewModel? DuplicateNote(NoteViewModel source)
+    {
+        var copy = _notes.DuplicateNote(source);
+        if (copy == null) return null;
+        SelectNote(copy);
+        StatusMessage = $"ノート「{copy.Title}」を作成しました。";
+        return copy;
+    }
+
     public void MoveNoteUp(NoteViewModel note) => _notes.MoveNoteUp(note);
     public void MoveNoteDown(NoteViewModel note) => _notes.MoveNoteDown(note);
     public void MoveNotebookUp(NotebookViewModel notebook) => _notes.MoveNotebookUp(notebook);
