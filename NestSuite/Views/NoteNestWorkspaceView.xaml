@@ -161,7 +161,8 @@
             </Border>
 
             <!-- TreeView -->
-            <TreeView Grid.Row="2" x:Name="NotebookTree"
+            <Grid Grid.Row="2">
+            <TreeView x:Name="NotebookTree"
                       ItemsSource="{Binding Notebooks}"
                       SelectedItemChanged="NotebookTree_SelectedItemChanged"
                       Padding="0,4">
@@ -231,6 +232,14 @@
 
                 </TreeView.Resources>
             </TreeView>
+            <TextBlock Text="＋ で最初のノートを作成"
+                       Foreground="{DynamicResource MutedFg}"
+                       FontSize="12"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       IsHitTestVisible="False"
+                       Visibility="{Binding IsNoteListEmpty, Converter={StaticResource BoolToVis}}"/>
+            </Grid>
 
             <!-- Bottom toolbar -->
             <Border Grid.Row="3"

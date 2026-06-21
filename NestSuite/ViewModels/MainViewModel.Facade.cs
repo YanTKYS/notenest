@@ -61,6 +61,7 @@ public partial class MainViewModel
     public ObservableCollection<MarkerViewModel> Markers => _markers.Markers;
     public int MarkerCount => _markers.MarkerCount;
     public IEnumerable<NoteViewModel> AllNotes => _notes.AllNotes;
+    public bool IsNoteListEmpty => !_notes.AllNotes.Any();
     public string? CurrentNoteTitle => _editor.SelectedNote?.Title;
     public ObservableCollection<RecentFileViewModel> RecentFiles => _session.RecentFiles;
     public bool HasRecentFiles => _session.HasRecentFiles;

@@ -57,6 +57,9 @@ public class TempNestWorkspaceViewModel : BaseViewModel, IDisposable
         _disposed = true;
         _saveTimer.Stop();
         foreach (var slot in Slots)
+        {
             slot.Changed -= OnSlotChanged;
+            slot.StopFeedback();
+        }
     }
 }
