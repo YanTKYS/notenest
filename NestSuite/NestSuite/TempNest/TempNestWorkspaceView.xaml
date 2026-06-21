@@ -20,6 +20,12 @@
             <DockPanel Margin="10">
                 <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
                             HorizontalAlignment="Right" Margin="0,6,0,0">
+                    <TextBlock Text="コピーしました"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="10.5"
+                               Margin="0,0,6,0"
+                               VerticalAlignment="Center"
+                               Visibility="{Binding Slot1.ShowCopyFeedback, Converter={StaticResource BoolToVis}}"/>
                     <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
                             Command="{Binding Slot1.CopyBodyCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
@@ -85,6 +91,12 @@
             <DockPanel Margin="10">
                 <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
                             HorizontalAlignment="Right" Margin="0,6,0,0">
+                    <TextBlock Text="コピーしました"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="10.5"
+                               Margin="0,0,6,0"
+                               VerticalAlignment="Center"
+                               Visibility="{Binding Slot2.ShowCopyFeedback, Converter={StaticResource BoolToVis}}"/>
                     <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
                             Command="{Binding Slot2.CopyBodyCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
@@ -150,6 +162,12 @@
             <DockPanel Margin="10">
                 <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
                             HorizontalAlignment="Right" Margin="0,6,0,0">
+                    <TextBlock Text="コピーしました"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="10.5"
+                               Margin="0,0,6,0"
+                               VerticalAlignment="Center"
+                               Visibility="{Binding Slot3.ShowCopyFeedback, Converter={StaticResource BoolToVis}}"/>
                     <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
                             Command="{Binding Slot3.CopyBodyCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
@@ -215,6 +233,12 @@
             <DockPanel Margin="10">
                 <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
                             HorizontalAlignment="Right" Margin="0,6,0,0">
+                    <TextBlock Text="コピーしました"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="10.5"
+                               Margin="0,0,6,0"
+                               VerticalAlignment="Center"
+                               Visibility="{Binding Slot4.ShowCopyFeedback, Converter={StaticResource BoolToVis}}"/>
                     <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
                             Command="{Binding Slot4.CopyBodyCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>

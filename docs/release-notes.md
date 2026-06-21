@@ -1,3 +1,13 @@
+## v2.6.2 — 品質改善・空状態ガイド・テスト拡充（TN-5 / TN-6 / L13 / ID-11 / TD-10 / TD-12）
+
+- **TempNest のコピーボタン押下後に「コピーしました」フィードバックテキストを 1.5 秒表示するようにした（TN-5）。** スロット内の本文をクリップボードにコピーした後、ボタン行の左側に `MutedFg` 色で「コピーしました」テキストを表示し、操作完了を視覚的に確認できるようにした。1.5 秒後に自動消灯し、`TempNestWorkspaceViewModel.Dispose()` でタイマーを確実に停止する。
+- **TempNest の空スロットでコピー・クリアボタンを無効化するようにした（TN-6）。** 本文が空の場合はコピーボタン（`CopyBodyCommand`）を、タイトルと本文がともに空の場合はクリアボタン（`ClearCommand`）を無効にした。`RelayCommand` の CanExecute に条件を追加し、WPF の `CommandManager.RequerySuggested` により入力に応じて自動再評価される。空文字がクリップボードに入る問題を解消した。
+- **NoteNest で最初のノートがない状態に「＋ で最初のノートを作成」ガイドテキストを表示するようにした（L13）。** `IsNoteListEmpty` プロパティを `MainViewModel.Facade.cs` に追加し、`NoteChangeCoordinator` の変更通知チェーンに組み込んだ。左ペインのノートツリー上に `MutedFg` 色の `TextBlock` を重ねて表示し、ノートが存在する場合は自動的に非表示になる。新規プロジェクトを開いたときの空白画面における操作迷いを防ぐ。
+- **IdeaNest のカード0件・フィルタ0件時の空状態テキストが実装済みであることを確認した（ID-11）。** `IdeaNestWorkspaceViewModel` の `ShowEmptyState` / `EmptyStateTitle` / `EmptyStateMessage` および XAML の空状態 StackPanel は v2.6.0 以前より実装済み。カードが0件のとき「まだアイデアがありません」、フィルタ結果が0件のとき「条件に一致するカードがありません」を中央表示する。
+- **TempNest タブ・スロット ViewModel のユニットテストを `TempNestTests.cs` として新設した（TD-10）。** `CreateTempTab()` 全プロパティ・`GetExtension(Temp)` の例外・`TempNestSlotViewModel` の `ClearCommand` / `CopyBodyCommand` CanExecute・`ToSlot` / `LoadFromSlot` ラウンドトリップ・`TempNestStoreService.Load()` の戻り件数を計 18 テストで検証する。
+- **`NestSuiteDocumentTabTests.cs` の `CreateTempTab()` 関連テストを `TempNestTests.cs` に集約した（TD-12）。** 既存の `NestSuiteDocumentTabTests` は TabFactory / SessionManager のテストを十分に備えているため、TempNest 固有のプロパティ検証（`Id`・`WorkspaceKind`・`CanClose`・`FilePath`・`DisplayName`）を新規 `TempNestTests.cs` で補完する構成とした。
+- **NoteNest 保存スキーマ `1.4.1` を維持している（v2.6.2）。** IdeaNest / ChatNest への影響はない。
+
 ## v2.6.1 — TempNest 初期改善（SH-16 / TN-1 / TD-9）
 
 - **起動時のちらつきを抑制した（SH-16）。** `TabStrip.ItemsSource = _tabs` の設定を Temp タブ追加前に移動し、空の `ObservableCollection` をバインドしてから `Add()` することで、WPF の自動選択による一時的な TempNest 表示を抑制した。

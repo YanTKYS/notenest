@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using NestSuite.ViewModels;
 
 namespace NestSuite.TempNest;
@@ -8,6 +9,8 @@ public class TempNestSlotViewModel : BaseViewModel
 {
     private string _title = "";
     private string _body  = "";
+    private bool _showCopyFeedback;
+    private readonly DispatcherTimer _feedbackTimer;
 
     public string Title
     {
@@ -21,6 +24,12 @@ public class TempNestSlotViewModel : BaseViewModel
         set { if (SetProperty(ref _body, value)) Changed?.Invoke(); }
     }
 
+    public bool ShowCopyFeedback
+    {
+        get => _showCopyFeedback;
+        private set => SetProperty(ref _showCopyFeedback, value);
+    }
+
     public event Action? Changed;
 
     public ICommand CopyBodyCommand { get; }
@@ -28,10 +37,39 @@ public class TempNestSlotViewModel : BaseViewModel
 
     public TempNestSlotViewModel()
     {
+        _feedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
+        _feedbackTimer.Tick += (_, _) =>
+        {
+            _feedbackTimer.Stop();
+            ShowCopyFeedback = false;
+        };
+
         CopyBodyCommand = new RelayCommand(
-            _ => { if (!string.IsNullOrEmpty(Body)) Clipboard.SetText(Body); },
+            _ =>
+            {
+                if (!string.IsNullOrEmpty(Body))
+                {
+                    Clipboard.SetText(Body);
+                    StartFeedback();
+                }
+            },
             _ => !string.IsNullOrEmpty(Body));
-        ClearCommand = new RelayCommand(_ => Clear());
+        ClearCommand = new RelayCommand(
+            _ => Clear(),
+            _ => !string.IsNullOrEmpty(Title) || !string.IsNullOrEmpty(Body));
+    }
+
+    private void StartFeedback()
+    {
+        _feedbackTimer.Stop();
+        ShowCopyFeedback = true;
+        _feedbackTimer.Start();
+    }
+
+    public void StopFeedback()
+    {
+        _feedbackTimer.Stop();
+        ShowCopyFeedback = false;
     }
 
     private void Clear()
