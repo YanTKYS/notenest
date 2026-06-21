@@ -11,7 +11,7 @@ internal sealed record AllNoteMatchItem(NoteViewModel Note, int CharIndex, strin
 
 public partial class FindReplaceDialog : Window
 {
-    private readonly TextBox _editor;
+    private TextBox _editor;
     private IEnumerable<NoteViewModel>? _allNotes;
     private Action<NoteViewModel>? _navigateToNote;
 
@@ -36,11 +36,25 @@ public partial class FindReplaceDialog : Window
         _editor = editor;
         Loaded += (_, _) => FindBox.Focus();
         FindBox.TextChanged += (_, _) => OnSearchTermChanged();
-        _editor.TextChanged += (_, _) =>
-        {
-            if (IsVisible && AllNotesCheck.IsChecked != true)
-                UpdateMatchCount();
-        };
+        _editor.TextChanged += OnEditorTextChanged;
+    }
+
+    private void OnEditorTextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (IsVisible && AllNotesCheck.IsChecked != true)
+            UpdateMatchCount();
+    }
+
+    internal void SetEditor(TextBox editor)
+    {
+        if (ReferenceEquals(_editor, editor)) return;
+        _editor.TextChanged -= OnEditorTextChanged;
+        _editor = editor;
+        _editor.TextChanged += OnEditorTextChanged;
+        _lastFoundIndex = -1;
+        _currentMatchIndex = -1;
+        _matchPositions.Clear();
+        UpdateMatchCount();
     }
 
     internal void SetAllNotes(IEnumerable<NoteViewModel> allNotes, Action<NoteViewModel> navigateToNote)
