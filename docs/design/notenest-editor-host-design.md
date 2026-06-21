@@ -2,6 +2,7 @@
 
 > 作成: v2.5.4 (H0-4)
 > 更新: v2.5.5 (H0-5) — H1〜H4 再判定の結果、EH-1（NoteEditorHost 最小実装）を H1a/H2a の前提として採用。H4 は要望取り下げにより対象外に確定。
+> 更新: v2.5.7 (EH-1) — §8 記載の最小実装を完了。実装結果を §8.4 に追記。
 > 前提: `docs/design/notenest-editor-textbox-dependencies.md`（v2.5.1 H0-1 棚卸し結果）
 > 前提: `docs/design/notenest-editor-adapter-design.md`（v2.5.2 H0-2 設計・v2.5.3 H0-3 実装結果）
 > 目的: v2.5.5 以降で `EditorHost` を導入するかどうかを判断できる設計整理。今回は実装しない。
@@ -300,6 +301,22 @@ v2.5.5 で `EditorHost` を実装すべきかどうかの判断基準：
 
 ---
 
+### 8.4 v2.5.7 実装結果（EH-1 完了）
+
+§8.1 で計画した最小実装を v2.5.7 (EH-1) で完了した。計画との主な差異を記録する。
+
+| 項目 | 計画（§8.1・§6.2） | 実装結果（v2.5.7） |
+|------|-------------------|-------------------|
+| バインド転送方式 | `EditorContent` / `EditorFontFamily` 等を DependencyProperty として転送 | DataContext 継承で対応。UserControl は親の DataContext（MainViewModel）を引き継ぐため、DependencyProperty 追加は不要だった |
+| NoteEditorHost XAML | `<local:NoteEditorHost EditorContent="{Binding ...}" .../>` と明示バインド | `<editor:NoteEditorHost Grid.Row="3" x:Name="EditorHost" .../>` のみ。内部バインドは `{Binding EditorContent}` 等をそのまま使用 |
+| ContextMenu イベント | Host の公開プロパティ経由 | `RoutedEventHandler` 型の CLR イベント（`OpenNoteLinkClicked` / `InsertNoteLinkClicked`）として公開し、XAML 属性構文で親に接続 |
+| `SelectionChanged` の扱い | 記載なし（H0-3 の Adapter サブスクライブを継続） | Adapter の `SelectionChanged` を `EditorReady` イベント後に親がサブスクライブ。XAML からの直接接続は行わない |
+| EditorReady イベント | 記載なし | `EditorBox_Loaded` で Adapter 生成後に `EditorReady` イベントを発火。親はこれを受けて `Editor.SelectionChanged` にサブスクライブする |
+
+DataContext 継承を採用したことで DependencyProperty の追加が不要になり、実装が計画より少なくなった。H2a（行番号ガター再実装）では行番号データを ViewModel からバインドする可能性があり、その際に DependencyProperty または別バインド手段が必要になるかどうかを改めて判断する。
+
+---
+
 ## 9. EditorHost 導入時のリスク
 
 | リスク | 評価 | 対策 |
@@ -360,4 +377,5 @@ H0 系列の各文書の位置づけをまとめる。
 | v2.5.2 (H0-2) | `notenest-editor-adapter-design.md` | `ITextEditorAdapter` の責務・API・適用範囲を設計 |
 | v2.5.3 (H0-3) | 上記 + 実装 | `ITextEditorAdapter` / `TextBoxEditorAdapter` を実装 |
 | v2.5.4 (H0-4) | 本文書 | `EditorHost` の導入方針を整理（実装は v2.5.5 以降で判断） |
-| v2.5.5 以降 (H0-5) | 未作成 | H1〜H4 の実装方式を再判定し、実装順・採用部品を確定する |
+| v2.5.5 (H0-5) | `notenest-editor-h0-reassessment.md` | H1〜H4 の実装方式を再判定し、実装順・採用部品を確定 |
+| v2.5.7 (EH-1) | 本文書 §8.4 | `NoteEditorHost` 最小実装完了。計画との差異を記録 |
