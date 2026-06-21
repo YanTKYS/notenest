@@ -1,3 +1,13 @@
+## v2.5.8 — 行番号ガターの現在行強調（H2a）
+
+- **NoteNest の行番号ガターで、現在キャレットがある行を控えめに背景ハイライトで強調するようにした（H2a）。** `NoteEditorHost` 内の `LineNumberBox` の背景レイヤーとして Canvas と Rectangle を追加し、`GetRectFromCharacterIndex()` でキャレット行の y 座標を取得して Rectangle を配置する方式を採用した。
+- **`NoteEditorHost` 内で現在行強調を完結させた（H2a）。** `NoteNestWorkspaceView` / ViewModel には現在行状態を持たせず、`Editor.SelectionChanged` / `EditorBox_TextChanged` / `EditorScrollViewer_ScrollChanged` で自動的に追従する実装とした。スクロール後の更新は `Dispatcher.InvokeAsync(..., DispatcherPriority.Render)` で layout 後に実行する。
+- **行番号ガターを Grid + Rectangle（背景）+ Canvas（ハイライト）+ TextBox（透明背景）の構造に変更した（H2a）。** 既存の `LineNumberBox`（TextBox）の構造・スクロール同期・行番号テキスト生成・フォント・余白はそのまま維持した。TextBox の `Background` を `Transparent` に変え、背景は下層 `Rectangle` で提供する。
+- **ライトテーマに `LineNumberCurrentLineBg`（`#DDE8F5`）・ダークテーマに `LineNumberCurrentLineBg`（`#252D3E`）を追加した（H2a）。** 両テーマで控えめで読みやすい背景色を採用した。
+- **本文エディタ内の現在行背景ハイライトは実装していない（H2a）。** WPF 標準 TextBox では本文内の特定行に背景色を塗ることができないため対象外とした。行番号ガター側のみの強調にとどめた。
+- **H1a（簡易ノートリンク補完）は未実装（H2a）。** H3（ノートリンク視覚的ハイライト）は長期保留継続。H4（マーカー行の表示／非表示）は見送りのまま。
+- **UI 全体・保存形式・保存スキーマに変更はない（H2a）。** NoteNest 保存スキーマ `1.4.1` を維持している。IdeaNest / ChatNest への影響はない。
+
 ## v2.5.7 — NoteEditorHost 最小実装（EH-1）
 
 - **`NoteEditorHost` UserControl を `NestSuite/NoteNest/Editor/` に追加した（EH-1）。** `LineNumberBox`・`EditorBox` を UserControl 内に移動し、`ITextEditorAdapter Editor` プロパティ・`EditorReady` イベント・`OpenNoteLinkClicked` / `InsertNoteLinkClicked` イベントを公開する最小実装とした。
