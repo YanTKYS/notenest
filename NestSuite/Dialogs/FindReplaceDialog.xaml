@@ -29,14 +29,14 @@
         <TextBlock Grid.Row="2" Grid.Column="0" Text="置換:" VerticalAlignment="Center"/>
         <TextBox   Grid.Row="2" Grid.Column="1" x:Name="ReplaceBox" FontSize="13" Padding="4,3"/>
 
-        <CheckBox  Grid.Row="4" Grid.Column="1" x:Name="CaseCheck" Content="大文字/小文字を区別する" FontSize="12"/>
+        <CheckBox  Grid.Row="4" Grid.Column="1" x:Name="CaseCheck" Content="大文字/小文字を区別する(_S)" FontSize="12"/>
 
         <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
                     Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="次を検索" Width="90" Margin="0,0,6,0" Click="FindNext_Click" IsDefault="True" Padding="6,4"/>
-            <Button Content="置換" Width="70" Margin="0,0,6,0" Click="Replace_Click" Padding="6,4"/>
-            <Button Content="すべて置換" Width="90" Margin="0,0,6,0" Click="ReplaceAll_Click" Padding="6,4"/>
-            <Button Content="閉じる" Width="70" Click="Close_Click" Padding="6,4"/>
+            <Button Content="次を検索(_N)" Width="90" Margin="0,0,6,0" Click="FindNext_Click" IsDefault="True" Padding="6,4"/>
+            <Button Content="置換(_R)" Width="70" Margin="0,0,6,0" Click="Replace_Click" Padding="6,4"/>
+            <Button Content="すべて置換(_A)" Width="90" Margin="0,0,6,0" Click="ReplaceAll_Click" Padding="6,4"/>
+            <Button Content="閉じる(_C)" Width="70" Click="Close_Click" Padding="6,4"/>
         </StackPanel>
     </Grid>
 </Window>

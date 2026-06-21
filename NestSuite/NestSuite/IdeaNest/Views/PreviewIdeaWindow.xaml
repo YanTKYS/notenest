@@ -145,7 +145,7 @@
                                 ToolTip="次のカード (→)"
                                 Click="OnNextClick" />
                     </StackPanel>
-                    <Button Grid.Column="2" Content="閉じる" Style="{StaticResource IdeaPrimaryButtonStyle}"
+                    <Button Grid.Column="2" Content="閉じる(_C)" Style="{StaticResource IdeaPrimaryButtonStyle}"
                             IsCancel="True" Click="OnCloseClick" />
                 </Grid>
             </Grid>

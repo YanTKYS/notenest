@@ -17,20 +17,20 @@
                 <Border.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="コメントを編集(_E)..." Click="EditTaskComment_Click"/>
-                        <MenuItem Header="名前変更..." Click="RenameTask_Click"/>
-                        <MenuItem Header="グループを変更">
-                            <MenuItem Header="今日のタスク" Click="MoveTaskToToday_Click"/>
-                            <MenuItem Header="今週のタスク" Click="MoveTaskToWeek_Click"/>
-                            <MenuItem Header="バックログ"   Click="MoveTaskToBacklog_Click"/>
+                        <MenuItem Header="名前変更(_R)..." Click="RenameTask_Click"/>
+                        <MenuItem Header="グループを変更(_G)">
+                            <MenuItem Header="今日のタスク(_T)" Click="MoveTaskToToday_Click"/>
+                            <MenuItem Header="今週のタスク(_W)" Click="MoveTaskToWeek_Click"/>
+                            <MenuItem Header="バックログ(_B)"   Click="MoveTaskToBacklog_Click"/>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem Header="関連ノートを開く" Click="OpenRelatedNote_Click"
+                        <MenuItem Header="関連ノートを開く(_O)" Click="OpenRelatedNote_Click"
                                   Visibility="{Binding HasRelatedNote, Converter={StaticResource BoolToVis}}"/>
-                        <MenuItem Header="関連ノートを設定..." Click="SetRelatedNote_Click"/>
-                        <MenuItem Header="関連ノートをクリア" Click="ClearRelatedNote_Click"
+                        <MenuItem Header="関連ノートを設定(_S)..." Click="SetRelatedNote_Click"/>
+                        <MenuItem Header="関連ノートをクリア(_L)" Click="ClearRelatedNote_Click"
                                   Visibility="{Binding HasRelatedNote, Converter={StaticResource BoolToVis}}"/>
                         <Separator/>
-                        <MenuItem Header="削除" Click="DeleteTask_Click"/>
+                        <MenuItem Header="削除(_D)" Click="DeleteTask_Click"/>
                     </ContextMenu>
                 </Border.ContextMenu>
                 <DockPanel>
@@ -185,13 +185,13 @@
                                    Drop="NotebookHeader_Drop">
                             <TextBlock.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="ノートを追加..." Click="AddNoteToNotebook_Click"/>
+                                    <MenuItem Header="ノートを追加(_A)..." Click="AddNoteToNotebook_Click"/>
                                     <Separator/>
-                                    <MenuItem Header="上に移動" Click="MoveNotebookUp_Click"/>
-                                    <MenuItem Header="下に移動" Click="MoveNotebookDown_Click"/>
+                                    <MenuItem Header="上に移動(_U)" Click="MoveNotebookUp_Click"/>
+                                    <MenuItem Header="下に移動(_L)" Click="MoveNotebookDown_Click"/>
                                     <Separator/>
-                                    <MenuItem Header="名前変更..."    Click="RenameNotebook_Click"/>
-                                    <MenuItem Header="削除"           Click="DeleteNotebook_Click"/>
+                                    <MenuItem Header="名前変更(_R)..."    Click="RenameNotebook_Click"/>
+                                    <MenuItem Header="削除(_D)"           Click="DeleteNotebook_Click"/>
                                 </ContextMenu>
                             </TextBlock.ContextMenu>
                         </TextBlock>
@@ -203,14 +203,14 @@
                                    PreviewMouseMove="NoteItem_PreviewMouseMove">
                             <DockPanel.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="上に移動" Click="MoveNoteUp_Click"/>
-                                    <MenuItem Header="下に移動" Click="MoveNoteDown_Click"/>
+                                    <MenuItem Header="上に移動(_U)" Click="MoveNoteUp_Click"/>
+                                    <MenuItem Header="下に移動(_L)" Click="MoveNoteDown_Click"/>
                                     <Separator/>
-                                    <MenuItem Header="このノートへのリンクを挿入" Click="InsertNoteLinkFromNote_Click"/>
+                                    <MenuItem Header="このノートへのリンクを挿入(_I)" Click="InsertNoteLinkFromNote_Click"/>
                                     <Separator/>
-                                    <MenuItem Header="名前変更..." Click="RenameNote_Click"/>
+                                    <MenuItem Header="名前変更(_R)..." Click="RenameNote_Click"/>
                                     <Separator/>
-                                    <MenuItem Header="削除"        Click="DeleteNote_Click"/>
+                                    <MenuItem Header="削除(_D)"        Click="DeleteNote_Click"/>
                                 </ContextMenu>
                             </DockPanel.ContextMenu>
                             <TextBlock DockPanel.Dock="Right"
