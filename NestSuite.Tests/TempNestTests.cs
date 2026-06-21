@@ -150,7 +150,7 @@ public class TempNestTests
     }
 
     [Fact]
-    public void CopyBodyCommand_WhitespaceOnlyBody_IsDisabled()
+    public void CopyBodyCommand_WhitespaceOnlyBody_IsEnabled()
     {
         // string.IsNullOrEmpty("  ") == false なので実際にはコピー可能。
         // Copy CanExecute は IsNullOrEmpty で判定するため、空白のみは有効。
