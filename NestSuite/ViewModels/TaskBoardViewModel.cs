@@ -20,6 +20,17 @@ public sealed class TaskBoardViewModel
     public event EventHandler? Changed;
     public ObservableCollection<TaskGroupViewModel> TaskGroups { get; }
 
+    public string TotalIncompleteTaskCountText
+    {
+        get
+        {
+            var total = TaskGroups.Sum(g => g.Tasks.Count);
+            if (total == 0) return "";
+            var incomplete = TaskGroups.Sum(g => g.Tasks.Count(t => !t.IsCompleted));
+            return $"（未完了 {incomplete}）";
+        }
+    }
+
     public void Load(TaskCollection tasks)
     {
         foreach (var group in TaskGroups)

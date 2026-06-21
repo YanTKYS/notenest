@@ -495,8 +495,12 @@
                         <Button DockPanel.Dock="Right" Content="«" Width="22" Height="22"
                                 Style="{StaticResource IconButton}"
                                 Click="ToggleRightPane_Click" ToolTip="右ペインを折り畳む"/>
-                        <TextBlock Text="タスク" FontWeight="Bold" FontSize="13"
-                                   VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="タスク" FontWeight="Bold" FontSize="13"/>
+                            <TextBlock Text="{Binding TotalIncompleteTaskCountText}"
+                                       Foreground="{DynamicResource FaintFg}" FontSize="11"
+                                       VerticalAlignment="Center" Margin="4,0,0,0"/>
+                        </StackPanel>
                     </DockPanel>
                 </Border>
 
@@ -656,11 +660,11 @@
                             <ComboBoxItem Content="行番号順"/>
                         </ComboBox>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <CheckBox Content="TODO"  IsChecked="{Binding FilterTodo}"
+                            <CheckBox Content="{Binding TodoCountText}"  IsChecked="{Binding FilterTodo}"
                                       Foreground="{DynamicResource TodoBrush}"  FontSize="11" Margin="0,0,10,0"/>
-                            <CheckBox Content="FIXME" IsChecked="{Binding FilterFixme}"
+                            <CheckBox Content="{Binding FixmeCountText}" IsChecked="{Binding FilterFixme}"
                                       Foreground="{DynamicResource FixmeBrush}" FontSize="11" Margin="0,0,10,0"/>
-                            <CheckBox Content="NOTE"  IsChecked="{Binding FilterNote}"
+                            <CheckBox Content="{Binding NoteCountText}"  IsChecked="{Binding FilterNote}"
                                       Foreground="{DynamicResource NoteBrush}"  FontSize="11"/>
                         </StackPanel>
                     </DockPanel>
