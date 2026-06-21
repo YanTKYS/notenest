@@ -4,6 +4,7 @@
 > 更新: v2.5.5 (H0-5) — H1〜H4 再判定の結果、EH-1（NoteEditorHost 最小実装）を H1a/H2a の前提として採用。H4 は要望取り下げにより対象外に確定。
 > 更新: v2.5.7 (EH-1) — §8 記載の最小実装を完了。実装結果を §8.4 に追記。
 > 更新: v2.5.8 (H2a) — 行番号ガター現在行強調を実装完了。実装結果を §8.5 に追記。
+> 更新: v2.5.9 (H1a) — 簡易ノートリンク補完を実装完了。実装結果を §8.6 に追記。
 > 前提: `docs/design/notenest-editor-textbox-dependencies.md`（v2.5.1 H0-1 棚卸し結果）
 > 前提: `docs/design/notenest-editor-adapter-design.md`（v2.5.2 H0-2 設計・v2.5.3 H0-3 実装結果）
 > 目的: v2.5.5 以降で `EditorHost` を導入するかどうかを判断できる設計整理。今回は実装しない。
@@ -343,6 +344,33 @@ H1a（簡易ノートリンク補完 Popup）を実装する際は、`NoteEditor
 
 ---
 
+### 8.6 v2.5.9 実装結果（H1a 完了）
+
+簡易ノートリンク補完を v2.5.9 (H1a) で実装した。
+
+| 項目 | 実装内容 |
+|------|---------|
+| 実装場所 | `NoteEditorHost` 内で完結。`NoteNestWorkspaceView` は Func デリゲート 2 本を設定するだけ |
+| 候補データの受け渡し | `Func<IEnumerable<string>>? NoteTitleProvider` — NoteNestWorkspaceView が `ViewModel.Notebooks` から全ノートタイトルをフラットに返す |
+| 編集モード判定 | `Func<bool>? IsNoteEditModeProvider` — タスクコメント編集中（`IsTaskCommentMode`）は補完を抑制 |
+| トリガー検出 | `TryExtractCompletionContext()` — TextChanged / SelectionChanged のたびにキャレット前 300 文字を走査し、最後の `[[` から現在位置までの文字列をクエリとして抽出 |
+| キャンセル条件 | クエリに `]]` / `]` / `\n` / `\r` が含まれた場合・候補 0 件・IsNoteEditMode=false・フォーカス喪失・タブ非表示（IsVisibleChanged） |
+| 候補絞り込み | 大文字小文字無視の `Contains`。"前方一致" を優先して先頭に並べ、上位 20 件に制限 |
+| Popup 位置 | `EditorBox.GetRectFromCharacterIndex(CaretIndex)` でキャレット y 座標を取得し、`Placement="Relative"` + `HorizontalOffset/VerticalOffset` で配置。取得失敗時はエディタ左上にフォールバック |
+| キーボード操作 | ↓↑ で選択移動、Tab で確定、Esc でキャンセル |
+| Enter の扱い | `AcceptsReturn="True"` による改行挿入に任せ、改行後に `TryExtractCompletionContext` が `\n` を検出して自動クローズ。IME 確定 Enter との誤爆を避けるため補完確定に使わない（docs に理由を記録） |
+| 確定処理 | `[[query` 全体（`_completionLinkStart` からキャレットまで）を選択し `ReplaceSelection("[[noteTitle]]")` で置換。`_suppressCompletionUpdate` フラグで置換中の再トリガーを防止 |
+| 既存機能への影響 | InsertNoteLink_Click / NotePickerDialog は変更なし。行番号ガター強調（H2a）は維持 |
+
+#### 制限・残課題
+
+- **Enter 確定は未実装**: IME との衝突リスクがあるため Tab 確定のみとした。本格的な IME 追跡（`TextCompositionManager`）を追加すれば Enter 確定も可能だが、複雑化を避けるため今回は見送り
+- **高精度なキャレット追従は実装しない**: テキスト折り返し・スクロール・IME 変換中の Popup 位置はずれる可能性がある。厳密追従は `GetRectFromCharacterIndex` の精度限界により TextBox 継続では実現困難
+- **候補上限 20 件**: プロジェクトにノートが多い場合は 20 件で打ち切る。この制限は意図的なもの（docs に記録）
+- **H3 は未実装**: 本文内リンク色分けは TextBox 継続では安全な品質が出ないため引き続き長期保留
+
+---
+
 ## 9. EditorHost 導入時のリスク
 
 | リスク | 評価 | 対策 |
@@ -406,3 +434,4 @@ H0 系列の各文書の位置づけをまとめる。
 | v2.5.5 (H0-5) | `notenest-editor-h0-reassessment.md` | H1〜H4 の実装方式を再判定し、実装順・採用部品を確定 |
 | v2.5.7 (EH-1) | 本文書 §8.4 | `NoteEditorHost` 最小実装完了。計画との差異を記録 |
 | v2.5.8 (H2a)  | 本文書 §8.5 | 行番号ガター現在行背景強調（Canvas オーバーレイ）を実装完了 |
+| v2.5.9 (H1a)  | 本文書 §8.6 | 簡易ノートリンク補完 Popup（`[[` 入力検知・候補絞り込み・挿入）を実装完了 |
