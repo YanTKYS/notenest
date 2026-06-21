@@ -11,6 +11,7 @@ using NestSuite.IdeaNest.ViewModels;
 using NestSuite.IdeaNest.Services;
 using NestSuite.NoteNest.Editor;
 using NestSuite.Services;
+using NestSuite.TempNest;
 using NestSuite.ViewModels;
 using NestSuite.Views;
 
@@ -80,13 +81,16 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         //          こうすることで「有セッション＋引数ファイル」→ [復元タブ + 引数タブ]、
         //          「無セッション＋引数ファイル」→ [引数タブのみ] となり、
         //          無題タブが不要に混入しない。
+        // v2.6.0: Temp タブは常に存在する固定ピン留めタブ（左端）
+        var tempTab = NestSuiteTabFactory.CreateTempTab();
+        _tabs.Add(tempTab);
+        _sessionManager.Add(CreateSessionForTab(tempTab));
+
         TabStrip.ItemsSource = _tabs;
         if (!TryRestoreSession() && NestSuiteStartupTabPolicy.ShouldCreateInitialTab(initialFilePath))
         {
-            var initialTab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.NoteNest);
-            _tabs.Add(initialTab);
-            _sessionManager.Add(CreateSessionForTab(initialTab));
-            ActivateTab(initialTab);
+            // セッション復元なし・初期ファイルなし → Temp タブをアクティブ化（無題 NoteNest は作成しない）
+            ActivateTab(tempTab);
         }
     }
 
@@ -154,6 +158,14 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
                     "未保存の ChatNest", MessageBoxImage.Warning))
                 { e.Cancel = true; return; }
             }
+        }
+
+        // v2.6.0: TempNest の一時メモを保存する（デバウンス中のデータも確定させる）
+        foreach (var s in _sessionManager.Sessions
+            .Where(s => s.WorkspaceKind == NestSuiteWorkspaceKind.Temp))
+        {
+            if (s.WorkspaceViewModel is TempNestWorkspaceViewModel tempVm)
+                tempVm.SaveNow();
         }
 
         // v1.15.0: ウィンドウが実際に閉じることが確定した時点でセッション状態を保存する
@@ -249,6 +261,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             NestSuiteWorkspaceKind.NoteNest => CreateNoteNestViewModel(),
             NestSuiteWorkspaceKind.ChatNest => CreateChatNestViewModel(),
             NestSuiteWorkspaceKind.IdeaNest => CreateIdeaNestViewModel(),
+            NestSuiteWorkspaceKind.Temp     => new TempNestWorkspaceViewModel(),
             _ => throw new ArgumentOutOfRangeException(nameof(tab), tab.WorkspaceKind, null)
         };
         return new NestSuiteWorkspaceSession(tab.Id, tab.WorkspaceKind, vm, tab.FilePath, tab.IsModified);
@@ -344,6 +357,28 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             _selectedTab = tab;
             TabStrip.SelectedItem = tab;
 
+            // v2.6.0: TempNest は ToolDefinitions に登録されていないため先に処理する
+            if (tab.WorkspaceKind == NestSuiteWorkspaceKind.Temp)
+            {
+                WorkspaceView.Visibility           = Visibility.Collapsed;
+                ChatWorkspaceView.Visibility       = Visibility.Collapsed;
+                IdeaNestWorkspaceView.Visibility   = Visibility.Collapsed;
+                TempNestWorkspaceView.Visibility   = Visibility.Visible;
+                UnintegratedPlaceholder.Visibility = Visibility.Collapsed;
+
+                if (_sessionManager.TryGet(tab.Id, out var tempSession) && tempSession != null)
+                    TempNestWorkspaceView.DataContext = tempSession.WorkspaceViewModel;
+
+                foreach (var (id, border) in _sidebarBorders)
+                    UpdateSidebarHighlight(border, id, "");
+                foreach (var (id, item) in _toolMenuItems)
+                    item.IsChecked = false;
+
+                NestSuiteModeSuffix.Text = "  /  TempNest";
+                RefreshWorkspaceStatus();
+                return;
+            }
+
             var toolId = tab.ToolId;
             var tool = NestSuiteToolRegistry.ToolDefinitions.First(t => t.Id == toolId);
 
@@ -352,9 +387,10 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             bool isIdeaNest = toolId == NestSuiteToolRegistry.IdeaNestToolId;
 
             // Workspace 表示切替（選択タブに対応する Workspace のみ表示）
-            WorkspaceView.Visibility = isNoteNest ? Visibility.Visible : Visibility.Collapsed;
-            ChatWorkspaceView.Visibility = isChatNest ? Visibility.Visible : Visibility.Collapsed;
-            IdeaNestWorkspaceView.Visibility = isIdeaNest ? Visibility.Visible : Visibility.Collapsed;
+            WorkspaceView.Visibility           = isNoteNest ? Visibility.Visible : Visibility.Collapsed;
+            ChatWorkspaceView.Visibility       = isChatNest ? Visibility.Visible : Visibility.Collapsed;
+            IdeaNestWorkspaceView.Visibility   = isIdeaNest ? Visibility.Visible : Visibility.Collapsed;
+            TempNestWorkspaceView.Visibility   = Visibility.Collapsed;
             UnintegratedPlaceholder.Visibility = tool.IsIntegrated ? Visibility.Collapsed : Visibility.Visible;
 
             // v1.9.5: NoteNest タブ切替時に選択タブの MainViewModel に DataContext を差し替える
@@ -444,6 +480,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         if (IsDescendantOfButton(e.OriginalSource as DependencyObject)) return;
         _tabDragStartPoint = e.GetPosition(null);
         _tabDragSource = GetTabFromVisualTree(e.OriginalSource as DependencyObject);
+        if (_tabDragSource?.CanClose == false) _tabDragSource = null;
     }
 
     private void TabStrip_PreviewMouseMove(object sender, MouseEventArgs e)
@@ -621,6 +658,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
             MainViewModel vm                  => BuildNoteNestStatusText(vm),
             ChatNestWorkspaceViewModel vm     => BuildChatNestStatusText(vm),
             IdeaNestWorkspaceViewModel vm     => BuildIdeaNestStatusText(vm),
+            TempNestWorkspaceViewModel        => "",
             _                                 => ""
         };
     }
@@ -980,7 +1018,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// </summary>
     private void CloseOtherTabs(NestSuiteDocumentTab keepTab)
     {
-        foreach (var tab in _tabs.Where(t => t.Id != keepTab.Id).ToList())
+        foreach (var tab in _tabs.Where(t => t.Id != keepTab.Id && t.CanClose).ToList())
         {
             if (!CloseTab(tab)) break;
         }
@@ -1008,6 +1046,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         if (e.ChangedButton != MouseButton.Middle) return;
         var tab = GetTabFromVisualTree(e.OriginalSource as DependencyObject);
         if (tab == null) return;
+        if (!tab.CanClose) return;
         CloseTab(tab);
         e.Handled = true;
     }
@@ -1103,6 +1142,9 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         }
         if (idx < 0) return false;
 
+        // v2.6.0: Temp タブなど CanClose=false のタブは閉じない
+        if (!tab.CanClose) return false;
+
         switch (tab.WorkspaceKind)
         {
             case NestSuiteWorkspaceKind.NoteNest:
@@ -1122,20 +1164,10 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         _sessionManager.Remove(tab.Id);
         _tabs.RemoveAt(idx);
 
-        if (_tabs.Count == 0)
-        {
-            // 最後のタブを閉じた場合は無題 NoteNest タブを自動作成する
-            var newTab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.NoteNest);
-            _tabs.Add(newTab);
-            _sessionManager.Add(CreateSessionForTab(newTab));
-            ActivateTab(newTab);
-        }
-        else
-        {
-            // 右隣を優先、なければ左隣（最後のタブなら idx-1）
-            var nextIdx = Math.Min(idx, _tabs.Count - 1);
-            ActivateTab(_tabs[nextIdx]);
-        }
+        // v2.6.0: Temp タブが常に存在するため _tabs.Count == 0 にはならない
+        // 右隣を優先、なければ左隣（最後のタブなら idx-1）
+        var nextIdx = Math.Min(idx, _tabs.Count - 1);
+        ActivateTab(_tabs[nextIdx]);
         return true;
     }
 
@@ -1646,6 +1678,10 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// </summary>
     private void EnsureDefaultTab()
     {
+        // v2.6.0: Temp タブが常に存在するためフォールバックとして Temp をアクティブ化する
+        var tempTab = _tabs.FirstOrDefault(t => t.WorkspaceKind == NestSuiteWorkspaceKind.Temp);
+        if (tempTab != null) { ActivateTab(tempTab); return; }
+
         if (NestSuiteStartupTabPolicy.ShouldEnsureFallbackTab(_tabs.Count))
         {
             var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.NoteNest);

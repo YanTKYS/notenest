@@ -4,6 +4,7 @@
         xmlns:views="clr-namespace:NestSuite.Views"
         xmlns:chatnest="clr-namespace:NestSuite.ChatNest"
         xmlns:ideanest="clr-namespace:NestSuite.IdeaNest.Views"
+        xmlns:tempnest="clr-namespace:NestSuite.TempNest"
         Title="NestSuite"
         Height="720" Width="1280"
         MinHeight="500" MinWidth="870"
@@ -183,7 +184,9 @@
                                 <Grid ToolTip="{Binding TooltipText}">
                                     <Grid.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="このタブを閉じる(_C)"   Click="TabContextClose_Click"/>
+                                            <MenuItem Header="このタブを閉じる(_C)"
+                                                      IsEnabled="{Binding CanClose}"
+                                                      Click="TabContextClose_Click"/>
                                             <Separator/>
                                             <MenuItem Header="他のタブを閉じる(_O)"   Click="TabContextCloseOthers_Click"/>
                                             <MenuItem Header="右側のタブを閉じる(_R)" Click="TabContextCloseRight_Click"/>
@@ -214,6 +217,7 @@
                                                 Cursor="Hand"
                                                 ToolTip="このタブを閉じる"
                                                 Tag="{Binding}"
+                                                Visibility="{Binding CanClose, Converter={StaticResource BoolToVis}}"
                                                 Click="TabClose_Click"/>
                                     </StackPanel>
                                 </Grid>
@@ -232,6 +236,8 @@
                 <chatnest:ChatNestWorkspaceView x:Name="ChatWorkspaceView" Visibility="Collapsed"/>
                 <!-- v1.8.0: IdeaNest 統合検証用 Workspace（IdeaNest タブ選択時に表示） -->
                 <ideanest:IdeaNestWorkspaceView x:Name="IdeaNestWorkspaceView" ShowMenu="False" Visibility="Collapsed"/>
+                <!-- v2.6.0: TempNest 固定タブ Workspace（ファイル型でない内部 JSON 管理の一時メモ） -->
+                <tempnest:TempNestWorkspaceView x:Name="TempNestWorkspaceView" Visibility="Collapsed"/>
                 <!-- 未統合ツールタブ選択時のプレースホルダー -->
                 <Border x:Name="UnintegratedPlaceholder" Visibility="Collapsed"
                         Background="{DynamicResource SidebarBg}">

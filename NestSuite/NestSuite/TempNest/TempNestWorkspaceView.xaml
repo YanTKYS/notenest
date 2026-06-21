@@ -1,0 +1,136 @@
+<UserControl x:Class="NestSuite.TempNest.TempNestWorkspaceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Background="{DynamicResource AppBg}" Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="8"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Slot 1: Top-Left -->
+        <Border Grid.Row="0" Grid.Column="0"
+                BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"
+                CornerRadius="4" Background="{DynamicResource SidebarBg}">
+            <DockPanel Margin="10">
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                            HorizontalAlignment="Right" Margin="0,6,0,0">
+                    <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
+                            Command="{Binding Slot1.CopyBodyCommand}"
+                            Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
+                    <Button Content="クリア" Padding="8,3" FontSize="11"
+                            Command="{Binding Slot1.ClearCommand}"
+                            Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
+                </StackPanel>
+                <TextBox DockPanel.Dock="Top"
+                         Text="{Binding Slot1.Title, UpdateSourceTrigger=PropertyChanged}"
+                         BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
+                         Background="Transparent" Foreground="{DynamicResource AppFg}"
+                         FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4" Margin="0,0,0,6"
+                         MaxLength="100"/>
+                <TextBox Text="{Binding Slot1.Body, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="True" TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         BorderThickness="0" Background="Transparent"
+                         Foreground="{DynamicResource AppFg}"
+                         VerticalContentAlignment="Top" FontSize="12" Padding="0"
+                         SpellCheck.IsEnabled="False"/>
+            </DockPanel>
+        </Border>
+
+        <!-- Slot 2: Top-Right -->
+        <Border Grid.Row="0" Grid.Column="2"
+                BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"
+                CornerRadius="4" Background="{DynamicResource SidebarBg}">
+            <DockPanel Margin="10">
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                            HorizontalAlignment="Right" Margin="0,6,0,0">
+                    <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
+                            Command="{Binding Slot2.CopyBodyCommand}"
+                            Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
+                    <Button Content="クリア" Padding="8,3" FontSize="11"
+                            Command="{Binding Slot2.ClearCommand}"
+                            Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
+                </StackPanel>
+                <TextBox DockPanel.Dock="Top"
+                         Text="{Binding Slot2.Title, UpdateSourceTrigger=PropertyChanged}"
+                         BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
+                         Background="Transparent" Foreground="{DynamicResource AppFg}"
+                         FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4" Margin="0,0,0,6"
+                         MaxLength="100"/>
+                <TextBox Text="{Binding Slot2.Body, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="True" TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         BorderThickness="0" Background="Transparent"
+                         Foreground="{DynamicResource AppFg}"
+                         VerticalContentAlignment="Top" FontSize="12" Padding="0"
+                         SpellCheck.IsEnabled="False"/>
+            </DockPanel>
+        </Border>
+
+        <!-- Slot 3: Bottom-Left -->
+        <Border Grid.Row="2" Grid.Column="0"
+                BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"
+                CornerRadius="4" Background="{DynamicResource SidebarBg}">
+            <DockPanel Margin="10">
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                            HorizontalAlignment="Right" Margin="0,6,0,0">
+                    <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
+                            Command="{Binding Slot3.CopyBodyCommand}"
+                            Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
+                    <Button Content="クリア" Padding="8,3" FontSize="11"
+                            Command="{Binding Slot3.ClearCommand}"
+                            Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
+                </StackPanel>
+                <TextBox DockPanel.Dock="Top"
+                         Text="{Binding Slot3.Title, UpdateSourceTrigger=PropertyChanged}"
+                         BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
+                         Background="Transparent" Foreground="{DynamicResource AppFg}"
+                         FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4" Margin="0,0,0,6"
+                         MaxLength="100"/>
+                <TextBox Text="{Binding Slot3.Body, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="True" TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         BorderThickness="0" Background="Transparent"
+                         Foreground="{DynamicResource AppFg}"
+                         VerticalContentAlignment="Top" FontSize="12" Padding="0"
+                         SpellCheck.IsEnabled="False"/>
+            </DockPanel>
+        </Border>
+
+        <!-- Slot 4: Bottom-Right -->
+        <Border Grid.Row="2" Grid.Column="2"
+                BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"
+                CornerRadius="4" Background="{DynamicResource SidebarBg}">
+            <DockPanel Margin="10">
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                            HorizontalAlignment="Right" Margin="0,6,0,0">
+                    <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
+                            Command="{Binding Slot4.CopyBodyCommand}"
+                            Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
+                    <Button Content="クリア" Padding="8,3" FontSize="11"
+                            Command="{Binding Slot4.ClearCommand}"
+                            Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
+                </StackPanel>
+                <TextBox DockPanel.Dock="Top"
+                         Text="{Binding Slot4.Title, UpdateSourceTrigger=PropertyChanged}"
+                         BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
+                         Background="Transparent" Foreground="{DynamicResource AppFg}"
+                         FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4" Margin="0,0,0,6"
+                         MaxLength="100"/>
+                <TextBox Text="{Binding Slot4.Body, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="True" TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         BorderThickness="0" Background="Transparent"
+                         Foreground="{DynamicResource AppFg}"
+                         VerticalContentAlignment="Top" FontSize="12" Padding="0"
+                         SpellCheck.IsEnabled="False"/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>

@@ -52,6 +52,13 @@ public sealed record NestSuiteDocumentTab
     public bool IsModified { get; init; }
 
     /// <summary>
+    /// タブをユーザー操作で閉じられるかどうか。
+    /// false の場合は閉じるボタンを非表示にし、中クリック・一括閉じる操作の対象外とする。
+    /// TempNest タブは false。通常タブは true（デフォルト）。
+    /// </summary>
+    public bool CanClose { get; init; } = true;
+
+    /// <summary>
     /// ファイルに紐づいていない無題タブかどうか（<c>FilePath is null</c>）。
     /// </summary>
     public bool IsUntitled => FilePath is null;
@@ -66,6 +73,7 @@ public sealed record NestSuiteDocumentTab
         NestSuiteWorkspaceKind.NoteNest => NestSuiteToolRegistry.NoteNestToolId,
         NestSuiteWorkspaceKind.ChatNest => NestSuiteToolRegistry.ChatNestToolId,
         NestSuiteWorkspaceKind.IdeaNest => NestSuiteToolRegistry.IdeaNestToolId,
+        NestSuiteWorkspaceKind.Temp => "Temp",
         _ => throw new ArgumentOutOfRangeException(nameof(WorkspaceKind), WorkspaceKind, null)
     };
 
@@ -81,8 +89,11 @@ public sealed record NestSuiteDocumentTab
                 NestSuiteWorkspaceKind.NoteNest => "NoteNest",
                 NestSuiteWorkspaceKind.ChatNest => "ChatNest",
                 NestSuiteWorkspaceKind.IdeaNest => "IdeaNest",
+                NestSuiteWorkspaceKind.Temp => "TempNest",
                 _ => "不明"
             };
+            if (WorkspaceKind == NestSuiteWorkspaceKind.Temp)
+                return $"種類: {kindLabel}\n一時メモ（自動保存）";
             var fileText = FilePath ?? "未保存（無題）";
             var stateText = IsModified ? "未保存の変更あり" : "保存済み";
             return $"種類: {kindLabel}\nファイル: {fileText}\n状態: {stateText}";

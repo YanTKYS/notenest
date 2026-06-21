@@ -94,4 +94,18 @@ public static class NestSuiteTabFactory
         var ext = Path.GetExtension(filePath);
         return KindByExtension.TryGetValue(ext, out kind);
     }
+
+    /// <summary>
+    /// v2.6.0: TempNest 固定タブを生成する。CanClose=false の固定タブ。
+    /// </summary>
+    public static NestSuiteDocumentTab CreateTempTab()
+        => new NestSuiteDocumentTab
+        {
+            Id            = "tempnest-fixed",
+            WorkspaceKind = NestSuiteWorkspaceKind.Temp,
+            DisplayName   = "Temp",
+            FilePath      = null,
+            IsModified    = false,
+            CanClose      = false,
+        };
 }

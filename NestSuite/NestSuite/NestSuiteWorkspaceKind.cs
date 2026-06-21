@@ -35,4 +35,10 @@ public enum NestSuiteWorkspaceKind
     /// IdeaNest 統合前に IdeaNestWorkspaceView の切り出しが必要。
     /// </summary>
     IdeaNest,
+
+    /// <summary>
+    /// TempNest Workspace。NestSuite Shell 固定の一時メモ領域。
+    /// ファイル型 Workspace ではなく、内部 JSON で管理される。
+    /// </summary>
+    Temp,
 }
