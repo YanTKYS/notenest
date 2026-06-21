@@ -3,6 +3,7 @@
 > 作成: v2.5.4 (H0-4)
 > 更新: v2.5.5 (H0-5) — H1〜H4 再判定の結果、EH-1（NoteEditorHost 最小実装）を H1a/H2a の前提として採用。H4 は要望取り下げにより対象外に確定。
 > 更新: v2.5.7 (EH-1) — §8 記載の最小実装を完了。実装結果を §8.4 に追記。
+> 更新: v2.5.8 (H2a) — 行番号ガター現在行強調を実装完了。実装結果を §8.5 に追記。
 > 前提: `docs/design/notenest-editor-textbox-dependencies.md`（v2.5.1 H0-1 棚卸し結果）
 > 前提: `docs/design/notenest-editor-adapter-design.md`（v2.5.2 H0-2 設計・v2.5.3 H0-3 実装結果）
 > 目的: v2.5.5 以降で `EditorHost` を導入するかどうかを判断できる設計整理。今回は実装しない。
@@ -317,6 +318,31 @@ DataContext 継承を採用したことで DependencyProperty の追加が不要
 
 ---
 
+### 8.5 v2.5.8 実装結果（H2a 完了）
+
+行番号ガターの現在行背景強調を v2.5.8 (H2a) で実装した。
+
+| 項目 | 実装内容 |
+|------|---------|
+| 実装場所 | `NoteEditorHost` 内で完結。`NoteNestWorkspaceView` / ViewModel に変更なし |
+| 構造変更 | Column 0 の TextBox を `Grid > Rectangle（背景）+ Canvas（ハイライト層）+ TextBox（透明背景）` に変更 |
+| ハイライト手法 | `LineNumberBox.GetRectFromCharacterIndex(charIdx)` で現在行の y 座標を取得し、`Canvas.SetTop()` で Rectangle を配置 |
+| 更新タイミング | `Editor.SelectionChanged`・`EditorBox_TextChanged`・`EditorScrollViewer_ScrollChanged`（後者は `Dispatcher.InvokeAsync(..., DispatcherPriority.Render)` で layout 後実行）・`IsVisibleChanged` |
+| テーマリソース | ライト: `LineNumberCurrentLineBg = #DDE8F5` / ダーク: `LineNumberCurrentLineBg = #252D3E` を追加 |
+| 既存行番号への影響 | スクロール同期・行番号テキスト生成・フォント・余白に変更なし |
+
+#### 採用した方式と制約
+
+- **TextBox 継続で実現できた範囲**: ガター側の背景ハイライトは Canvas オーバーレイで対応可能だった
+- **実現できなかった範囲**: WPF 標準 TextBox では行単位の Foreground・FontWeight 変更が不可能。太字・文字色変更は行わなかった。この点は docs/design/notenest-editor-h0-reassessment.md §2 H2 の評価どおり
+- **本文内ハイライトは対象外**: エディタ本文内の現在行背景ハイライトは TextBox では実装不可能なため対象外とした
+
+#### H1a に進む場合の注意
+
+H1a（簡易ノートリンク補完 Popup）を実装する際は、`NoteEditorHost` 内の `EditorBox` 上に Popup を追加する。キャレット座標取得は `EditorBox.GetRectFromCharacterIndex(EditorBox.CaretIndex)` を使う（現在 H2a で `LineNumberBox` 側に使っているのと同じ API）。IME 入力中の誤発火に注意すること。
+
+---
+
 ## 9. EditorHost 導入時のリスク
 
 | リスク | 評価 | 対策 |
@@ -379,3 +405,4 @@ H0 系列の各文書の位置づけをまとめる。
 | v2.5.4 (H0-4) | 本文書 | `EditorHost` の導入方針を整理（実装は v2.5.5 以降で判断） |
 | v2.5.5 (H0-5) | `notenest-editor-h0-reassessment.md` | H1〜H4 の実装方式を再判定し、実装順・採用部品を確定 |
 | v2.5.7 (EH-1) | 本文書 §8.4 | `NoteEditorHost` 最小実装完了。計画との差異を記録 |
+| v2.5.8 (H2a)  | 本文書 §8.5 | 行番号ガター現在行背景強調（Canvas オーバーレイ）を実装完了 |

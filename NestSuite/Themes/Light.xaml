@@ -31,8 +31,9 @@
     <SolidColorBrush x:Key="SampleBannerFg"     Color="#7A6000"/>
 
     <!-- line number gutter -->
-    <SolidColorBrush x:Key="LineNumberBg" Color="#F8F8F8"/>
-    <SolidColorBrush x:Key="LineNumberFg" Color="#AAAAAA"/>
+    <SolidColorBrush x:Key="LineNumberBg"            Color="#F8F8F8"/>
+    <SolidColorBrush x:Key="LineNumberFg"            Color="#AAAAAA"/>
+    <SolidColorBrush x:Key="LineNumberCurrentLineBg" Color="#DDE8F5"/>
 
     <!-- task states -->
     <SolidColorBrush x:Key="TaskCompletedFg" Color="#AAAAAA"/>
