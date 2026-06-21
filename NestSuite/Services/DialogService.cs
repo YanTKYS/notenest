@@ -121,6 +121,10 @@ public sealed class DialogService
             _findReplaceDialog = new FindReplaceDialog(editor) { Owner = _owner };
             _findReplaceDialog.RestoreState(lastSearchText, lastReplaceText, left, top);
         }
+        else
+        {
+            _findReplaceDialog.SetEditor(editor);
+        }
 
         if (allNotes != null && navigateToNote != null)
             _findReplaceDialog.SetAllNotes(allNotes, navigateToNote);
