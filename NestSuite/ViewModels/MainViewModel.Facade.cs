@@ -40,6 +40,9 @@ public partial class MainViewModel
     public int MarkerSortOrderIndex { get => _markers.SortOrderIndex; set => _markers.SortOrderIndex = value; }
     public IEnumerable<MarkerViewModel> FilteredMarkers => _markers.FilteredMarkers;
     public string FilteredMarkerCountText => _markers.FilteredMarkerCountText;
+    public string TodoCountText  => _markers.TodoCountText;
+    public string FixmeCountText => _markers.FixmeCountText;
+    public string NoteCountText  => _markers.NoteCountText;
     public bool IsSampleProject => _session.IsSampleProject;
     public bool ShowLineNumbers { get => _editor.ShowLineNumbers; set => _editor.ShowLineNumbers = value; }
     public bool IsTaskCommentMode => _editor.IsTaskCommentMode;
@@ -54,6 +57,7 @@ public partial class MainViewModel
     public bool HasEditingTaskRelatedNote => _editor.HasEditingTaskRelatedNote;
     public ObservableCollection<NotebookViewModel> Notebooks => _notes.Notebooks;
     public ObservableCollection<TaskGroupViewModel> TaskGroups => _tasks.TaskGroups;
+    public string TotalIncompleteTaskCountText => _tasks.TotalIncompleteTaskCountText;
     public ObservableCollection<MarkerViewModel> Markers => _markers.Markers;
     public int MarkerCount => _markers.MarkerCount;
     public IEnumerable<NoteViewModel> AllNotes => _notes.AllNotes;

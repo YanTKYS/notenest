@@ -20,6 +20,9 @@ public sealed class MarkerPanelViewModel : BaseViewModel
     public ObservableCollection<MarkerViewModel> Markers { get; } = new();
     public int MarkerCount => Markers.Count;
     public string ProjectMarkerSummary => $"全体  TODO: {_todoCount}  FIXME: {_fixmeCount}  NOTE: {_noteCount}";
+    public string TodoCountText  => $"TODO（{_todoCount}）";
+    public string FixmeCountText => $"FIXME（{_fixmeCount}）";
+    public string NoteCountText  => $"NOTE（{_noteCount}）";
 
     public bool FilterTodo { get => _filterTodo; set { if (SetProperty(ref _filterTodo, value)) RaiseFilteredChanged(); } }
     public bool FilterFixme { get => _filterFixme; set { if (SetProperty(ref _filterFixme, value)) RaiseFilteredChanged(); } }
@@ -67,6 +70,9 @@ public sealed class MarkerPanelViewModel : BaseViewModel
         }
         OnPropertyChanged(nameof(MarkerCount));
         OnPropertyChanged(nameof(ProjectMarkerSummary));
+        OnPropertyChanged(nameof(TodoCountText));
+        OnPropertyChanged(nameof(FixmeCountText));
+        OnPropertyChanged(nameof(NoteCountText));
         RaiseFilteredChanged();
     }
 
