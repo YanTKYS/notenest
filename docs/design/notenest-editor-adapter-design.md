@@ -3,9 +3,11 @@
 > 作成: v2.5.2 (H0-2)
 > 更新: v2.5.3 (H0-3) — 実装完了。ファイルパスを確定版に修正
 > 更新: v2.5.4 (H0-4) — EditorHost 導入方針を `notenest-editor-host-design.md` に整理
+> 更新: v2.5.5 (H0-5) — H0 系列の総括・H1〜H4 再判定は `notenest-editor-h0-reassessment.md` 参照。H4 は要望取り下げにより対象外。
 > 前提: `docs/design/notenest-editor-textbox-dependencies.md`（v2.5.1 H0-1 棚卸し結果）
 > 目的: H0-3 での `TextBoxEditorAdapter` 試験実装に向けた、インターフェース設計の確定。
 > 次段階: `docs/design/notenest-editor-host-design.md`（v2.5.4 H0-4 — EditorHost 導入方針）
+> 最終判断: `docs/design/notenest-editor-h0-reassessment.md`（v2.5.5 H0-5 — H0 系列総括・推奨実装順）
 
 ---
 

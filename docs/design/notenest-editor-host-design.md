@@ -1,9 +1,11 @@
 # NoteNest EditorHost 導入方針
 
 > 作成: v2.5.4 (H0-4)
+> 更新: v2.5.5 (H0-5) — H1〜H4 再判定の結果、EH-1（NoteEditorHost 最小実装）を H1a/H2a の前提として採用。H4 は要望取り下げにより対象外に確定。
 > 前提: `docs/design/notenest-editor-textbox-dependencies.md`（v2.5.1 H0-1 棚卸し結果）
 > 前提: `docs/design/notenest-editor-adapter-design.md`（v2.5.2 H0-2 設計・v2.5.3 H0-3 実装結果）
 > 目的: v2.5.5 以降で `EditorHost` を導入するかどうかを判断できる設計整理。今回は実装しない。
+> 次段階: `docs/design/notenest-editor-h0-reassessment.md`（v2.5.5 H0-5 — H0 系列総括・H1〜H4 再判定・推奨実装順）
 
 ---
 
