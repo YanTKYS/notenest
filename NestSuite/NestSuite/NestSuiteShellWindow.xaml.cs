@@ -384,6 +384,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
             // ステータスバー更新
             NestSuiteModeSuffix.Text = $"  /  {tool.DisplayName}";
+            RefreshWorkspaceStatus();
         }
         finally
         {
@@ -570,6 +571,10 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
                 UpdateRecentFilesMenu();
             }
         }
+
+        if (e.PropertyName is nameof(MainViewModel.MarkerCount) or nameof(MainViewModel.TotalIncompleteTaskCountText) &&
+            sender is MainViewModel statusVm && IsActiveVm(statusVm))
+            RefreshWorkspaceStatus();
     }
 
     private void OnChatNestPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -577,6 +582,11 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         if (e.PropertyName == nameof(ChatNestWorkspaceViewModel.HasUnsavedChanges) &&
             sender is ChatNestWorkspaceViewModel vm)
             SyncChatNestTabForViewModel(vm);
+
+        if (e.PropertyName is nameof(ChatNestWorkspaceViewModel.HasUnsavedChanges)
+                           or nameof(ChatNestWorkspaceViewModel.SelectedSpeaker) &&
+            sender is ChatNestWorkspaceViewModel statusVm && IsActiveVm(statusVm))
+            RefreshWorkspaceStatus();
     }
 
     private void OnIdeaNestPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -584,7 +594,52 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         if (e.PropertyName == nameof(IdeaNestWorkspaceViewModel.HasChanges) &&
             sender is IdeaNestWorkspaceViewModel vm)
             SyncIdeaNestTabForViewModel(vm);
+
+        if (e.PropertyName is nameof(IdeaNestWorkspaceViewModel.HasChanges)
+                           or nameof(IdeaNestWorkspaceViewModel.CountText)
+                           or nameof(IdeaNestWorkspaceViewModel.HasActiveFilter) &&
+            sender is IdeaNestWorkspaceViewModel statusVm && IsActiveVm(statusVm))
+            RefreshWorkspaceStatus();
     }
+
+    private bool IsActiveVm(object vm)
+    {
+        if (!TryGetActiveSession(out var session) || session == null) return false;
+        return ReferenceEquals(session.WorkspaceViewModel, vm);
+    }
+
+    private void RefreshWorkspaceStatus()
+    {
+        if (!TryGetActiveSession(out var session) || session == null)
+        {
+            WorkspaceStatusText.Text = "";
+            return;
+        }
+        WorkspaceStatusText.Text = session.WorkspaceViewModel switch
+        {
+            MainViewModel vm                  => BuildNoteNestStatusText(vm),
+            ChatNestWorkspaceViewModel vm     => BuildChatNestStatusText(vm),
+            IdeaNestWorkspaceViewModel vm     => BuildIdeaNestStatusText(vm),
+            _                                 => ""
+        };
+    }
+
+    private static string BuildNoteNestStatusText(MainViewModel vm)
+    {
+        var noteCount   = vm.AllNotes.Count();
+        var taskCount   = vm.TaskGroups.Sum(g => g.Tasks.Count);
+        var markerCount = vm.MarkerCount;
+        return $"  |  ノート {noteCount}  タスク {taskCount}  マーカー {markerCount}";
+    }
+
+    private static string BuildIdeaNestStatusText(IdeaNestWorkspaceViewModel vm)
+    {
+        var filterText = vm.HasActiveFilter ? "  フィルター中" : "";
+        return $"  |  {vm.CountText}{filterText}";
+    }
+
+    private static string BuildChatNestStatusText(ChatNestWorkspaceViewModel vm) =>
+        $"  |  発言 {vm.Messages.Count}  発言者: {vm.SelectedSpeaker}";
 
     /// <summary>
     /// v1.9.7: 指定 IdeaNest ViewModel に対応するタブの IsModified を HasChanges に同期する。
