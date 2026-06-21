@@ -25,7 +25,15 @@ public partial class NoteNestWorkspaceView : UserControl
         InitializeComponent();
         InitNoteFilter();
         EditorHost.EditorReady += (_, _) =>
+        {
             EditorHost.Editor.SelectionChanged += EditorAdapter_SelectionChanged;
+            EditorHost.NoteTitleProvider      = () =>
+                ViewModel.Notebooks
+                    .SelectMany(nb => nb.Notes)
+                    .Where(n => !string.IsNullOrWhiteSpace(n.Title))
+                    .Select(n => n.Title);
+            EditorHost.IsNoteEditModeProvider = () => ViewModel.IsNoteEditMode;
+        };
     }
 
     // ── Public API for AppShell（NestSuiteShellWindow）──────────────────────

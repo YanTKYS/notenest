@@ -78,5 +78,53 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
+
+        <!-- Note-link autocomplete popup (H1a) -->
+        <Popup x:Name="CompletionPopup"
+               Grid.Column="1"
+               IsOpen="False"
+               StaysOpen="True"
+               Focusable="False"
+               AllowsTransparency="False">
+            <Border BorderBrush="{DynamicResource PaneBorder}"
+                    BorderThickness="1"
+                    Background="{DynamicResource AppBg}"
+                    SnapsToDevicePixels="True">
+                <ListBox x:Name="CompletionList"
+                         Focusable="False"
+                         IsTabStop="False"
+                         MaxHeight="200"
+                         MinWidth="180"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         PreviewMouseLeftButtonDown="CompletionList_PreviewMouseLeftButtonDown">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding"  Value="8,3"/>
+                            <Setter Property="Foreground" Value="{DynamicResource AppFg}"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Focusable"  Value="False"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource SelectedNoteBg}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource MarkerHoverBg}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}"
+                                       TextTrimming="CharacterEllipsis"
+                                       MaxWidth="320"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+        </Popup>
     </Grid>
 </UserControl>
