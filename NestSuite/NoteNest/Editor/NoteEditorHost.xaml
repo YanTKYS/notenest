@@ -82,6 +82,7 @@
         <!-- Note-link autocomplete popup (H1a) -->
         <Popup x:Name="CompletionPopup"
                Grid.Column="1"
+               Placement="Relative"
                IsOpen="False"
                StaysOpen="True"
                Focusable="False"
