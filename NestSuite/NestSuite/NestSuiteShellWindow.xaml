@@ -110,6 +110,8 @@
                 <TextBlock x:Name="NestSuiteModeSuffix"
                            Text="  /  NoteNest"
                            FontSize="11" Foreground="{DynamicResource MutedFg}"/>
+                <TextBlock x:Name="WorkspaceStatusText"
+                           FontSize="11" Foreground="{DynamicResource MutedFg}"/>
             </StackPanel>
         </Border>
 
