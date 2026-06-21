@@ -27,19 +27,54 @@
                             Command="{Binding Slot1.ClearCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                 </StackPanel>
-                <TextBox DockPanel.Dock="Top"
-                         Text="{Binding Slot1.Title, UpdateSourceTrigger=PropertyChanged}"
-                         BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
-                         Background="Transparent" Foreground="{DynamicResource AppFg}"
-                         FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4" Margin="0,0,0,6"
-                         MaxLength="100"/>
-                <TextBox Text="{Binding Slot1.Body, UpdateSourceTrigger=PropertyChanged}"
-                         AcceptsReturn="True" TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto"
-                         BorderThickness="0" Background="Transparent"
-                         Foreground="{DynamicResource AppFg}"
-                         VerticalContentAlignment="Top" FontSize="12" Padding="0"
-                         SpellCheck.IsEnabled="False"/>
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
+                    <TextBox Text="{Binding Slot1.Title, UpdateSourceTrigger=PropertyChanged}"
+                             BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
+                             Background="Transparent" Foreground="{DynamicResource AppFg}"
+                             FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4"
+                             MaxLength="100"/>
+                    <TextBlock Text="タイトル"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="12" FontWeight="SemiBold"
+                               Padding="1,0,0,0" VerticalAlignment="Top"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Slot1.Title}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+                <Grid>
+                    <TextBox Text="{Binding Slot1.Body, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True" TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             BorderThickness="0" Background="Transparent"
+                             Foreground="{DynamicResource AppFg}"
+                             VerticalContentAlignment="Top" FontSize="12" Padding="0"
+                             SpellCheck.IsEnabled="False"/>
+                    <TextBlock Text="一時メモ"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="12"
+                               Padding="1,0,0,0" VerticalAlignment="Top"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Slot1.Body}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
             </DockPanel>
         </Border>
 
@@ -57,19 +92,54 @@
                             Command="{Binding Slot2.ClearCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                 </StackPanel>
-                <TextBox DockPanel.Dock="Top"
-                         Text="{Binding Slot2.Title, UpdateSourceTrigger=PropertyChanged}"
-                         BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
-                         Background="Transparent" Foreground="{DynamicResource AppFg}"
-                         FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4" Margin="0,0,0,6"
-                         MaxLength="100"/>
-                <TextBox Text="{Binding Slot2.Body, UpdateSourceTrigger=PropertyChanged}"
-                         AcceptsReturn="True" TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto"
-                         BorderThickness="0" Background="Transparent"
-                         Foreground="{DynamicResource AppFg}"
-                         VerticalContentAlignment="Top" FontSize="12" Padding="0"
-                         SpellCheck.IsEnabled="False"/>
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
+                    <TextBox Text="{Binding Slot2.Title, UpdateSourceTrigger=PropertyChanged}"
+                             BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
+                             Background="Transparent" Foreground="{DynamicResource AppFg}"
+                             FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4"
+                             MaxLength="100"/>
+                    <TextBlock Text="タイトル"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="12" FontWeight="SemiBold"
+                               Padding="1,0,0,0" VerticalAlignment="Top"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Slot2.Title}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+                <Grid>
+                    <TextBox Text="{Binding Slot2.Body, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True" TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             BorderThickness="0" Background="Transparent"
+                             Foreground="{DynamicResource AppFg}"
+                             VerticalContentAlignment="Top" FontSize="12" Padding="0"
+                             SpellCheck.IsEnabled="False"/>
+                    <TextBlock Text="一時メモ"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="12"
+                               Padding="1,0,0,0" VerticalAlignment="Top"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Slot2.Body}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
             </DockPanel>
         </Border>
 
@@ -87,19 +157,54 @@
                             Command="{Binding Slot3.ClearCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                 </StackPanel>
-                <TextBox DockPanel.Dock="Top"
-                         Text="{Binding Slot3.Title, UpdateSourceTrigger=PropertyChanged}"
-                         BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
-                         Background="Transparent" Foreground="{DynamicResource AppFg}"
-                         FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4" Margin="0,0,0,6"
-                         MaxLength="100"/>
-                <TextBox Text="{Binding Slot3.Body, UpdateSourceTrigger=PropertyChanged}"
-                         AcceptsReturn="True" TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto"
-                         BorderThickness="0" Background="Transparent"
-                         Foreground="{DynamicResource AppFg}"
-                         VerticalContentAlignment="Top" FontSize="12" Padding="0"
-                         SpellCheck.IsEnabled="False"/>
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
+                    <TextBox Text="{Binding Slot3.Title, UpdateSourceTrigger=PropertyChanged}"
+                             BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
+                             Background="Transparent" Foreground="{DynamicResource AppFg}"
+                             FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4"
+                             MaxLength="100"/>
+                    <TextBlock Text="タイトル"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="12" FontWeight="SemiBold"
+                               Padding="1,0,0,0" VerticalAlignment="Top"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Slot3.Title}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+                <Grid>
+                    <TextBox Text="{Binding Slot3.Body, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True" TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             BorderThickness="0" Background="Transparent"
+                             Foreground="{DynamicResource AppFg}"
+                             VerticalContentAlignment="Top" FontSize="12" Padding="0"
+                             SpellCheck.IsEnabled="False"/>
+                    <TextBlock Text="一時メモ"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="12"
+                               Padding="1,0,0,0" VerticalAlignment="Top"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Slot3.Body}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
             </DockPanel>
         </Border>
 
@@ -117,19 +222,54 @@
                             Command="{Binding Slot4.ClearCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                 </StackPanel>
-                <TextBox DockPanel.Dock="Top"
-                         Text="{Binding Slot4.Title, UpdateSourceTrigger=PropertyChanged}"
-                         BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
-                         Background="Transparent" Foreground="{DynamicResource AppFg}"
-                         FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4" Margin="0,0,0,6"
-                         MaxLength="100"/>
-                <TextBox Text="{Binding Slot4.Body, UpdateSourceTrigger=PropertyChanged}"
-                         AcceptsReturn="True" TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto"
-                         BorderThickness="0" Background="Transparent"
-                         Foreground="{DynamicResource AppFg}"
-                         VerticalContentAlignment="Top" FontSize="12" Padding="0"
-                         SpellCheck.IsEnabled="False"/>
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
+                    <TextBox Text="{Binding Slot4.Title, UpdateSourceTrigger=PropertyChanged}"
+                             BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
+                             Background="Transparent" Foreground="{DynamicResource AppFg}"
+                             FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4"
+                             MaxLength="100"/>
+                    <TextBlock Text="タイトル"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="12" FontWeight="SemiBold"
+                               Padding="1,0,0,0" VerticalAlignment="Top"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Slot4.Title}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+                <Grid>
+                    <TextBox Text="{Binding Slot4.Body, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True" TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             BorderThickness="0" Background="Transparent"
+                             Foreground="{DynamicResource AppFg}"
+                             VerticalContentAlignment="Top" FontSize="12" Padding="0"
+                             SpellCheck.IsEnabled="False"/>
+                    <TextBlock Text="一時メモ"
+                               Foreground="{DynamicResource MutedFg}"
+                               FontSize="12"
+                               Padding="1,0,0,0" VerticalAlignment="Top"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Slot4.Body}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
             </DockPanel>
         </Border>
     </Grid>
