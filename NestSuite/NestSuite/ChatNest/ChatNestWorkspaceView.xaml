@@ -134,8 +134,8 @@
                 <!-- CH-4/CH-6: 右クリックで編集・削除を選択する -->
                 <StackPanel.ContextMenu>
                     <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-                        <MenuItem Header="編集" Command="{Binding BeginEditCommand}"/>
-                        <MenuItem Header="削除" Command="{Binding RequestDeleteCommand}"/>
+                        <MenuItem Header="編集(_E)" Command="{Binding BeginEditCommand}"/>
+                        <MenuItem Header="削除(_D)" Command="{Binding RequestDeleteCommand}"/>
                     </ContextMenu>
                 </StackPanel.ContextMenu>
 
@@ -200,11 +200,11 @@
                             <StackPanel Orientation="Horizontal"
                                         HorizontalAlignment="Right"
                                         Margin="0,6,0,0">
-                                <Button Content="キャンセル"
+                                <Button Content="キャンセル(_C)"
                                         Style="{StaticResource CopyButton}"
                                         Margin="0,0,6,0"
                                         Command="{Binding CancelEditCommand}"/>
-                                <Button Content="確定"
+                                <Button Content="確定(_K)"
                                         Style="{StaticResource FlatButton}"
                                         Background="#1976D2"
                                         Foreground="White"
@@ -444,12 +444,12 @@
                                Foreground="#212121"
                                Margin="0,0,0,16"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="キャンセル"
+                        <Button Content="キャンセル(_C)"
                                 Style="{StaticResource CopyButton}"
                                 Padding="14,7"
                                 Margin="0,0,8,0"
                                 Command="{Binding CancelDeleteCommand}"/>
-                        <Button Content="削除"
+                        <Button Content="削除(_D)"
                                 Style="{StaticResource FlatButton}"
                                 Background="#E53935"
                                 Foreground="White"
