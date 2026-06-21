@@ -1,3 +1,14 @@
+## v2.5.4 — EditorHost 導入方針整理（H0-4）
+
+- **H0-4 として、`EditorHost` の導入方針を設計文書として整理した（H0-4）。** 設計文書は `docs/design/notenest-editor-host-design.md` に追加した。
+- **`EditorHost` の責務・非責務を整理した（H0-4）。** エディタ UI の入れ物・`ITextEditorAdapter` の提供・補完 Popup や行番号ガターの受け皿が責務であり、保存スキーマ管理・タスク抽出・検索インデックス等は非責務であることを明確にした。
+- **v2.5.3 で追加した `TextBoxEditorAdapter` と `EditorHost` の関係を整理した（H0-4）。** Host 内で Adapter を生成して外部プロパティとして提供する案を推奨とし、`FindReplaceDialog` への Adapter 受け渡し経路・`NavigateToLine()` / `InsertTextAtCaret()` の呼び出し元の移行方針を整理した。
+- **現行 XAML への影響を分析した（H0-4）。** `LineNumberBox` と `EditorBox` を UserControl に切り出す場合の影響箇所・大きさを評価した。`EditorBox_Loaded` / `UpdateLineNumbers()` / `EditorScrollViewer_ScrollChanged` が Host 内に移動する主な変更点であることを整理した。
+- **H1〜H4 に対して `EditorHost` が役立つ範囲・役立たない範囲を整理した（H0-4）。** H1（補完 Popup の置き場として有効）・H2（行番号ガター再設計を Host に閉じやすい）では効果があり、H3（TextBox 継続では装飾精度が出ない）・H4（表示/保存分離が本質課題でありHost だけでは解決しない）には EditorHost 以外の設計変更が必要であることを明記した。
+- **v2.5.5 以降で実装する場合の最小実装案と判断基準を整理した（H0-4）。** H1 または H2 を近期実装する場合に Host 実装が自然な整理になることを整理した。H3 / H4 のみを目標とする場合は H0-5 での実装方式再判定を先行させることを推奨した。
+- **EditorHost 導入時のリスクと回帰確認観点を整理した（H0-4）。** XAML 崩れ・Adapter 受け渡し漏れ・行番号同期崩れを中リスクとし、対策方針を明記した。回帰確認観点として本文編集・保存・検索／置換・ノートリンク挿入・タスク・マーカー移動・テーマ等 20 項目を整理した。
+- **アプリ機能・UI・既存動作・保存形式・保存スキーマに変更はない（H0-4）。** 今回はドキュメント整理のみ。`EditorHost` のコード追加は v2.5.5 以降で判断する。NoteNest 保存スキーマ `1.4.1` を維持している。
+
 ## v2.5.3 — TextBoxEditorAdapter 試験実装（H0-3）
 
 - **`ITextEditorAdapter` インターフェースと `TextBoxEditorAdapter` クラスを追加した（H0-3）。** `NestSuite/NoteNest/Editor/` に配置し、WPF `TextBox` を薄くラップする最小実装として導入した。`TextChanged` / `SelectionChanged` は `EventHandler?` 型で転送し、呼び出し側が WPF 型に依存しないようにした。
