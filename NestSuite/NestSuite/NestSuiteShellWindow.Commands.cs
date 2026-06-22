@@ -18,7 +18,7 @@ using NestSuite.Views;
 
 namespace NestSuite;
 
-partial class NestSuiteShellWindow
+public partial class NestSuiteShellWindow
 {
     // ── NestSuite メニューハンドラ ──────────────────────────────────────
 

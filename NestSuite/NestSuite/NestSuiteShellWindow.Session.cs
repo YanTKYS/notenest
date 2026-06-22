@@ -18,7 +18,7 @@ using NestSuite.Views;
 
 namespace NestSuite;
 
-partial class NestSuiteShellWindow
+public partial class NestSuiteShellWindow
 {
     // ── v1.14.0: 最近使ったファイル ──────────────────────────────────────────
 

@@ -18,7 +18,7 @@ using NestSuite.Views;
 
 namespace NestSuite;
 
-partial class NestSuiteShellWindow
+public partial class NestSuiteShellWindow
 {
     /// <summary>
     /// 指定タブをアクティブ化し、Workspace 表示・サイドバーハイライト・メニュー・ステータスバーを同期する。
