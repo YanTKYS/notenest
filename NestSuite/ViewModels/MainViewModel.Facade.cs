@@ -78,6 +78,7 @@ public partial class MainViewModel
     public NoteWorkspaceViewModel Notes => _notes;
     public TaskBoardViewModel Tasks => _tasks;
     public MarkerPanelViewModel MarkerPanel => _markers;
+    public NoteLinkPanelViewModel LinkPanel => _links;
     public EditorStateViewModel Editor => _editor;
     public ProjectSessionViewModel Session => _session;
 

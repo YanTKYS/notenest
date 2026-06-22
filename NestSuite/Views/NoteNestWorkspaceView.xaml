@@ -550,143 +550,279 @@
             <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"
                           Background="{DynamicResource PaneBorder}" ShowsPreview="True"/>
 
-            <!-- ── Markers ── -->
-            <Grid Grid.Row="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <!-- ── Markers / Links TabControl ── -->
+            <TabControl Grid.Row="2"
+                        Background="{DynamicResource RightPaneBg}"
+                        BorderBrush="{DynamicResource PaneBorder}"
+                        BorderThickness="0,1,0,0"
+                        FontSize="11.5">
 
-                <!-- Markers header -->
-                <Border Grid.Row="0"
-                        BorderBrush="{DynamicResource PaneBorder}" BorderThickness="0,0,0,1"
-                        Padding="12,9">
-                    <DockPanel>
-                        <TextBlock DockPanel.Dock="Right"
-                                   Text="{Binding FilteredMarkerCountText}"
-                                   Foreground="{DynamicResource MutedFg}" FontSize="12"
-                                   VerticalAlignment="Center"/>
-                        <TextBlock DockPanel.Dock="Right"
-                                   Text="？"
-                                   Foreground="{DynamicResource HintFg}"
-                                   FontSize="12"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,8,0"
-                                   Cursor="Help">
-                            <TextBlock.ToolTip>
-                                <ToolTip>
-                                    <StackPanel Margin="4,2">
-                                        <TextBlock Text="利用可能なマーカー:" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                                        <TextBlock Text="[TODO]   やること"   Margin="0,0,0,3"/>
-                                        <TextBlock Text="[FIXME]  修正が必要" Margin="0,0,0,3"/>
-                                        <TextBlock Text="[NOTE]   メモ・補足"/>
-                                    </StackPanel>
-                                </ToolTip>
-                            </TextBlock.ToolTip>
-                        </TextBlock>
-                        <TextBlock Text="マーカー" FontWeight="Bold" FontSize="13"
-                                   VerticalAlignment="Center"/>
-                    </DockPanel>
-                </Border>
+                <!-- ── Tab: マーカー ── -->
+                <TabItem Header="マーカー">
+                    <Grid Background="{DynamicResource RightPaneBg}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                <!-- Marker filter row -->
-                <Border Grid.Row="1"
-                        BorderBrush="{DynamicResource PaneBorder}" BorderThickness="0,0,0,1"
-                        Background="{DynamicResource RightPaneBg}" Padding="10,5">
-                    <DockPanel>
-                        <ComboBox DockPanel.Dock="Right"
-                                  SelectedIndex="{Binding MarkerSortOrderIndex}"
-                                  FontSize="11"
-                                  Width="68"
-                                  VerticalAlignment="Center">
-                            <ComboBoxItem Content="抽出順"/>
-                            <ComboBoxItem Content="種別順"/>
-                            <ComboBoxItem Content="ノート順"/>
-                            <ComboBoxItem Content="行番号順"/>
-                        </ComboBox>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <CheckBox Content="{Binding TodoCountText}"  IsChecked="{Binding FilterTodo}"
-                                      Foreground="{DynamicResource TodoBrush}"  FontSize="11" Margin="0,0,10,0"/>
-                            <CheckBox Content="{Binding FixmeCountText}" IsChecked="{Binding FilterFixme}"
-                                      Foreground="{DynamicResource FixmeBrush}" FontSize="11" Margin="0,0,10,0"/>
-                            <CheckBox Content="{Binding NoteCountText}"  IsChecked="{Binding FilterNote}"
-                                      Foreground="{DynamicResource NoteBrush}"  FontSize="11"/>
-                        </StackPanel>
-                    </DockPanel>
-                </Border>
+                        <!-- Markers header -->
+                        <Border Grid.Row="0"
+                                BorderBrush="{DynamicResource PaneBorder}" BorderThickness="0,0,0,1"
+                                Padding="12,9">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Right"
+                                           Text="{Binding FilteredMarkerCountText}"
+                                           Foreground="{DynamicResource MutedFg}" FontSize="12"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock DockPanel.Dock="Right"
+                                           Text="？"
+                                           Foreground="{DynamicResource HintFg}"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,8,0"
+                                           Cursor="Help">
+                                    <TextBlock.ToolTip>
+                                        <ToolTip>
+                                            <StackPanel Margin="4,2">
+                                                <TextBlock Text="利用可能なマーカー:" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                                <TextBlock Text="[TODO]   やること"   Margin="0,0,0,3"/>
+                                                <TextBlock Text="[FIXME]  修正が必要" Margin="0,0,0,3"/>
+                                                <TextBlock Text="[NOTE]   メモ・補足"/>
+                                            </StackPanel>
+                                        </ToolTip>
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+                                <TextBlock Text="マーカー" FontWeight="Bold" FontSize="13"
+                                           VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
 
-                <!-- Marker list -->
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding FilteredMarkers}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Padding="10,8"
-                                        BorderBrush="{DynamicResource ItemBorderBrush}" BorderThickness="0,0,0,1"
-                                        Cursor="Hand"
-                                        MouseLeftButtonDown="Marker_MouseLeftButtonDown">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="{DynamicResource MarkerHoverBg}"/>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                    <StackPanel>
-                                        <DockPanel>
-                                            <TextBlock Text="{Binding Type}"
-                                                       FontWeight="Bold" FontSize="11"
-                                                       Width="46" DockPanel.Dock="Left">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryFg}"/>
+                        <!-- Marker filter row -->
+                        <Border Grid.Row="1"
+                                BorderBrush="{DynamicResource PaneBorder}" BorderThickness="0,0,0,1"
+                                Background="{DynamicResource RightPaneBg}" Padding="10,5">
+                            <DockPanel>
+                                <ComboBox DockPanel.Dock="Right"
+                                          SelectedIndex="{Binding MarkerSortOrderIndex}"
+                                          FontSize="11"
+                                          Width="68"
+                                          VerticalAlignment="Center">
+                                    <ComboBoxItem Content="抽出順"/>
+                                    <ComboBoxItem Content="種別順"/>
+                                    <ComboBoxItem Content="ノート順"/>
+                                    <ComboBoxItem Content="行番号順"/>
+                                </ComboBox>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <CheckBox Content="{Binding TodoCountText}"  IsChecked="{Binding FilterTodo}"
+                                              Foreground="{DynamicResource TodoBrush}"  FontSize="11" Margin="0,0,10,0"/>
+                                    <CheckBox Content="{Binding FixmeCountText}" IsChecked="{Binding FilterFixme}"
+                                              Foreground="{DynamicResource FixmeBrush}" FontSize="11" Margin="0,0,10,0"/>
+                                    <CheckBox Content="{Binding NoteCountText}"  IsChecked="{Binding FilterNote}"
+                                              Foreground="{DynamicResource NoteBrush}"  FontSize="11"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Marker list -->
+                        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding FilteredMarkers}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="10,8"
+                                                BorderBrush="{DynamicResource ItemBorderBrush}" BorderThickness="0,0,0,1"
+                                                Cursor="Hand"
+                                                MouseLeftButtonDown="Marker_MouseLeftButtonDown">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="{DynamicResource MarkerHoverBg}"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <StackPanel>
+                                                <DockPanel>
+                                                    <TextBlock Text="{Binding Type}"
+                                                               FontWeight="Bold" FontSize="11"
+                                                               Width="46" DockPanel.Dock="Left">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="{DynamicResource PrimaryFg}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Type}" Value="TODO">
+                                                                        <Setter Property="Foreground" Value="{DynamicResource TodoBrush}"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Type}" Value="FIXME">
+                                                                        <Setter Property="Foreground" Value="{DynamicResource FixmeBrush}"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Type}" Value="NOTE">
+                                                                        <Setter Property="Foreground" Value="{DynamicResource NoteBrush}"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                    <TextBlock Text="{Binding LineLabel}"
+                                                               Foreground="{DynamicResource MutedFg}" FontSize="11"
+                                                               Margin="0,0,6,0" VerticalAlignment="Center"
+                                                               DockPanel.Dock="Left"/>
+                                                    <TextBlock Text="{Binding NoteTitle}"
+                                                               Foreground="{DynamicResource SecondaryFg}" FontSize="11"
+                                                               VerticalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                </DockPanel>
+                                                <TextBlock Text="{Binding Excerpt}"
+                                                           Foreground="{DynamicResource PrimaryFg}" FontSize="11.5"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           Margin="0,3,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+
+                        <!-- Project-wide marker summary -->
+                        <Border Grid.Row="3"
+                                BorderBrush="{DynamicResource PaneBorder}" BorderThickness="0,1,0,0"
+                                Background="{DynamicResource SidebarBg}"
+                                Padding="12,6">
+                            <TextBlock Text="{Binding ProjectMarkerSummary}"
+                                       FontSize="11" Foreground="{DynamicResource MutedFg}"
+                                       TextWrapping="Wrap"/>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                <!-- ── Tab: リンク ── -->
+                <TabItem Header="リンク">
+                    <Grid Background="{DynamicResource RightPaneBg}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+
+                                <!-- No note selected -->
+                                <TextBlock Margin="12,16,12,8"
+                                           FontSize="12" Foreground="{DynamicResource MutedFg}"
+                                           Text="ノートを選択してください"
+                                           TextWrapping="Wrap"
+                                           Visibility="{Binding LinkPanel.HasNoNote, Converter={StaticResource BoolToVis}}"/>
+
+                                <!-- ── Section: からのリンク ── -->
+                                <Border Padding="12,8"
+                                        BorderBrush="{DynamicResource PaneBorder}" BorderThickness="0,0,0,1"
+                                        Background="{DynamicResource GroupHeaderBg}"
+                                        Visibility="{Binding LinkPanel.HasNote, Converter={StaticResource BoolToVis}}">
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding LinkPanel.OutboundCountText}"
+                                                   DockPanel.Dock="Right"
+                                                   Foreground="{DynamicResource MutedFg}" FontSize="11"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Text="からのリンク"
+                                                   FontWeight="SemiBold" FontSize="12"
+                                                   VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Border>
+
+                                <!-- No outbound links -->
+                                <TextBlock Text="（なし）"
+                                           FontSize="11" Foreground="{DynamicResource MutedFg}"
+                                           Margin="12,6,12,6"
+                                           Visibility="{Binding LinkPanel.HasNoOutboundLinks, Converter={StaticResource BoolToVis}}"/>
+
+                                <!-- Outbound link items -->
+                                <ItemsControl ItemsSource="{Binding LinkPanel.OutboundLinks}"
+                                              Visibility="{Binding LinkPanel.HasNote, Converter={StaticResource BoolToVis}}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="12,7"
+                                                    BorderBrush="{DynamicResource ItemBorderBrush}" BorderThickness="0,0,0,1"
+                                                    Cursor="Hand"
+                                                    MouseLeftButtonDown="OutboundLink_MouseLeftButtonDown">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Type}" Value="TODO">
-                                                                <Setter Property="Foreground" Value="{DynamicResource TodoBrush}"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Type}" Value="FIXME">
-                                                                <Setter Property="Foreground" Value="{DynamicResource FixmeBrush}"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Type}" Value="NOTE">
-                                                                <Setter Property="Foreground" Value="{DynamicResource NoteBrush}"/>
-                                                            </DataTrigger>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="{DynamicResource MarkerHoverBg}"/>
+                                                            </Trigger>
                                                         </Style.Triggers>
                                                     </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
-                                            <TextBlock Text="{Binding LineLabel}"
-                                                       Foreground="{DynamicResource MutedFg}" FontSize="11"
-                                                       Margin="0,0,6,0" VerticalAlignment="Center"
-                                                       DockPanel.Dock="Left"/>
-                                            <TextBlock Text="{Binding NoteTitle}"
-                                                       Foreground="{DynamicResource SecondaryFg}" FontSize="11"
-                                                       VerticalAlignment="Center"
-                                                       TextTrimming="CharacterEllipsis"/>
-                                        </DockPanel>
-                                        <TextBlock Text="{Binding Excerpt}"
-                                                   Foreground="{DynamicResource PrimaryFg}" FontSize="11.5"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   Margin="0,3,0,0"/>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                                                </Border.Style>
+                                                <DockPanel>
+                                                    <TextBlock DockPanel.Dock="Right"
+                                                               Text="⚠"
+                                                               Foreground="{DynamicResource FixmeBrush}"
+                                                               FontSize="11"
+                                                               VerticalAlignment="Center"
+                                                               ToolTip="リンク切れ"
+                                                               Visibility="{Binding IsBroken, Converter={StaticResource BoolToVis}}"/>
+                                                    <TextBlock Text="{Binding LinkName}"
+                                                               FontSize="12" FontWeight="SemiBold"
+                                                               VerticalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                </DockPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
 
-                <!-- Project-wide marker summary -->
-                <Border Grid.Row="3"
-                        BorderBrush="{DynamicResource PaneBorder}" BorderThickness="0,1,0,0"
-                        Background="{DynamicResource SidebarBg}"
-                        Padding="12,6">
-                    <TextBlock Text="{Binding ProjectMarkerSummary}"
-                               FontSize="11" Foreground="{DynamicResource MutedFg}"
-                               TextWrapping="Wrap"/>
-                </Border>
-            </Grid>
+                                <!-- ── Section: へのリンク ── -->
+                                <Border Padding="12,8"
+                                        Margin="0,6,0,0"
+                                        BorderBrush="{DynamicResource PaneBorder}" BorderThickness="0,1,0,1"
+                                        Background="{DynamicResource GroupHeaderBg}"
+                                        Visibility="{Binding LinkPanel.HasNote, Converter={StaticResource BoolToVis}}">
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding LinkPanel.BacklinkCountText}"
+                                                   DockPanel.Dock="Right"
+                                                   Foreground="{DynamicResource MutedFg}" FontSize="11"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Text="へのリンク"
+                                                   FontWeight="SemiBold" FontSize="12"
+                                                   VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Border>
+
+                                <!-- No backlinks -->
+                                <TextBlock Text="（なし）"
+                                           FontSize="11" Foreground="{DynamicResource MutedFg}"
+                                           Margin="12,6,12,6"
+                                           Visibility="{Binding LinkPanel.HasNoBacklinks, Converter={StaticResource BoolToVis}}"/>
+
+                                <!-- Backlink items -->
+                                <ItemsControl ItemsSource="{Binding LinkPanel.Backlinks}"
+                                              Visibility="{Binding LinkPanel.HasNote, Converter={StaticResource BoolToVis}}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="12,7"
+                                                    BorderBrush="{DynamicResource ItemBorderBrush}" BorderThickness="0,0,0,1"
+                                                    Cursor="Hand"
+                                                    MouseLeftButtonDown="Backlink_MouseLeftButtonDown">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="{DynamicResource MarkerHoverBg}"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <TextBlock Text="{Binding DisplayText}"
+                                                           FontSize="12"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+
+            </TabControl>
 
         </Grid>
     </Grid>

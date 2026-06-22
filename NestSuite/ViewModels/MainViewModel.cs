@@ -9,6 +9,7 @@ public partial class MainViewModel : BaseViewModel, IDisposable
     private readonly NoteWorkspaceViewModel _notes = new();
     private readonly TaskBoardViewModel _tasks = new();
     private readonly MarkerPanelViewModel _markers = new(new MarkerExtractorService());
+    private readonly NoteLinkPanelViewModel _links = new();
     private readonly EditorStateViewModel _editor = new();
     private readonly ProjectSessionViewModel _session = new();
     private readonly WorkspaceChangeCoordinator _changeCoordinator;
@@ -78,6 +79,8 @@ public partial class MainViewModel : BaseViewModel, IDisposable
     private void WorkspaceChanged(object? sender, WorkspaceChangeEventArgs e)
     {
         if (e.IsDataChanged) IsModified = true;
+        if (e.IsDataChanged || e.PropertyNames.Contains(nameof(SelectedNote)))
+            RefreshLinks();
         foreach (var propertyName in e.PropertyNames)
             OnPropertyChanged(propertyName);
     }
