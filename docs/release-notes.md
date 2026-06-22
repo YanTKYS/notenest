@@ -1,3 +1,11 @@
+## v2.7.0 — .NET Framework 4.8 テストビルド追加（GitHub Actions）
+
+- **Release workflow に .NET Framework 4.8 前提の `net48_test` 版ビルドを追加した（v2.7.0）。** `NestSuite.Net48Test.csproj`（`net48` / framework-dependent / 非 self-contained）を新設し、`release.yml` の `Build net48 test` ステップで `dotnet build` する。成功時に `nestsuite_${tag}_net48_test.zip` を生成し、同じ GitHub Release に追加アセットとして添付する。失敗時は警告を出力し、現行 .NET 8 版リリースは継続して作成される。
+- **net48_test 版の目的は軽量化検証のみであり、正式サポート外とする（v2.7.0）。** framework-dependent ビルドは .NET 8 self-contained 版と異なり、.NET Framework 4.8 ランタイムが端末に存在することを前提とする。ZIP 内に `README_net48_test.txt` を同梱し「軽量化検証用・正式サポート外・実機確認前提」を明記する。
+- **現行 .NET 8 self-contained single-file アセット（`nestsuite_*.zip`）の出力・命名・構成に変更はない（v2.7.0）。** CI（`ci.yml`）の build/test ステップも変更なし。NestSuite.sln に net48 プロジェクトは含めない。
+- **`NestSuite.Net48Test.csproj` は現行ソース（`NestSuite/**`）を `<Compile Include>` / `<Page Include>` でリンク参照する（v2.7.0）。** 現行 `NestSuite.csproj` の multi-target 化は行わない。`System.Text.Json` NuGet パッケージ（v8.0.5）と C# 9–11 ポリフィル（`IsExternalInit` / `RequiredMemberAttribute` / `CompilerFeatureRequiredAttribute`）を `Polyfills/Net48Polyfills.cs` として追加し、コンパイルを可能にした。
+- **保存形式・NoteNest 保存スキーマ `1.4.1` に変更はない（v2.7.0）。** IdeaNest / ChatNest / TempNest の保存形式に変更はない。
+
 ## v2.6.9 — NoteNest リンク管理タブ（M3）
 
 - **右ペイン下部をタブ化し「マーカー」と「リンク」タブを切り替えられるようにした（M3）。** 従来はマーカー一覧のみだった右ペイン下部を `TabControl` に変更し、既存の「マーカー」タブをそのまま維持しつつ、新規の「リンク」タブを追加した。
