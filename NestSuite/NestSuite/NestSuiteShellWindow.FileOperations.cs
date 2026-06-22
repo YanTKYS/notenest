@@ -38,7 +38,11 @@ public partial class NestSuiteShellWindow
         }
         catch (Exception ex)
         {
-            _dialogs.ShowError($"IdeaNest ファイルの保存に失敗しました。\n\n{ex.Message}", "保存エラー");
+            bool logged = ErrorLogService.Log("IdeaNestSave", ex, "IdeaNest", path);
+            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
+            _dialogs.ShowError(
+                $"IdeaNest ファイルの保存に失敗しました。\n{FileErrorMessages.ForSave(ex)}{logHint}",
+                "保存エラー");
             return false;
         }
     }
@@ -119,7 +123,11 @@ public partial class NestSuiteShellWindow
         }
         catch (Exception ex)
         {
-            _dialogs.ShowError($"IdeaNest ファイルを開けませんでした。\n\n{ex.Message}", "読込エラー");
+            bool logged = ErrorLogService.Log("IdeaNestLoad", ex, "IdeaNest", path);
+            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
+            _dialogs.ShowError(
+                $"IdeaNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
+                "読込エラー");
         }
     }
 
@@ -172,7 +180,11 @@ public partial class NestSuiteShellWindow
         }
         catch (Exception ex)
         {
-            _dialogs.ShowError($"ChatNest ファイルの保存に失敗しました。\n\n{ex.Message}", "保存エラー");
+            bool logged = ErrorLogService.Log("ChatNestSave", ex, "ChatNest", path);
+            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
+            _dialogs.ShowError(
+                $"ChatNest ファイルの保存に失敗しました。\n{FileErrorMessages.ForSave(ex)}{logHint}",
+                "保存エラー");
             return false;
         }
     }
@@ -255,7 +267,11 @@ public partial class NestSuiteShellWindow
         }
         catch (Exception ex)
         {
-            _dialogs.ShowError($"ChatNest ファイルを開けませんでした。\n\n{ex.Message}", "読込エラー");
+            bool logged = ErrorLogService.Log("ChatNestLoad", ex, "ChatNest", path);
+            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
+            _dialogs.ShowError(
+                $"ChatNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
+                "読込エラー");
         }
     }
 
@@ -471,7 +487,11 @@ public partial class NestSuiteShellWindow
         }
         catch (Exception ex)
         {
-            _dialogs.ShowError($"NoteNest ファイルを開けませんでした。\n\n{ex.Message}", "読込エラー");
+            bool logged = ErrorLogService.Log("NoteNestLoad", ex, "NoteNest", path);
+            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
+            _dialogs.ShowError(
+                $"NoteNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
+                "読込エラー");
         }
     }
 
@@ -548,7 +568,11 @@ public partial class NestSuiteShellWindow
         }
         catch (Exception ex)
         {
-            _dialogs.ShowError($"NoteNest ファイルを開けませんでした。\n\n{ex.Message}", "読込エラー");
+            bool logged = ErrorLogService.Log("NoteNestLoadInitial", ex, "NoteNest", path);
+            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
+            _dialogs.ShowError(
+                $"NoteNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
+                "読込エラー");
             EnsureDefaultTab();
         }
     }
@@ -610,7 +634,11 @@ public partial class NestSuiteShellWindow
         }
         catch (Exception ex)
         {
-            _dialogs.ShowError($"ChatNest ファイルを開けませんでした。\n\n{ex.Message}", "読込エラー");
+            bool logged = ErrorLogService.Log("ChatNestLoadInitial", ex, "ChatNest", path);
+            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
+            _dialogs.ShowError(
+                $"ChatNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
+                "読込エラー");
             EnsureDefaultTab();
         }
     }
@@ -651,7 +679,11 @@ public partial class NestSuiteShellWindow
         }
         catch (Exception ex)
         {
-            _dialogs.ShowError($"IdeaNest ファイルを開けませんでした。\n\n{ex.Message}", "読込エラー");
+            bool logged = ErrorLogService.Log("IdeaNestLoadInitial", ex, "IdeaNest", path);
+            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
+            _dialogs.ShowError(
+                $"IdeaNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
+                "読込エラー");
             EnsureDefaultTab();
         }
     }

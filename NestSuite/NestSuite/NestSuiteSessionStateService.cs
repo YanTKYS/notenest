@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json;
+using NestSuite.Services;
 
 namespace NestSuite;
 
@@ -30,7 +31,7 @@ public class NestSuiteSessionStateService
     public void Save(NestSuiteSessionState state)
     {
         try { WriteAtomically(state); }
-        catch { }
+        catch (Exception ex) { ErrorLogService.Log("SessionSave", ex); }
     }
 
     private void WriteAtomically(NestSuiteSessionState state)

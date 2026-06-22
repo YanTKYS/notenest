@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json;
+using NestSuite.Services;
 
 namespace NestSuite.TempNest;
 
@@ -25,8 +26,9 @@ public static class TempNestStoreService
                 slots[i] = i < data.Slots.Count ? data.Slots[i] : new TempNestSlot();
             return slots;
         }
-        catch
+        catch (Exception ex)
         {
+            ErrorLogService.Log("TempNestLoad", ex, "TempNest", DataPath);
             return CreateEmptySlots();
         }
     }
@@ -43,7 +45,10 @@ public static class TempNestStoreService
             };
             File.WriteAllText(DataPath, JsonSerializer.Serialize(data, JsonOpts));
         }
-        catch { }
+        catch (Exception ex)
+        {
+            ErrorLogService.Log("TempNestSave", ex, "TempNest", DataPath);
+        }
     }
 
     private static TempNestSlot[] CreateEmptySlots()
