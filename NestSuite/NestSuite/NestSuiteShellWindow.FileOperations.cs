@@ -109,13 +109,7 @@ public partial class NestSuiteShellWindow
     }
 
     /// <summary>v1.9.7: 新規 IdeaNest タブを作成する。既存の IdeaNest タブには影響しない。</summary>
-    private void NewIdeaNestSession()
-    {
-        var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.IdeaNest);
-        _tabs.Add(tab);
-        _sessionManager.Add(CreateSessionForTab(tab));
-        ActivateTab(tab);
-    }
+    private void NewIdeaNestSession() => NewWorkspaceSession(NestSuiteWorkspaceKind.IdeaNest);
 
     // ── v1.7.4: ChatNest ファイル操作 ─────────────────────────────────────
 
@@ -232,13 +226,7 @@ public partial class NestSuiteShellWindow
     /// v1.9.2: 新規 ChatNest タブを作成する。既存の ChatNest タブには影響しない。
     /// 各タブは独立した ViewModel を持つため、破棄確認や Clear() は不要。
     /// </summary>
-    private void NewChatNestSession()
-    {
-        var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.ChatNest);
-        _tabs.Add(tab);
-        _sessionManager.Add(CreateSessionForTab(tab));
-        ActivateTab(tab);
-    }
+    private void NewChatNestSession() => NewWorkspaceSession(NestSuiteWorkspaceKind.ChatNest);
 
     // ── v1.7.4: ファイルメニューハンドラ（タブ種別でディスパッチ） ─────────
     // ツール種別を明示的に分岐することで、IdeaNest 選択中に非表示の NoteNest へ
@@ -396,13 +384,7 @@ public partial class NestSuiteShellWindow
     // ── v1.9.5: NoteNest ファイル操作 ─────────────────────────────────────
 
     /// <summary>v1.9.5: 新規 NoteNest タブを作成する。既存の NoteNest タブには影響しない。</summary>
-    private void NewNoteNestSession()
-    {
-        var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.NoteNest);
-        _tabs.Add(tab);
-        _sessionManager.Add(CreateSessionForTab(tab));
-        ActivateTab(tab);
-    }
+    private void NewNoteNestSession() => NewWorkspaceSession(NestSuiteWorkspaceKind.NoteNest);
 
     /// <summary>
     /// v1.9.5: .notenest ファイルを開き、新しい NoteNest タブ／Session を作成してロードする。

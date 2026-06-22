@@ -314,25 +314,16 @@ public partial class NestSuiteShellWindow
     /// v1.9.7: IdeaNest タブを閉じる前の確認と PropertyChanged 購読解除。
     /// ViewModel はタブごとの独立インスタンスのため LoadFromWorkspace リセットは不要。
     /// </summary>
-    private bool ConfirmAndResetIdeaNest(NestSuiteDocumentTab tab)
-    {
-        if (tab.IsModified &&
-            !_dialogs.Confirm(
-                $"「{tab.DisplayName}」には保存されていない変更があります。\n保存せずに閉じますか？",
-                "タブを閉じる", MessageBoxImage.Warning))
-            return false;
-
-        // v1.9.7: ViewModel はタブごとの独立インスタンス。PropertyChanged 購読を解除する。
-        // v2.3.1 TD-1: Dispose でタイマー停止・イベント解除する
-        if (_sessionManager.TryGet(tab.Id, out var session) &&
-            session?.WorkspaceViewModel is IdeaNestWorkspaceViewModel vm)
+    private bool ConfirmAndResetIdeaNest(NestSuiteDocumentTab tab) =>
+        ConfirmTabClose(tab, () =>
         {
-            vm.PropertyChanged -= OnIdeaNestPropertyChanged;
-            vm.Dispose();
-        }
-
-        return true;
-    }
+            if (_sessionManager.TryGet(tab.Id, out var session) &&
+                session?.WorkspaceViewModel is IdeaNestWorkspaceViewModel vm)
+            {
+                vm.PropertyChanged -= OnIdeaNestPropertyChanged;
+                vm.Dispose();
+            }
+        });
 
     // ── v1.7.6: タブを閉じる操作 ──────────────────────────────────────────
 
@@ -542,48 +533,30 @@ public partial class NestSuiteShellWindow
     /// 未保存の場合は確認ダイアログを表示。確認後は PropertyChanged 購読を解除する。
     /// v1.9.5: ViewModel はタブごとの独立インスタンスのため CreateNewProjectDirect() は不要。
     /// </summary>
-    private bool ConfirmAndResetNoteNest(NestSuiteDocumentTab tab)
-    {
-        if (tab.IsModified &&
-            !_dialogs.Confirm(
-                $"「{tab.DisplayName}」には保存されていない変更があります。\n保存せずに閉じますか？",
-                "タブを閉じる", MessageBoxImage.Warning))
-            return false;
-
-        // v1.9.5: ViewModel はタブごとの独立インスタンス。PropertyChanged 購読を解除し破棄する。
-        // Dispose() でタイマーを停止する（DispatcherTimer は Stop しないと GC されない）
-        if (_sessionManager.TryGet(tab.Id, out var session) &&
-            session?.WorkspaceViewModel is MainViewModel vm)
+    private bool ConfirmAndResetNoteNest(NestSuiteDocumentTab tab) =>
+        ConfirmTabClose(tab, () =>
         {
-            vm.PropertyChanged -= OnNoteNestSessionPropertyChanged;
-            vm.Dispose();
-        }
-
-        return true;
-    }
+            if (_sessionManager.TryGet(tab.Id, out var session) &&
+                session?.WorkspaceViewModel is MainViewModel vm)
+            {
+                vm.PropertyChanged -= OnNoteNestSessionPropertyChanged;
+                vm.Dispose();
+            }
+        });
 
     /// <summary>
     /// ChatNest タブを閉じる前の確認とリセット。
     /// 未保存の場合は確認ダイアログを表示。確認後は <see cref="ChatNestWorkspaceViewModel.Clear"/>
     /// でリセットする。
     /// </summary>
-    private bool ConfirmAndResetChatNest(NestSuiteDocumentTab tab)
-    {
-        if (tab.IsModified &&
-            !_dialogs.Confirm(
-                $"「{tab.DisplayName}」には保存されていない変更があります。\n保存せずに閉じますか？",
-                "タブを閉じる", MessageBoxImage.Warning))
-            return false;
-
-        // v1.9.2: ViewModel はタブごとの独立インスタンス。Clear() は不要。イベント購読を解除する
-        // v2.3.1 TD-1: Dispose でタイマー停止・イベント解除する
-        if (_sessionManager.TryGet(tab.Id, out var session) &&
-            session?.WorkspaceViewModel is ChatNestWorkspaceViewModel vm)
+    private bool ConfirmAndResetChatNest(NestSuiteDocumentTab tab) =>
+        ConfirmTabClose(tab, () =>
         {
-            vm.PropertyChanged -= OnChatNestPropertyChanged;
-            vm.Dispose();
-        }
-
-        return true;
-    }
+            if (_sessionManager.TryGet(tab.Id, out var session) &&
+                session?.WorkspaceViewModel is ChatNestWorkspaceViewModel vm)
+            {
+                vm.PropertyChanged -= OnChatNestPropertyChanged;
+                vm.Dispose();
+            }
+        });
 }
