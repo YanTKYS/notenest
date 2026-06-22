@@ -1,3 +1,12 @@
+## v2.7.6 — ファイル操作共通化 第一段階（TD-3-1）
+
+- **3 Workspace のファイル操作重複を段階的に整理した（TD-3-1）。** Load / Save / タブ同期周辺の共通処理を `NestSuiteShellWindow.WorkspaceFileHelper.cs` に集約した。
+- **新設ヘルパー:** `RegisterLoadedTab`（タブ・セッション登録・アクティブ化・最近ファイル更新の一括処理）/ `LogAndShowLoadError`・`LogAndShowSaveError`（例外ログ記録とユーザーダイアログ表示の一括処理）/ `CheckAndActivateDuplicateTabForSave`（名前を付けて保存時の重複タブ検出と既存タブ活性化）。
+- **委譲先メソッド:** `LoadNoteNestFileAt` / `LoadChatNestFileAt` / `LoadIdeaNestFileAt` / `LoadInitialNoteNestFile` / `LoadInitialChatNestFile` / `LoadInitialIdeaNestFile`（各 Load メソッドの try 末尾と catch ブロックを委譲）/ `TrySaveChatNestToPath` / `TrySaveIdeaNestToPath`（catch ブロックを委譲）/ `SaveNoteNestFileAs` / `SaveChatNestFileAs` / `SaveIdeaNestFileAs`（重複タブ検出を委譲）。
+- **既存のメソッド名・外部シグネチャは変更なし。** `LoadNoteNestFileAt` 等の公開シグネチャはすべて維持。ChatNest の `PropertyChanged` 購読順序（`_sessionManager.Add` の直後・`ActivateTab` の直前）を `afterRegister` パラメータで維持。
+- **UI 動作・保存形式・エラーメッセージの意味に変更はない。** `ErrorLogService` の方針（Error のみ / Info・Warning なし）に変更はない。
+- **保存形式・NoteNest 保存スキーマ `1.4.1` に変更はない（v2.7.6）。** IdeaNest / ChatNest / TempNest の保存形式に変更はない。
+
 ## v2.7.5 — 例外診断改善・Error ログ最小導入（TD-4 / TD-5 縮小採用）
 
 - **ファイル読込・保存・セッション復元周辺の例外診断を改善した（TD-4）。** `FileNotFoundException` / `UnauthorizedAccessException` / `JsonException` / `IOException` など代表的な例外を種別分けし、ユーザー向けに「ファイルが見つかりません。移動または削除された可能性があります。」など原因別の短いメッセージを表示するよう変更した。`ex.Message` をそのまま表示する箇所（9 箇所）をすべて更新した。
