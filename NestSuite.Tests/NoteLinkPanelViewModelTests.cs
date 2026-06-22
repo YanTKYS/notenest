@@ -5,12 +5,8 @@ namespace NestSuite.Tests;
 
 public class NoteLinkPanelViewModelTests
 {
-    private static NoteViewModel MakeNote(string title, string content = "")
-    {
-        var note = new NoteViewModel { Title = title };
-        note.Content = content;
-        return note;
-    }
+    private static NoteViewModel MakeNote(string title, string content = "") =>
+        new NoteViewModel(new NestSuite.Models.Note { Title = title, Content = content });
 
     [Fact]
     public void Refresh_WithNull_ClearsAllAndHasNoteIsFalse()
