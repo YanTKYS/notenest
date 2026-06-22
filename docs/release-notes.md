@@ -1,3 +1,12 @@
+## v2.7.7 — 新規作成・タブクローズ処理共通化（TD-3-2）
+
+- **3 Workspace の新規作成・タブクローズ処理の重複を整理した（TD-3-2）。** `NestSuiteShellWindow.WorkspaceTabHelper.cs` を新設し、共通ヘルパーを導入した。
+- **新設ヘルパー:** `ConfirmTabClose(tab, cleanup)`（未保存確認ダイアログとクリーンアップ処理の一括実行。キャンセル時は cleanup を呼ばず false を返す）/ `NewWorkspaceSession(kind)`（無題タブの作成・セッション登録・アクティブ化の一括処理）。
+- **委譲先メソッド:** `ConfirmAndResetNoteNest` / `ConfirmAndResetChatNest` / `ConfirmAndResetIdeaNest`（確認ダイアログを `ConfirmTabClose` へ委譲し、ViewModel 別クリーンアップをラムダで渡す）/ `NewNoteNestSession` / `NewChatNestSession` / `NewIdeaNestSession`（`NewWorkspaceSession` への 1 行委譲式に簡略化）。
+- **既存のメソッド名・外部シグネチャは変更なし。** `ConfirmAndResetNoteNest` 等の private メソッド名はすべて維持。未保存確認ダイアログのメッセージ文・挙動に変更なし。
+- **UI 動作・保存形式に変更はない。** PropertyChanged 購読解除・Dispose 順序はリファクタリング前と同一。
+- **保存形式・NoteNest 保存スキーマ `1.4.1` に変更はない（v2.7.7）。** IdeaNest / ChatNest / TempNest の保存形式に変更はない。
+
 ## v2.7.6 — ファイル操作共通化 第一段階（TD-3-1）
 
 - **3 Workspace のファイル操作重複を段階的に整理した（TD-3-1）。** Load / Save / タブ同期周辺の共通処理を `NestSuiteShellWindow.WorkspaceFileHelper.cs` に集約した。
