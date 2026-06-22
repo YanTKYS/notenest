@@ -28,6 +28,7 @@
 - **リポジトリ名変更**（`notenest` → `nestsuite`）は v2.0.1 リリース後に実施予定（[repository-rename.md](operations/repository-rename.md) 参照）
 - **`.nestsuite` 統合形式**（全 Workspace を 1 ファイルに収める形式）は将来検討
 - **設定キー・ProgId など互換性識別子の整理**（`NoteNest_*` 系の Mutex 名・Pipe 名・AppData パス等）は必要性が出た場合に検討
+- **.NET Framework 4.8 への正式移行は対応しない。** v2.7.0 で追加した `net48_test` ビルドは軽量化検証用の Experimental asset であり、正式サポートへの移行は今後の実機検証結果を踏まえて別途判断する
 
 ---
 
