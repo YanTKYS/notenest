@@ -18,7 +18,7 @@ using NestSuite.Views;
 
 namespace NestSuite;
 
-partial class NestSuiteShellWindow
+public partial class NestSuiteShellWindow
 {
     /// <summary>v1.9.7: 指定 Session の IdeaNest を指定パスへ保存する。失敗時はエラーダイアログを表示し false を返す。</summary>
     private bool TrySaveIdeaNestToPath(NestSuiteWorkspaceSession session, string path)

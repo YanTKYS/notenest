@@ -18,7 +18,7 @@ using NestSuite.Views;
 
 namespace NestSuite;
 
-partial class NestSuiteShellWindow
+public partial class NestSuiteShellWindow
 {
     // ── v1.17.0: タブドラッグ並び替え ─────────────────────────────────────
 
