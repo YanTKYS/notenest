@@ -170,4 +170,19 @@ public class NoteLinkPanelViewModelTests
 
         Assert.Equal("Beta", vm.Backlinks.Single().DisplayText);
     }
+
+    [Fact]
+    public void Refresh_DuplicateTitlesInData_DoesNotThrow()
+    {
+        var vm = new NoteLinkPanelViewModel();
+        var noteA = MakeNote("A", "[[Dup]]");
+        var dup1 = MakeNote("Dup", "first");
+        var dup2 = MakeNote("Dup", "second");
+
+        // 同名ノートが2件あっても例外にならず、リンク切れ扱いにしない
+        var ex = Record.Exception(() => vm.Refresh(noteA, [noteA, dup1, dup2]));
+        Assert.Null(ex);
+        Assert.Single(vm.OutboundLinks);
+        Assert.False(vm.OutboundLinks[0].IsBroken);
+    }
 }

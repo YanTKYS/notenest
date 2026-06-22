@@ -72,12 +72,11 @@ public sealed class NoteLinkPanelViewModel : BaseViewModel
         }
 
         var allNotesList = allNotes.ToList();
-        var titleLookup = allNotesList.ToDictionary(
-            n => n.Title, n => n, StringComparer.OrdinalIgnoreCase);
+        var titleLookup = allNotesList.ToLookup(n => n.Title, StringComparer.OrdinalIgnoreCase);
 
         OutboundLinks = NoteLinkService.ExtractAllLinks(selectedNote.Content)
             .Where(link => !string.IsNullOrWhiteSpace(link))
-            .Select(link => new OutboundLinkEntry(link, titleLookup.GetValueOrDefault(link)))
+            .Select(link => new OutboundLinkEntry(link, titleLookup[link].FirstOrDefault()))
             .ToList();
 
         Backlinks = allNotesList
