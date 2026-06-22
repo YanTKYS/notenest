@@ -2,7 +2,6 @@ using System.Reflection;
 using NestSuite;
 using NestSuite.ChatNest;
 using NestSuite.IdeaNest.ViewModels;
-using NestSuite.Services;
 using Xunit;
 
 namespace NestSuite.Tests;
@@ -117,11 +116,17 @@ public class WorkspaceSessionSyncHelperTests
     }
 
     // ── ErrorLogService: Info/Warning ログが存在しないことを確認 ───────────
+    // ErrorLogService は internal のため typeof() 不可。同アセンブリ内の public 型から Assembly を取得する。
+
+    private static readonly Type? ErrorLogServiceType =
+        typeof(NestSuite.Services.FileErrorMessages).Assembly
+            .GetType("NestSuite.Services.ErrorLogService");
 
     [Fact]
     public void ErrorLogService_HasNoInfoMethod()
     {
-        var method = typeof(ErrorLogService).GetMethod("Info",
+        Assert.NotNull(ErrorLogServiceType);
+        var method = ErrorLogServiceType!.GetMethod("Info",
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
         Assert.Null(method);
     }
@@ -129,7 +134,8 @@ public class WorkspaceSessionSyncHelperTests
     [Fact]
     public void ErrorLogService_HasNoWarningMethod()
     {
-        var method = typeof(ErrorLogService).GetMethod("Warning",
+        Assert.NotNull(ErrorLogServiceType);
+        var method = ErrorLogServiceType!.GetMethod("Warning",
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
         Assert.Null(method);
     }
@@ -137,7 +143,8 @@ public class WorkspaceSessionSyncHelperTests
     [Fact]
     public void ErrorLogService_HasLogMethod_ErrorOnly()
     {
-        var method = typeof(ErrorLogService).GetMethod("Log",
+        Assert.NotNull(ErrorLogServiceType);
+        var method = ErrorLogServiceType!.GetMethod("Log",
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
         Assert.NotNull(method);
         Assert.Equal(typeof(bool), method!.ReturnType);
