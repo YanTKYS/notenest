@@ -52,6 +52,7 @@ public partial class MainViewModel
         var copy = _notes.DuplicateNote(source);
         if (copy == null) return null;
         SelectNote(copy);
+        SyncTreeSelectionCallback?.Invoke(copy);
         StatusMessage = $"ノート「{copy.Title}」を作成しました。";
         return copy;
     }
