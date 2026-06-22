@@ -94,7 +94,7 @@ public partial class MainViewModel
             {
                 var metadataSeparator = informationalVersion.IndexOf('+');
                 return metadataSeparator >= 0
-                    ? informationalVersion[..metadataSeparator]
+                    ? informationalVersion.Substring(0, metadataSeparator)
                     : informationalVersion;
             }
 

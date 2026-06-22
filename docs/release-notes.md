@@ -1,3 +1,12 @@
+## v2.7.2 — net48_test 残存非互換 API の一括修正
+
+- **net48_test ビルドで残存していた .NET Framework 4.8 非互換の API 呼び出しをすべて棚卸しし、意味を変えない最小置換で修正した（v2.7.2）。** v2.7.1 の修正に続く第2弾であり、本対応を最後の軽量互換修正トライアルとする。
+- **修正した互換性エラー（計13件）:** `ToHashSet()` → `new HashSet<T>(...)` に置換（`TaskBoardViewModel` / `NoteWorkspaceViewModel` / `ExportService`）/ インデックス・範囲演算子 `[..n]` / `[n..]` → `Substring(0, n)` / `Substring(n)` に置換（`MainViewModel.Facade.cs` / `ExportService.cs` / `FileAssociationService.cs` / `CardOperationsService.cs` / `IdeaCardViewModel.cs` / `IdeaNestWorkspaceService.cs`）/ `string.Join(char, ...)` → `string.Join(string, ...)` に置換（`IdeaCardViewModel.cs`）/ `ReadLineAsync(CancellationToken)` → `ReadLineAsync()` に変更（`NestSuiteSingleInstance.cs`）/ `Environment.ProcessPath` → `Process.GetCurrentProcess().MainModule?.FileName` のフォールバックのみ使用に変更（`NestSuiteShellWindow.xaml.cs`）。
+- **変更対象ファイル:** `MainViewModel.Facade.cs` / `TaskBoardViewModel.cs` / `NoteWorkspaceViewModel.cs` / `ExportService.cs` / `FileAssociationService.cs` / `CardOperationsService.cs` / `IdeaCardViewModel.cs` / `IdeaNestWorkspaceService.cs` / `NestSuiteSingleInstance.cs` / `NestSuiteShellWindow.xaml.cs`（計10ファイル）。
+- **現行 .NET 8 self-contained 版は継続。** 置換した API はすべて .NET 8 でも動作する。CI（`ci.yml`）への影響なし。
+- **net48_test は引き続き軽量化検証用・正式サポート外とする（v2.7.2）。** 本修正後の実機起動確認は別途手動で行う。
+- **保存形式・NoteNest 保存スキーマ `1.4.1` に変更はない（v2.7.2）。** IdeaNest / ChatNest / TempNest の保存形式に変更はない。
+
 ## v2.7.1 — net48_test 互換性エラーの最小修正
 
 - **net48_test ビルドで発生していた .NET Framework 4.8 非互換の API 呼び出しを棚卸しし、意味を変えない最小置換で修正した（v2.7.1）。** 現行 .NET 8 ソースを変更する形で対応し、`.NET 8 / net48 両方で動作する古い書き方` へ統一した。`#if NET48` 条件コンパイルは使用していない。

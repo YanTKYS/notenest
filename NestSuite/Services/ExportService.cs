@@ -51,7 +51,7 @@ public class ExportService
     private static TaskCollection ScopeTasks(TaskCollection tasks, ExportTarget target, IEnumerable<Notebook> scopedNotebooks)
     {
         if (target == ExportTarget.Project) return tasks;
-        var noteIds = scopedNotebooks.SelectMany(notebook => notebook.Notes).Select(note => note.Id).ToHashSet();
+        var noteIds = new HashSet<string>(scopedNotebooks.SelectMany(notebook => notebook.Notes).Select(note => note.Id));
         return new TaskCollection
         {
             Today = FilterLinkedTasks(tasks.Today, noteIds),
@@ -196,9 +196,9 @@ public class ExportService
         // Check the stem (part before first dot) against Windows reserved device names.
         // Windows treats CON.txt, AUX.anything, etc. as reserved devices too.
         var dotIndex = safe.IndexOf('.');
-        var stem     = dotIndex >= 0 ? safe[..dotIndex] : safe;
+        var stem     = dotIndex >= 0 ? safe.Substring(0, dotIndex) : safe;
         if (ReservedNames.Contains(stem))
-            safe = dotIndex >= 0 ? stem + "_" + safe[dotIndex..] : safe + "_";
+            safe = dotIndex >= 0 ? stem + "_" + safe.Substring(dotIndex) : safe + "_";
 
         return safe;
     }

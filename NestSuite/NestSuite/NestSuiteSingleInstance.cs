@@ -61,7 +61,7 @@ public sealed class NestSuiteSingleInstance : IDisposable
                 using var reader = new StreamReader(pipe, Encoding.UTF8);
                 string? line;
                 while (!ct.IsCancellationRequested &&
-                       (line = await reader.ReadLineAsync(ct).ConfigureAwait(false)) != null)
+                       (line = await reader.ReadLineAsync().ConfigureAwait(false)) != null)
                 {
                     line = line.Trim();
                     if (!string.IsNullOrEmpty(line)) onFilePath(line);
