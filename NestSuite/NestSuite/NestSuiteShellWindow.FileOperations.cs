@@ -38,11 +38,7 @@ public partial class NestSuiteShellWindow
         }
         catch (Exception ex)
         {
-            bool logged = ErrorLogService.Log("IdeaNestSave", ex, "IdeaNest", path);
-            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
-            _dialogs.ShowError(
-                $"IdeaNest ファイルの保存に失敗しました。\n{FileErrorMessages.ForSave(ex)}{logHint}",
-                "保存エラー");
+            LogAndShowSaveError("IdeaNestSave", "IdeaNest", "IdeaNest ファイルの保存に失敗しました。", ex, path);
             return false;
         }
     }
@@ -71,18 +67,7 @@ public partial class NestSuiteShellWindow
         // v1.9.7 fix: 選択中タブ以外の IdeaNest タブが同じパスを開いていないか確認する
         // 2 つの独立 ViewModel が同じファイルを指す状態を防ぐ
         var normalizedPath = NormalizeFilePath(rawPath);
-        var duplicateTab = _tabs.FirstOrDefault(t =>
-            t.Id != _selectedTab.Id &&
-            t.WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest &&
-            NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, normalizedPath));
-        if (duplicateTab != null)
-        {
-            _dialogs.ShowError(
-                $"「{Path.GetFileName(normalizedPath)}」は既に別のタブで開かれています。\n既存のタブを表示します。",
-                "保存できません");
-            ActivateTab(duplicateTab);
-            return;
-        }
+        if (CheckAndActivateDuplicateTabForSave(NestSuiteWorkspaceKind.IdeaNest, normalizedPath)) return;
         TrySaveIdeaNestToPath(session, normalizedPath);
     }
 
@@ -115,19 +100,11 @@ public partial class NestSuiteShellWindow
             vm.LoadFromWorkspace(workspace);
             var tab = NestSuiteTabFactory.FromFilePath(path);
             var session = new NestSuiteWorkspaceSession(tab.Id, NestSuiteWorkspaceKind.IdeaNest, vm, path, false);
-            _tabs.Add(tab);
-            _sessionManager.Add(session);
-            ActivateTab(tab);
-            _recentFiles.Add(path);
-            UpdateRecentFilesMenu();
+            RegisterLoadedTab(tab, session, path);
         }
         catch (Exception ex)
         {
-            bool logged = ErrorLogService.Log("IdeaNestLoad", ex, "IdeaNest", path);
-            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
-            _dialogs.ShowError(
-                $"IdeaNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
-                "読込エラー");
+            LogAndShowLoadError("IdeaNestLoad", "IdeaNest", "IdeaNest ファイルを開けませんでした。", ex, path);
         }
     }
 
@@ -180,11 +157,7 @@ public partial class NestSuiteShellWindow
         }
         catch (Exception ex)
         {
-            bool logged = ErrorLogService.Log("ChatNestSave", ex, "ChatNest", path);
-            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
-            _dialogs.ShowError(
-                $"ChatNest ファイルの保存に失敗しました。\n{FileErrorMessages.ForSave(ex)}{logHint}",
-                "保存エラー");
+            LogAndShowSaveError("ChatNestSave", "ChatNest", "ChatNest ファイルの保存に失敗しました。", ex, path);
             return false;
         }
     }
@@ -214,18 +187,7 @@ public partial class NestSuiteShellWindow
         var rawPath = _dialogs.SelectChatNestSavePath(defaultName);
         if (rawPath == null) return;
         var normalizedPath = NormalizeFilePath(rawPath);
-        var duplicateTab = _tabs.FirstOrDefault(t =>
-            t.Id != _selectedTab.Id &&
-            t.WorkspaceKind == NestSuiteWorkspaceKind.ChatNest &&
-            NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, normalizedPath));
-        if (duplicateTab != null)
-        {
-            _dialogs.ShowError(
-                $"「{Path.GetFileName(normalizedPath)}」は既に別のタブで開かれています。\n既存のタブを表示します。",
-                "保存できません");
-            ActivateTab(duplicateTab);
-            return;
-        }
+        if (CheckAndActivateDuplicateTabForSave(NestSuiteWorkspaceKind.ChatNest, normalizedPath)) return;
         TrySaveChatNestToPath(session, normalizedPath);
     }
 
@@ -258,20 +220,11 @@ public partial class NestSuiteShellWindow
             newVm.LoadMessages(messages);
             var tab = NestSuiteTabFactory.FromFilePath(path);
             var session = new NestSuiteWorkspaceSession(tab.Id, NestSuiteWorkspaceKind.ChatNest, newVm, path, false);
-            _tabs.Add(tab);
-            _sessionManager.Add(session);
-            newVm.PropertyChanged += OnChatNestPropertyChanged;
-            ActivateTab(tab);
-            _recentFiles.Add(path);
-            UpdateRecentFilesMenu();
+            RegisterLoadedTab(tab, session, path, () => newVm.PropertyChanged += OnChatNestPropertyChanged);
         }
         catch (Exception ex)
         {
-            bool logged = ErrorLogService.Log("ChatNestLoad", ex, "ChatNest", path);
-            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
-            _dialogs.ShowError(
-                $"ChatNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
-                "読込エラー");
+            LogAndShowLoadError("ChatNestLoad", "ChatNest", "ChatNest ファイルを開けませんでした。", ex, path);
         }
     }
 
@@ -479,19 +432,11 @@ public partial class NestSuiteShellWindow
             if (!vm.OpenFileAtStartup(path)) return;
             var tab = NestSuiteTabFactory.FromFilePath(path);
             var session = new NestSuiteWorkspaceSession(tab.Id, NestSuiteWorkspaceKind.NoteNest, vm, path, false);
-            _tabs.Add(tab);
-            _sessionManager.Add(session);
-            ActivateTab(tab);
-            _recentFiles.Add(path);
-            UpdateRecentFilesMenu();
+            RegisterLoadedTab(tab, session, path);
         }
         catch (Exception ex)
         {
-            bool logged = ErrorLogService.Log("NoteNestLoadTab", ex, "NoteNest", path);
-            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
-            _dialogs.ShowError(
-                $"NoteNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
-                "読込エラー");
+            LogAndShowLoadError("NoteNestLoadTab", "NoteNest", "NoteNest ファイルを開けませんでした。", ex, path);
         }
     }
 
@@ -519,18 +464,7 @@ public partial class NestSuiteShellWindow
         var rawPath = _dialogs.SelectProjectSavePath(vm.ProjectName);
         if (rawPath == null) return;
         var normalizedPath = NormalizeFilePath(rawPath);
-        var duplicateTab = _tabs.FirstOrDefault(t =>
-            t.Id != _selectedTab.Id &&
-            t.WorkspaceKind == NestSuiteWorkspaceKind.NoteNest &&
-            NestSuiteOpenFilePolicy.IsSameFile(t.FilePath, normalizedPath));
-        if (duplicateTab != null)
-        {
-            _dialogs.ShowError(
-                $"「{Path.GetFileName(normalizedPath)}」は既に別のタブで開かれています。\n既存のタブを表示します。",
-                "保存できません");
-            ActivateTab(duplicateTab);
-            return;
-        }
+        if (CheckAndActivateDuplicateTabForSave(NestSuiteWorkspaceKind.NoteNest, normalizedPath)) return;
         vm.SaveToPath(normalizedPath);
     }
 
@@ -560,19 +494,11 @@ public partial class NestSuiteShellWindow
             if (!vm.OpenFileAtStartup(path)) { EnsureDefaultTab(); return; }
             var tab = NestSuiteTabFactory.FromFilePath(path);
             var session = new NestSuiteWorkspaceSession(tab.Id, NestSuiteWorkspaceKind.NoteNest, vm, path, false);
-            _tabs.Add(tab);
-            _sessionManager.Add(session);
-            ActivateTab(tab);
-            _recentFiles.Add(path);
-            UpdateRecentFilesMenu();
+            RegisterLoadedTab(tab, session, path);
         }
         catch (Exception ex)
         {
-            bool logged = ErrorLogService.Log("NoteNestLoadInitialTab", ex, "NoteNest", path);
-            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
-            _dialogs.ShowError(
-                $"NoteNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
-                "読込エラー");
+            LogAndShowLoadError("NoteNestLoadInitialTab", "NoteNest", "NoteNest ファイルを開けませんでした。", ex, path);
             EnsureDefaultTab();
         }
     }
@@ -625,20 +551,11 @@ public partial class NestSuiteShellWindow
 
             var tab = NestSuiteTabFactory.FromFilePath(path);
             var session = new NestSuiteWorkspaceSession(tab.Id, NestSuiteWorkspaceKind.ChatNest, newVm, path, false);
-            _tabs.Add(tab);
-            _sessionManager.Add(session);
-            newVm.PropertyChanged += OnChatNestPropertyChanged;
-            ActivateTab(tab);
-            _recentFiles.Add(path);
-            UpdateRecentFilesMenu();
+            RegisterLoadedTab(tab, session, path, () => newVm.PropertyChanged += OnChatNestPropertyChanged);
         }
         catch (Exception ex)
         {
-            bool logged = ErrorLogService.Log("ChatNestLoadInitial", ex, "ChatNest", path);
-            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
-            _dialogs.ShowError(
-                $"ChatNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
-                "読込エラー");
+            LogAndShowLoadError("ChatNestLoadInitial", "ChatNest", "ChatNest ファイルを開けませんでした。", ex, path);
             EnsureDefaultTab();
         }
     }
@@ -671,19 +588,11 @@ public partial class NestSuiteShellWindow
 
             var tab = NestSuiteTabFactory.FromFilePath(path);
             var session = new NestSuiteWorkspaceSession(tab.Id, NestSuiteWorkspaceKind.IdeaNest, vm, path, false);
-            _tabs.Add(tab);
-            _sessionManager.Add(session);
-            ActivateTab(tab);
-            _recentFiles.Add(path);
-            UpdateRecentFilesMenu();
+            RegisterLoadedTab(tab, session, path);
         }
         catch (Exception ex)
         {
-            bool logged = ErrorLogService.Log("IdeaNestLoadInitial", ex, "IdeaNest", path);
-            var logHint = logged ? "\n\n詳細はエラーログに記録されました。" : "";
-            _dialogs.ShowError(
-                $"IdeaNest ファイルを開けませんでした。\n{FileErrorMessages.ForLoad(ex)}{logHint}",
-                "読込エラー");
+            LogAndShowLoadError("IdeaNestLoadInitial", "IdeaNest", "IdeaNest ファイルを開けませんでした。", ex, path);
             EnsureDefaultTab();
         }
     }
