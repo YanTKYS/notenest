@@ -110,7 +110,7 @@ public sealed class TaskBoardViewModel
 
     public void ClearLinksToNoteIds(IEnumerable<string> deletedNoteIds)
     {
-        var ids = deletedNoteIds.ToHashSet();
+        var ids = new HashSet<string>(deletedNoteIds);
         foreach (var task in TaskGroups.SelectMany(group => group.Tasks))
             if (task.LinkedNoteId != null && ids.Contains(task.LinkedNoteId)) task.LinkedNoteId = null;
     }

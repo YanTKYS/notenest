@@ -156,7 +156,7 @@ public sealed class NoteWorkspaceViewModel
 
     private void SynchronizeTracking()
     {
-        var notebooks = Notebooks.ToHashSet();
+        var notebooks = new HashSet<NotebookViewModel>(Notebooks);
         foreach (var notebook in _trackedNotebooks.Except(notebooks).ToList())
         {
             notebook.PropertyChanged -= NotebookPropertyChanged;
@@ -170,7 +170,7 @@ public sealed class NoteWorkspaceViewModel
             _trackedNotebooks.Add(notebook);
         }
 
-        var notes = AllNotes.ToHashSet();
+        var notes = new HashSet<NoteViewModel>(AllNotes);
         foreach (var note in _trackedNotes.Except(notes).ToList())
         {
             note.PropertyChanged -= NotePropertyChanged;

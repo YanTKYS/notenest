@@ -51,7 +51,7 @@ public class CardOperationsService
         if (string.IsNullOrEmpty(title))
         {
             var firstLine = body.Split('\n').FirstOrDefault()?.Trim() ?? string.Empty;
-            draft.Title = firstLine.Length > 40 ? firstLine[..40] : firstLine;
+            draft.Title = firstLine.Length > 40 ? firstLine.Substring(0, 40) : firstLine;
         }
 
         var ts = _now();
@@ -73,7 +73,7 @@ public class CardOperationsService
 
         // v1.16.8: ChatNest Copy NestSuite 転記形式を検出し、タイトルと本文を分離する
         var newlineIdx = body.IndexOf('\n');
-        var firstLine = (newlineIdx >= 0 ? body[..newlineIdx] : body).TrimEnd('\r');
+        var firstLine = (newlineIdx >= 0 ? body.Substring(0, newlineIdx) : body).TrimEnd('\r');
         var match = ChatNestTransferHeaderPattern.Match(firstLine);
 
         string title;
@@ -81,7 +81,7 @@ public class CardOperationsService
         if (match.Success)
         {
             title = $"ChatNestからの転記: {match.Groups[1].Value}";
-            var rest = newlineIdx >= 0 ? body[(newlineIdx + 1)..] : string.Empty;
+            var rest = newlineIdx >= 0 ? body.Substring(newlineIdx + 1) : string.Empty;
             bodyText = rest.TrimStart('\r', '\n');
         }
         else

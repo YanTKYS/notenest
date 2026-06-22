@@ -1893,8 +1893,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     private void MenuFileAssociation_Click(object sender, RoutedEventArgs e)
     {
-        var exePath = Environment.ProcessPath
-            ?? System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
+        var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
             ?? string.Empty;
         new FileAssociationDialog(exePath) { Owner = this }.ShowDialog();
     }

@@ -66,7 +66,7 @@ public class IdeaCardViewModel : IdeaNestViewModelBase
             var first = (Body ?? string.Empty).Split('\n').FirstOrDefault()?.Trim() ?? string.Empty;
             if (first.Length > 40)
             {
-                first = first[..40] + "...";
+                first = first.Substring(0, 40) + "...";
             }
             return string.IsNullOrEmpty(first) ? "(無題)" : first;
         }
@@ -78,10 +78,10 @@ public class IdeaCardViewModel : IdeaNestViewModelBase
         {
             var lines = (Body ?? string.Empty).Split('\n');
             var take = lines.Take(4);
-            var joined = string.Join('\n', take).TrimEnd();
+            var joined = string.Join("\n", take).TrimEnd();
             if (joined.Length > 200)
             {
-                joined = joined[..200] + "...";
+                joined = joined.Substring(0, 200) + "...";
             }
             return joined;
         }

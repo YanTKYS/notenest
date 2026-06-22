@@ -48,12 +48,12 @@ public sealed class FileAssociationService
         if (trimmed.StartsWith('"'))
         {
             var end = trimmed.IndexOf('"', 1);
-            registeredExe = end > 0 ? trimmed[1..end] : trimmed;
+            registeredExe = end > 0 ? trimmed.Substring(1, end - 1) : trimmed;
         }
         else
         {
             var sp = trimmed.IndexOf(' ');
-            registeredExe = sp > 0 ? trimmed[..sp] : trimmed;
+            registeredExe = sp > 0 ? trimmed.Substring(0, sp) : trimmed;
         }
 
         return string.Equals(registeredExe, currentExePath, StringComparison.OrdinalIgnoreCase)
