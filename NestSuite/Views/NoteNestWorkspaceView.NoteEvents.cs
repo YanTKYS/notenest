@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using NestSuite.Services;
 using NestSuite.ViewModels;
 
 namespace NestSuite.Views;
@@ -132,8 +133,32 @@ public partial class NoteNestWorkspaceView
         var input = Host.ShowInput("名前変更", "新しいノート名:", note.Title);
         if (string.IsNullOrWhiteSpace(input)) return;
         var newTitle = input.Trim();
+
+        // M9: タイトルが実質的に変わる場合のみバックリンク影響チェック
+        if (!string.Equals(note.Title, newTitle, StringComparison.OrdinalIgnoreCase))
+        {
+            var impact = BacklinkService.FindBacklinks(note.Title, ViewModel.AllNotes, note);
+            if (impact.TotalLinkCount > 0 && !ConfirmRenameWithImpact(note.Title, impact))
+                return;
+        }
+
         if (!ViewModel.RenameNote(note, newTitle))
             ShowError($"ノート名「{newTitle}」は既に使用されています。");
+    }
+
+    private bool ConfirmRenameWithImpact(string oldTitle, BacklinkSummary impact)
+    {
+        var previewNotes = impact.AffectedNotes.Take(3).Select(n => $"「{n.Title}」");
+        var preview = string.Join("、", previewNotes);
+        if (impact.AffectedNotes.Count > 3)
+            preview += $" ほか {impact.AffectedNotes.Count - 3} ノート";
+        var message =
+            "このノート名を変更すると、他のノートからのリンクが切れる可能性があります。\n\n" +
+            $"旧名: {oldTitle}\n" +
+            $"影響: {impact.TotalLinkCount} 件（{impact.AffectedNotes.Count} ノート）\n" +
+            $"参照元: {preview}\n\n" +
+            "変更を続行しますか？";
+        return Confirm(message, "リンク影響の警告");
     }
 
     private void DeleteNoteWithConfirm(NoteViewModel? note)
