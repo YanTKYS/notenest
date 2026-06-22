@@ -47,4 +47,105 @@ public class NoteWorkspaceViewModelTests
         Assert.False(changed);
         Assert.Equal("Loaded", Assert.Single(workspace.Notebooks).Title);
     }
+
+    // ── L11: ノート複製 ───────────────────────────────────────────────────────
+
+    [Fact]
+    public void DuplicateNote_AddsCopyWithSuffixInSameNotebook()
+    {
+        var workspace = new NoteWorkspaceViewModel();
+        var notebook = workspace.AddNotebook("NB");
+        var original = workspace.AddNote(notebook, "会議メモ")!;
+
+        var copy = workspace.DuplicateNote(original);
+
+        Assert.NotNull(copy);
+        Assert.Equal(2, notebook.Notes.Count);
+        Assert.Equal("会議メモ のコピー", copy.Title);
+    }
+
+    [Fact]
+    public void DuplicateNote_CopiesContent()
+    {
+        var workspace = new NoteWorkspaceViewModel();
+        var notebook = workspace.AddNotebook("NB");
+        var original = workspace.AddNote(notebook, "ノート")!;
+        original.Content = "本文テキスト";
+
+        var copy = workspace.DuplicateNote(original)!;
+
+        Assert.Equal("本文テキスト", copy.Content);
+    }
+
+    [Fact]
+    public void DuplicateNote_HasDifferentId()
+    {
+        var workspace = new NoteWorkspaceViewModel();
+        var notebook = workspace.AddNotebook("NB");
+        var original = workspace.AddNote(notebook, "ノート")!;
+
+        var copy = workspace.DuplicateNote(original)!;
+
+        Assert.NotEqual(original.Id, copy.Id);
+    }
+
+    [Fact]
+    public void DuplicateNote_HasNewTimestamps()
+    {
+        var workspace = new NoteWorkspaceViewModel();
+        var notebook = workspace.AddNotebook("NB");
+        var original = workspace.AddNote(notebook, "ノート")!;
+        var before = DateTime.Now;
+
+        var copy = workspace.DuplicateNote(original)!;
+
+        Assert.True(copy.CreatedAt >= before);
+        Assert.True(copy.UpdatedAt >= before);
+    }
+
+    [Fact]
+    public void DuplicateNote_DoesNotModifyOriginal()
+    {
+        var workspace = new NoteWorkspaceViewModel();
+        var notebook = workspace.AddNotebook("NB");
+        var original = workspace.AddNote(notebook, "ノート")!;
+        original.Content = "元の本文";
+        var originalId      = original.Id;
+        var originalTitle   = original.Title;
+        var originalContent = original.Content;
+
+        workspace.DuplicateNote(original);
+
+        Assert.Equal(originalId,      original.Id);
+        Assert.Equal(originalTitle,   original.Title);
+        Assert.Equal(originalContent, original.Content);
+    }
+
+    [Fact]
+    public void DuplicateNote_NumberedSuffixWhenCopyAlreadyExists()
+    {
+        var workspace = new NoteWorkspaceViewModel();
+        var notebook = workspace.AddNotebook("NB");
+        var original = workspace.AddNote(notebook, "ノート")!;
+        workspace.DuplicateNote(original); // "ノート のコピー"
+
+        var second = workspace.DuplicateNote(original)!;
+
+        Assert.Equal("ノート のコピー 2", second.Title);
+    }
+
+    [Fact]
+    public void DuplicateNote_IncrementsNumberUntilUnique()
+    {
+        var workspace = new NoteWorkspaceViewModel();
+        var notebook = workspace.AddNotebook("NB");
+        var original = workspace.AddNote(notebook, "ノート")!;
+        workspace.DuplicateNote(original); // "ノート のコピー"
+        workspace.DuplicateNote(original); // "ノート のコピー 2"
+
+        var third = workspace.DuplicateNote(original)!;
+
+        Assert.Equal("ノート のコピー 3", third.Title);
+        Assert.Equal(4, notebook.Notes.Count); // original + 3 copies
+    }
 }

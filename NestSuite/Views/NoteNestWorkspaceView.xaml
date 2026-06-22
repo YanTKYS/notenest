@@ -211,6 +211,7 @@
                                     <MenuItem Header="このノートへのリンクを挿入(_I)" Click="InsertNoteLinkFromNote_Click"/>
                                     <Separator/>
                                     <MenuItem Header="名前変更(_R)..." Click="RenameNote_Click"/>
+                                    <MenuItem Header="複製(_C)"        Click="DuplicateNote_Click"/>
                                     <Separator/>
                                     <MenuItem Header="削除(_D)"        Click="DeleteNote_Click"/>
                                 </ContextMenu>

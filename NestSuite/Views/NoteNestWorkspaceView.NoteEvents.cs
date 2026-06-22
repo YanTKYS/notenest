@@ -108,6 +108,12 @@ public partial class NoteNestWorkspaceView
     private void RenameNote_Click(object sender, RoutedEventArgs e)
         => RenameNoteWithDialog(GetContextMenuDataContext<NoteViewModel>(sender));
 
+    private void DuplicateNote_Click(object sender, RoutedEventArgs e)
+    {
+        var note = GetContextMenuDataContext<NoteViewModel>(sender);
+        if (note != null) ViewModel.DuplicateNote(note);
+    }
+
     private void DeleteNote_Click(object sender, RoutedEventArgs e)
         => DeleteNoteWithConfirm(GetContextMenuDataContext<NoteViewModel>(sender));
 
