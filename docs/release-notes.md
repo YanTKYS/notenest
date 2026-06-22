@@ -1,3 +1,13 @@
+## v2.7.5 — 例外診断改善・Error ログ最小導入（TD-4 / TD-5 縮小採用）
+
+- **ファイル読込・保存・セッション復元周辺の例外診断を改善した（TD-4）。** `FileNotFoundException` / `UnauthorizedAccessException` / `JsonException` / `IOException` など代表的な例外を種別分けし、ユーザー向けに「ファイルが見つかりません。移動または削除された可能性があります。」など原因別の短いメッセージを表示するよう変更した。`ex.Message` をそのまま表示する箇所（9 箇所）をすべて更新した。
+- **Error 発生時のみ記録する軽量ログを追加した（TD-5 縮小採用）。** `ErrorLogService`（`NestSuite.Services`）を新設した。Info / Warning ログは出力しない。外部ライブラリへの依存はない。ログ書き込み失敗時もアプリ本体を落とさない。
+- **ログ出力先:** `%APPDATA%\NoteNest\logs\nestsuite-error.log`（既存の `%APPDATA%\NoteNest` 配下を継続使用。`%APPDATA%\NestSuite` への移行は行わない）。
+- **記録する情報:** タイムスタンプ・アプリバージョン・操作名・ワークスペース種別・対象ファイルパス・例外型・例外メッセージ・スタックトレース・内部例外。ノート本文・カード本文・チャット本文・ユーザー入力本文はログに記録しない。
+- **ログを記録した場合のみ**「詳細はエラーログに記録されました。」をエラーダイアログに付記する（ログ書き込み失敗時は付記しない）。
+- **ログ追記対象:** NoteNest / IdeaNest / ChatNest の保存・読込（9 箇所）、TempNest 保存・読込、セッション保存。
+- **保存形式・NoteNest 保存スキーマ `1.4.1` に変更はない（v2.7.5）。** IdeaNest / ChatNest / TempNest の保存形式に変更はない。
+
 ## v2.7.4 — NestSuiteShellWindow.xaml.cs を責務別 partial ファイルへ分割（TD-2）
 
 - **`NestSuiteShellWindow.xaml.cs`（1938行）を 6 つの責務別 `partial class` ファイルへ分割した（TD-2）。** 動作ロジックの変更はなく、純粋な機械的再配置のみ。XAML バインディング・コマンドハンドラ・イベント購読はそのまま維持する。
