@@ -1,3 +1,11 @@
+## v2.7.19 — Light / Dark テーマ切替（SH-10）
+
+- **Light / Dark テーマ切替を追加した。** 表示メニューに「テーマ」項目を追加し、Light / Dark を明示的に選択できるようにした。
+- **Shell / NoteNest / IdeaNest / ChatNest / TempNest の主要画面へテーマを反映した。** 共通 Brush を `Themes/Light.xaml` / `Themes/Dark.xaml` に整理し、タブバー、ステータスバー、ペイン、エディタ、行番号ガター、検索ハイライト、カード、発言カード、TempNest 2x2 メモ、軽量通知が DynamicResource 経由で切り替わるようにした。
+- **テーマ設定をアプリ表示設定として保存する。** `%APPDATA%\NoteNest\ui-settings.json` の `Theme` に保存し、起動時に復元する。不正値は Light にフォールバックする。
+- **保存形式変更なし。** `.notenest` / `.chatnest` / `.ideanest` / TempNest JSON / セッション形式にはテーマ設定を保存しない。NoteNest schema は `1.4.1` を維持する。
+- **OS テーマ連動・カスタムテーマ・アクセントカラー変更は対象外。** 外部依存追加なし。ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.7.18 — NestSuiteShellWindow.FileOperations.cs の責務分割（TD-16）
 
 - **`NestSuiteShellWindow.FileOperations.cs` の責務を partial class に分割した。** 開く/読込、上書き保存、名前を付けて保存、保存後状態同期、ファイルメニュー入口を責務別ファイルへ移動し、元の `FileOperations.cs` は分割概要を示す入口に整理した。

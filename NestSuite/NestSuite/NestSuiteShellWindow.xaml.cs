@@ -10,6 +10,7 @@ using NestSuite.ChatNest;
 using NestSuite.FileAssociation;
 using NestSuite.IdeaNest.ViewModels;
 using NestSuite.IdeaNest.Services;
+using NestSuite.Models;
 using NestSuite.NoteNest.Editor;
 using NestSuite.Services;
 using NestSuite.TempNest;
@@ -43,6 +44,9 @@ namespace NestSuite;
 public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 {
     private readonly DialogService _dialogs;
+    private readonly UiSettingsService _uiSettingsService = new();
+    private readonly ThemeService _themeService = new();
+    private AppTheme _currentTheme = AppTheme.Light;
     private MainViewModel ViewModel => (MainViewModel)DataContext;
 
     public NestSuiteShellWindow(string? initialFilePath = null)
@@ -50,11 +54,13 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         _dialogs = new DialogService(this);
 
         // テーマを InitializeComponent 前に適用（DynamicResource が正しい値に解決されるよう）
-        var uiSettings = new UiSettingsService().Load();
-        new ThemeService().Apply(uiSettings.Theme);
+        var uiSettings = _uiSettingsService.Load();
+        _currentTheme = UiSettingsService.NormalizeTheme(uiSettings.Theme);
+        _themeService.Apply(_currentTheme);
         _noteNestEditorFontSize = UiSettingsService.ValidateNoteNestEditorFontSize(uiSettings.NoteNestEditorFontSize);
 
         InitializeComponent();
+        UpdateThemeMenuChecks();
         // v1.19.1: 前回の NestSuite ウィンドウサイズを復元する
         ApplyWindowSize(uiSettings);
         UpdateRecentFilesMenu();
@@ -227,8 +233,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
 
     private void SaveWindowSize()
     {
-        var svc = new UiSettingsService();
-        var s = svc.Load();
+        var s = _uiSettingsService.Load();
         switch (WindowState)
         {
             case WindowState.Normal:
@@ -265,7 +270,27 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
                 break;
             }
         }
-        svc.Save(s);
+        _uiSettingsService.Save(s);
+    }
+
+    private void MenuThemeLight_Click(object sender, RoutedEventArgs e) => ApplyAndSaveTheme(AppTheme.Light);
+
+    private void MenuThemeDark_Click(object sender, RoutedEventArgs e) => ApplyAndSaveTheme(AppTheme.Dark);
+
+    private void ApplyAndSaveTheme(AppTheme theme)
+    {
+        _currentTheme = UiSettingsService.NormalizeTheme(theme);
+        _themeService.Apply(_currentTheme);
+        var settings = _uiSettingsService.Load();
+        settings.Theme = _currentTheme;
+        _uiSettingsService.Save(settings);
+        UpdateThemeMenuChecks();
+    }
+
+    private void UpdateThemeMenuChecks()
+    {
+        ThemeLightMenuItem.IsChecked = _currentTheme == AppTheme.Light;
+        ThemeDarkMenuItem.IsChecked = _currentTheme == AppTheme.Dark;
     }
 
     // ── v1.7.3: ファイル単位タブ管理 ─────────────────────────────────────

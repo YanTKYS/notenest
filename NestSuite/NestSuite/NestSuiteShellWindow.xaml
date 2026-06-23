@@ -47,6 +47,18 @@
                           IsCheckable="True"
                           Click="MenuTool_Click"/>
             </MenuItem>
+            <MenuItem Header="表示(_V)">
+                <MenuItem Header="テーマ(_T)">
+                    <MenuItem x:Name="ThemeLightMenuItem"
+                              Header="Light"
+                              IsCheckable="True"
+                              Click="MenuThemeLight_Click"/>
+                    <MenuItem x:Name="ThemeDarkMenuItem"
+                              Header="Dark"
+                              IsCheckable="True"
+                              Click="MenuThemeDark_Click"/>
+                </MenuItem>
+            </MenuItem>
             <MenuItem Header="ヘルプ(_H)">
                 <MenuItem Header="ファイル関連付けの設定(_A)..." Click="MenuFileAssociation_Click"/>
                 <Separator/>
