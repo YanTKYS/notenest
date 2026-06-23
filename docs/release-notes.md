@@ -1,3 +1,12 @@
+## v2.7.17 — NestSuiteShellWindow.Tabs.cs の責務分割（TD-15）
+
+- **`NestSuiteShellWindow.Tabs.cs` の責務を partial class に分割した。** タブ選択、タブ生成/同期、タブクローズ、タブコンテキストメニューを責務別ファイルへ移動し、元の `Tabs.cs` は分割概要を示す入口に整理した。
+- **タブ生成・選択・クローズ・タイトル同期等の見通しを改善した。** `TabSelection` / `TabLifecycle` / `TabClose` / `TabContextMenu` に分け、既存メソッド名と private 可視性は維持した。
+- **動作変更なし。** Tempタブ固定、タブ選択、タブクローズ、他を閉じる、右側を閉じる、中クリック、右クリック、Ctrl+Tab / Ctrl+数字、未保存確認、保存後タブ更新、セッション復元の挙動は変更しない。
+- **UI変更なし。** 表示・操作・ダイアログ文言に変更はない。
+- **保存形式・セッション形式に変更はない。** NoteNest schema = `1.4.1`、TempNest JSON version、`.chatnest` / `.ideanest` 形式を維持する。
+- **外部依存追加なし。** ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.7.16 — イベント購読の解除漏れ点検・修正（TD-13）
 
 - **イベント購読の解除漏れを点検・修正した。** Workspace / EditorHost / ViewModel / Timer 周辺の明示的な `+=` を確認し、寿命終了時に解除される経路を補強した。
