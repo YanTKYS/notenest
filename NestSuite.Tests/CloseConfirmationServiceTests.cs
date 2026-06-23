@@ -1,4 +1,5 @@
 using NestSuite.Services;
+using Xunit;
 
 namespace NestSuite.Tests;
 
