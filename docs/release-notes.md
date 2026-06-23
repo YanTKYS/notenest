@@ -1,3 +1,12 @@
+## v2.7.18 — NestSuiteShellWindow.FileOperations.cs の責務分割（TD-16）
+
+- **`NestSuiteShellWindow.FileOperations.cs` の責務を partial class に分割した。** 開く/読込、上書き保存、名前を付けて保存、保存後状態同期、ファイルメニュー入口を責務別ファイルへ移動し、元の `FileOperations.cs` は分割概要を示す入口に整理した。
+- **開く / 保存 / 名前を付けて保存 / 最近ファイル / 保存後状態同期の見通しを改善した。** `FileOpen` / `FileSave` / `FileSaveAs` / `FileSaveStateSync` / `FileCommands` に分け、既存メソッド名と private 可視性は維持した。
+- **動作変更なし。** NoteNest / IdeaNest / ChatNest の開く、保存、名前を付けて保存、保存成功後タブ更新、最近ファイル反映、保存失敗時の扱い、セッション復元は変更しない。
+- **UI変更なし。** ファイルダイアログ、メニュー、エラーダイアログ文言に変更はない。
+- **保存形式・セッション形式に変更はない。** NoteNest schema = `1.4.1`、TempNest JSON version、`.chatnest` / `.ideanest` 形式を維持する。
+- **外部依存追加なし。** ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.7.17 — NestSuiteShellWindow.Tabs.cs の責務分割（TD-15）
 
 - **`NestSuiteShellWindow.Tabs.cs` の責務を partial class に分割した。** タブ選択、タブ生成/同期、タブクローズ、タブコンテキストメニューを責務別ファイルへ移動し、元の `Tabs.cs` は分割概要を示す入口に整理した。
