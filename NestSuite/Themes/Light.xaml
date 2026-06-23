@@ -36,7 +36,7 @@
     <SolidColorBrush x:Key="LineNumberCurrentLineBg" Color="#DDE8F5"/>
 
     <!-- H3b: marker line highlight (TODO / FIXME / HACK) -->
-    <SolidColorBrush x:Key="MarkerLineHighlightBrush" Color="#FFF2CC"/>
+    <SolidColorBrush x:Key="MarkerLineHighlightBrush" Color="#66FFF2CC"/>
 
     <!-- task states -->
     <SolidColorBrush x:Key="TaskCompletedFg" Color="#AAAAAA"/>
