@@ -208,6 +208,42 @@ public class ChatNestUxTests
         Assert.Equal(string.Empty, vm.SearchResultSummary);
     }
 
+    // ── CH-5 回帰: 編集確定後の検索再計算 ───────────────────────────────────
+
+    [Fact]
+    public void Search_AfterEdit_MatchingMessageRemoved_SummaryUpdates()
+    {
+        var vm = CreateVmWithMessages("りんご", "バナナ");
+        vm.SearchText = "りんご";
+        Assert.Equal("1 / 1件", vm.SearchResultSummary);
+
+        // 「りんご」→「メロン」に編集確定
+        var msgVm = vm.Messages[0];
+        msgVm.BeginEditCommand.Execute(null);
+        msgVm.EditingText = "メロン";
+        msgVm.CommitEditCommand.Execute(null);
+
+        Assert.Equal("0件", vm.SearchResultSummary);
+        Assert.False(msgVm.IsSearchCurrent);
+    }
+
+    [Fact]
+    public void Search_AfterEdit_NonMatchingMessageBecomesMatch_SummaryUpdates()
+    {
+        var vm = CreateVmWithMessages("バナナ", "メロン");
+        vm.SearchText = "りんご";
+        Assert.Equal("0件", vm.SearchResultSummary);
+
+        // 「バナナ」→「りんご」に編集確定
+        var msgVm = vm.Messages[0];
+        msgVm.BeginEditCommand.Execute(null);
+        msgVm.EditingText = "りんご";
+        msgVm.CommitEditCommand.Execute(null);
+
+        Assert.Equal("1 / 1件", vm.SearchResultSummary);
+        Assert.True(msgVm.IsSearchCurrent);
+    }
+
     // ── ヘルパー ─────────────────────────────────────────────────────────────
 
     private static ChatNestWorkspaceViewModel CreateVmWithMessages(params string[] texts)
