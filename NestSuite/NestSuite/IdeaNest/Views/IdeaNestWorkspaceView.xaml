@@ -374,6 +374,8 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource IdeaCardContainerStyle}"
+                                        Focusable="True"
+                                        FocusVisualStyle="{x:Null}"
                                         Width="{Binding DataContext.CardWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         Height="{Binding DataContext.CardHeight, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         MinHeight="{Binding DataContext.CardMinHeight, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -430,6 +432,12 @@
                                                     <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                                            <Setter Property="Opacity" Value="1" />
+                                                            <Setter Property="IsHitTestVisible" Value="True" />
+                                                            <Setter Property="KeyboardNavigation.TabNavigation" Value="Local" />
+                                                        </DataTrigger>
+                                                        <!-- ID-9: show footer buttons when card has keyboard focus -->
+                                                        <DataTrigger Binding="{Binding IsKeyboardFocusWithin, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
                                                             <Setter Property="Opacity" Value="1" />
                                                             <Setter Property="IsHitTestVisible" Value="True" />
                                                             <Setter Property="KeyboardNavigation.TabNavigation" Value="Local" />
