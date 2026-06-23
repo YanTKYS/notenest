@@ -305,6 +305,7 @@
                     Padding="14,9">
                 <Border.Style>
                     <Style TargetType="Border">
+                        <Setter Property="Background" Value="{DynamicResource EditorBg}"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsTaskCommentMode}" Value="True">
                                 <Setter Property="Background" Value="{DynamicResource TaskCommentTitleBg}"/>
@@ -345,6 +346,7 @@
                               SelectedItem="{Binding EditorFontSize, Mode=TwoWay}"
                               ToolTip="フォントサイズ"/>
                     <TextBlock Text="{Binding EditorTitle}"
+                               Foreground="{DynamicResource AppFg}"
                                ToolTip="{Binding CurrentNoteTimestampSummary}"
                                FontSize="14" FontWeight="SemiBold"
                                VerticalAlignment="Center"

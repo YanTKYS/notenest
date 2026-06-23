@@ -32,12 +32,6 @@
                 <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
             </Style>
 
-            <Style TargetType="ComboBox">
-                <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}"/>
-                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
-            </Style>
-
             <Style TargetType="Button">
                 <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}"/>
                 <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
