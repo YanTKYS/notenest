@@ -382,6 +382,9 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
     {
         if (e.PropertyName is nameof(MessageViewModel.IsEditing) or nameof(MessageViewModel.EditingText))
             OnPropertyChanged(nameof(HasUnsavedChanges));
+
+        if (e.PropertyName == nameof(MessageViewModel.Text) && !string.IsNullOrEmpty(_searchText))
+            UpdateSearch();
     }
 
     // ── コマンド実装 ───────────────────────────────────────────────────────
