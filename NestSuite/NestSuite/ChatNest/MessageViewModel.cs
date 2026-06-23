@@ -6,15 +6,21 @@ namespace NestSuite.ChatNest;
 /// <summary>
 /// v2.3.0 CH-6: Message の UI ラッパー。インライン編集状態（IsEditing / EditingText）を管理する。
 /// 編集開始・削除依頼は callback を通じて <see cref="ChatNestWorkspaceViewModel"/> へ委譲する。
+///
+/// <para><b>v2.7.11 追加</b><br/>
+/// CH-10: <see cref="CopyMessageCommand"/> で発言本文のみをコピーする。<br/>
+/// CH-5:  <see cref="IsSearchCurrent"/> で現在の検索位置ハイライトを管理する。</para>
 /// </summary>
 public class MessageViewModel : INotifyPropertyChanged
 {
     private bool _isEditing;
     private string _editingText = string.Empty;
+    private bool _isSearchCurrent;
 
     private readonly Action<MessageViewModel> _onBeginEditRequested;
     private readonly Action<MessageViewModel> _onRequestDelete;
     private readonly Action<MessageViewModel> _onEditCommitted;
+    private readonly Action<MessageViewModel> _onCopyRequested;
 
     public Message Model { get; }
 
@@ -39,26 +45,39 @@ public class MessageViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>CH-5: 検索結果の現在位置マーカー。親 ViewModel が設定する。</summary>
+    public bool IsSearchCurrent
+    {
+        get => _isSearchCurrent;
+        set { _isSearchCurrent = value; OnPropertyChanged(); }
+    }
+
     public ChatNestRelayCommand BeginEditCommand { get; }
     public ChatNestRelayCommand CommitEditCommand { get; }
     public ChatNestRelayCommand CancelEditCommand { get; }
     public ChatNestRelayCommand RequestDeleteCommand { get; }
 
+    /// <summary>CH-10: 発言本文のみをクリップボードへコピーするコマンド。</summary>
+    public ChatNestRelayCommand CopyMessageCommand { get; }
+
     public MessageViewModel(
         Message model,
         Action<MessageViewModel> onBeginEditRequested,
         Action<MessageViewModel> onRequestDelete,
-        Action<MessageViewModel> onEditCommitted)
+        Action<MessageViewModel> onEditCommitted,
+        Action<MessageViewModel> onCopyRequested)
     {
         Model = model;
         _onBeginEditRequested = onBeginEditRequested;
-        _onRequestDelete = onRequestDelete;
-        _onEditCommitted = onEditCommitted;
+        _onRequestDelete      = onRequestDelete;
+        _onEditCommitted      = onEditCommitted;
+        _onCopyRequested      = onCopyRequested;
 
         BeginEditCommand     = new ChatNestRelayCommand(() => _onBeginEditRequested(this));
         CommitEditCommand    = new ChatNestRelayCommand(CommitEdit, () => !string.IsNullOrWhiteSpace(EditingText));
         CancelEditCommand    = new ChatNestRelayCommand(CancelEdit);
         RequestDeleteCommand = new ChatNestRelayCommand(() => _onRequestDelete(this));
+        CopyMessageCommand   = new ChatNestRelayCommand(() => _onCopyRequested(this));
     }
 
     internal void BeginEditInternal()
