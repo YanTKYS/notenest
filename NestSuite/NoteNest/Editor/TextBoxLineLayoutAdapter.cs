@@ -7,7 +7,7 @@ namespace NestSuite.NoteNest.Editor;
 // Centralises logical↔visual line mapping for a TextBox with TextWrapping=Wrap.
 // Static methods have no WPF dependency and are unit-testable.
 // Instance methods require a post-layout call site (DispatcherPriority.Render or later).
-internal sealed class TextBoxLineLayoutAdapter
+public sealed class TextBoxLineLayoutAdapter
 {
     private readonly TextBox _editor;
 
