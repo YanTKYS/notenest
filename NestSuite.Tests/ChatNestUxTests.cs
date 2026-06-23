@@ -15,13 +15,7 @@ public class ChatNestUxTests
     public void CopyMessageCommand_InvokesCallback_WithMessageViewModel()
     {
         MessageViewModel? captured = null;
-        var vm = new ChatNestWorkspaceViewModel();
-        vm.SelectedSpeaker = Speaker.主張;
-        vm.InputText = "コピー対象テキスト";
-        vm.PostCommand.Execute(null);
-
-        // 直接 MessageViewModel を作成して callback を検証
-        var msg = new Message(Speaker.主張, "コピーテスト");
+        var msg = new Message { Speaker = Speaker.自分, Text = "コピーテスト" };
         var msgVm = new MessageViewModel(
             msg,
             _ => { },
@@ -38,7 +32,7 @@ public class ChatNestUxTests
     public void CopyMessageCommand_DoesNotIncludeSpeakerOrTimestamp()
     {
         string? copiedText = null;
-        var msg = new Message(Speaker.疑問, "本文だけコピー");
+        var msg = new Message { Speaker = Speaker.補足, Text = "本文だけコピー" };
         var msgVm = new MessageViewModel(
             msg,
             _ => { },
@@ -49,7 +43,6 @@ public class ChatNestUxTests
         msgVm.CopyMessageCommand.Execute(null);
 
         Assert.Equal("本文だけコピー", copiedText);
-        // Speaker や CreatedAt は含まれない（callback は Text のみを受け取る）
     }
 
     // ── CH-5: 会話内検索 ─────────────────────────────────────────────────────
@@ -61,7 +54,6 @@ public class ChatNestUxTests
 
         vm.SearchText = "りんご";
 
-        // 2 件ヒット → "1 / 2件"
         Assert.Equal("1 / 2件", vm.SearchResultSummary);
     }
 
@@ -100,14 +92,14 @@ public class ChatNestUxTests
     public void SearchText_MatchesSpeaker()
     {
         var vm = new ChatNestWorkspaceViewModel();
-        vm.SelectedSpeaker = Speaker.主張;
+        vm.SelectedSpeaker = Speaker.自分;
         vm.InputText = "テスト発言";
         vm.PostCommand.Execute(null);
-        vm.SelectedSpeaker = Speaker.疑問;
+        vm.SelectedSpeaker = Speaker.反論;
         vm.InputText = "別の発言";
         vm.PostCommand.Execute(null);
 
-        vm.SearchText = "疑問";
+        vm.SearchText = "反論";
 
         Assert.Equal("1 / 1件", vm.SearchResultSummary);
     }
@@ -118,7 +110,6 @@ public class ChatNestUxTests
         var vm = CreateVmWithMessages("りんご1", "バナナ", "りんご2");
         vm.SearchText = "りんご";
 
-        // 初期位置: 1 / 2件（インデックス 0 のりんご1）
         Assert.Equal("1 / 2件", vm.SearchResultSummary);
 
         vm.SearchNextCommand.Execute(null);
@@ -143,7 +134,6 @@ public class ChatNestUxTests
     {
         var vm = CreateVmWithMessages("りんご1", "りんご2");
         vm.SearchText = "りんご";
-        // 初期: 1/2
 
         vm.SearchPreviousCommand.Execute(null); // → 2/2 (wrap)
 
@@ -225,7 +215,7 @@ public class ChatNestUxTests
         var vm = new ChatNestWorkspaceViewModel();
         foreach (var t in texts)
         {
-            vm.SelectedSpeaker = Speaker.主張;
+            vm.SelectedSpeaker = Speaker.自分;
             vm.InputText = t;
             vm.PostCommand.Execute(null);
         }
