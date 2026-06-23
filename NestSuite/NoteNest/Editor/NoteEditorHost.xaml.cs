@@ -15,8 +15,8 @@ public partial class NoteEditorHost : UserControl
     private int  _completionLinkStart     = -1;
     private bool _suppressCompletionUpdate;
     private bool _editorEventsAttached;
-    // H3b: cached marker line indices (0-based logical), updated on text change.
     private IReadOnlyList<int> _markerLineIndices = Array.Empty<int>();
+    private TextBoxLineLayoutAdapter? _lineLayout;
 
     public ITextEditorAdapter Editor { get; private set; } = null!;
 
@@ -36,7 +36,7 @@ public partial class NoteEditorHost : UserControl
         Unloaded            += NoteEditorHost_Unloaded;
         DataContextChanged  += NoteEditorHost_DataContextChanged;
         MarkerHighlightCanvas.SizeChanged += (_, _) =>
-            Dispatcher.InvokeAsync(UpdateMarkerHighlights, DispatcherPriority.Render);
+            Dispatcher.InvokeAsync(UpdateLayoutDependentUI, DispatcherPriority.Render);
     }
 
     // ── Initialisation ────────────────────────────────────────────────────
@@ -59,10 +59,10 @@ public partial class NoteEditorHost : UserControl
         EditorBox.PreviewKeyDown += EditorBox_PreviewKeyDown;
         EditorBox.LostFocus      += EditorBox_LostFocus;
 
-        UpdateLineNumbers();
-        UpdateCurrentLineHighlight();
+        _lineLayout = new TextBoxLineLayoutAdapter(EditorBox);
         _markerLineIndices = MarkerLineDetector.Detect(EditorBox.Text);
-        Dispatcher.InvokeAsync(UpdateMarkerHighlights, DispatcherPriority.Render);
+        UpdateCurrentLineHighlight();
+        Dispatcher.InvokeAsync(UpdateLayoutDependentUI, DispatcherPriority.Render);
         EditorReady?.Invoke(this, EventArgs.Empty);
     }
 
@@ -71,7 +71,7 @@ public partial class NoteEditorHost : UserControl
         if (IsVisible)
         {
             UpdateCurrentLineHighlight();
-            Dispatcher.InvokeAsync(UpdateMarkerHighlights, DispatcherPriority.Render);
+            Dispatcher.InvokeAsync(UpdateLayoutDependentUI, DispatcherPriority.Render);
         }
         else
         {
@@ -110,10 +110,9 @@ public partial class NoteEditorHost : UserControl
 
     private void EditorBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        UpdateLineNumbers();
-        UpdateCurrentLineHighlight();
         _markerLineIndices = MarkerLineDetector.Detect(EditorBox.Text);
-        Dispatcher.InvokeAsync(UpdateMarkerHighlights, DispatcherPriority.Render);
+        UpdateCurrentLineHighlight();
+        Dispatcher.InvokeAsync(UpdateLayoutDependentUI, DispatcherPriority.Render);
         if (!_suppressCompletionUpdate) UpdateCompletion();
     }
 
@@ -124,12 +123,20 @@ public partial class NoteEditorHost : UserControl
         Dispatcher.InvokeAsync(UpdateMarkerHighlights,     DispatcherPriority.Render);
     }
 
-    // ── Line number helpers ────────────────────────────────────────────────
+    // ── Layout-dependent UI (line numbers + marker highlights) ────────────
 
-    private void UpdateLineNumbers()
+    private void UpdateLayoutDependentUI()
     {
-        var count = EditorBox.Text.Count(c => c == '\n') + 1;
-        LineNumberBox.Text = string.Join("\n", Enumerable.Range(1, count));
+        UpdateLineNumbersFromLayout();
+        UpdateMarkerHighlights();
+    }
+
+    private void UpdateLineNumbersFromLayout()
+    {
+        var text = EditorBox.Text;
+        LineNumberBox.Text = _lineLayout != null
+            ? _lineLayout.BuildLineNumberText(text)
+            : string.Join("\n", Enumerable.Range(1, text.Count(c => c == '\n') + 1));
     }
 
     private void UpdateCurrentLineHighlight()
@@ -173,7 +180,7 @@ public partial class NoteEditorHost : UserControl
         CurrentLineHighlight.Visibility = Visibility.Visible;
     }
 
-    // ── H3b: Marker line highlights (TODO / FIXME / HACK) ────────────────
+    // ── H3b: Marker line highlights (TODO / FIXME / NOTE) ────────────────
 
     private void NoteEditorHost_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
@@ -186,13 +193,13 @@ public partial class NoteEditorHost : UserControl
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == "EditorFontSize")
-            Dispatcher.InvokeAsync(UpdateMarkerHighlights, DispatcherPriority.Render);
+            Dispatcher.InvokeAsync(UpdateLayoutDependentUI, DispatcherPriority.Render);
     }
 
     private void UpdateMarkerHighlights()
     {
         MarkerHighlightCanvas.Children.Clear();
-        if (Editor == null) return;
+        if (Editor == null || _lineLayout == null) return;
 
         var indices = _markerLineIndices;
         if (indices.Count == 0) return;
@@ -207,33 +214,14 @@ public partial class NoteEditorHost : UserControl
         var text = EditorBox.Text;
         foreach (var logicalLine in indices)
         {
-            var charOffset = GetLineStartCharIndex(text, logicalLine);
-            if (charOffset < 0) continue;
+            var (top, height) = _lineLayout.HighlightBounds(text, logicalLine);
+            if (height <= 0) continue;
+            if (top + height <= 0 || top >= canvasHeight) continue;
 
-            Rect rect;
-            try   { rect = EditorBox.GetRectFromCharacterIndex(charOffset); }
-            catch { continue; }
-
-            if (rect.IsEmpty || rect.Height <= 0) continue;
-            if (rect.Bottom <= 0 || rect.Top >= canvasHeight) continue;
-
-            var r = new Rectangle { Fill = brush, Width = canvasWidth, Height = rect.Height };
-            Canvas.SetTop(r, rect.Top);
+            var r = new Rectangle { Fill = brush, Width = canvasWidth, Height = height };
+            Canvas.SetTop(r, top);
             MarkerHighlightCanvas.Children.Add(r);
         }
-    }
-
-    private static int GetLineStartCharIndex(string text, int logicalLineIndex)
-    {
-        if (logicalLineIndex == 0) return 0;
-        int offset = 0;
-        for (int i = 0; i < logicalLineIndex; i++)
-        {
-            var idx = text.IndexOf('\n', offset);
-            if (idx < 0) return -1;
-            offset = idx + 1;
-        }
-        return offset;
     }
 
     // ── Note-link autocomplete (H1a) ──────────────────────────────────────

@@ -46,11 +46,17 @@ public class MarkerLineDetectorTests
     }
 
     [Fact]
-    public void Detect_HackUppercase_Detected()
+    public void Detect_NoteUppercase_Detected()
     {
-        var result = MarkerLineDetector.Detect("HACK workaround here");
+        var result = MarkerLineDetector.Detect("NOTE: important detail");
         Assert.Single(result);
         Assert.Equal(0, result[0]);
+    }
+
+    [Fact]
+    public void Detect_HackUppercase_NotDetected()
+    {
+        Assert.Empty(MarkerLineDetector.Detect("HACK workaround here"));
     }
 
     [Fact]
@@ -68,9 +74,9 @@ public class MarkerLineDetectorTests
     }
 
     [Fact]
-    public void Detect_HackLowercase_Detected()
+    public void Detect_NoteLowercase_Detected()
     {
-        var result = MarkerLineDetector.Detect("hack workaround");
+        var result = MarkerLineDetector.Detect("note: lowercase");
         Assert.Single(result);
     }
 
@@ -84,7 +90,7 @@ public class MarkerLineDetectorTests
     [Fact]
     public void Detect_MultipleMarkerLines_AllDetected()
     {
-        var text = "TODO: first\nnormal line\nFIXME: second\nanother\nHACK: third";
+        var text = "TODO: first\nnormal line\nFIXME: second\nanother\nNOTE: third";
         var result = MarkerLineDetector.Detect(text);
 
         Assert.Equal(3, result.Count);
