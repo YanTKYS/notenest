@@ -190,6 +190,37 @@ public class MarkerLineDetectorTests
         Assert.Contains("MarkerLineHighlightBrush", keys);
     }
 
+    // v2.8.3: canvas is now BEHIND the TextBox (ZIndex 1 < ZIndex 2=TextBox).
+    // The brush must be fully opaque (no alpha channel) so it acts as the line
+    // background rather than a semi-transparent overlay. An alpha prefix would
+    // cause the "dimming after layout change" compositing artifact.
+    [Theory]
+    [InlineData("NestSuite/Themes/Light.xaml")]
+    [InlineData("NestSuite/Themes/Dark.xaml")]
+    public void MarkerLineHighlightBrush_IsFullyOpaque(string relativePath)
+    {
+        var doc = XDocument.Load(FindRepoFile(relativePath));
+        XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
+        var colorValue = doc.Root!.Elements()
+            .Where(e => (string?)e.Attribute(x + "Key") == "MarkerLineHighlightBrush")
+            .Select(e => (string?)e.Attribute("Color"))
+            .FirstOrDefault();
+
+        Assert.NotNull(colorValue);
+        // WPF hex color: #RRGGBB (6 chars) is fully opaque.
+        // #AARRGGBB (8 chars) with AA < FF would indicate alpha.
+        var hex = colorValue!.TrimStart('#');
+        if (hex.Length == 8)
+        {
+            var alpha = Convert.ToInt32(hex.Substring(0, 2), 16);
+            Assert.Equal(0xFF, alpha);
+        }
+        else
+        {
+            Assert.Equal(6, hex.Length);
+        }
+    }
+
     private static string FindRepoFile(string relativePath)
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
