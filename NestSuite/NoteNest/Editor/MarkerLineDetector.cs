@@ -2,7 +2,7 @@ namespace NestSuite.NoteNest.Editor;
 
 public static class MarkerLineDetector
 {
-    // Returns 0-based logical line indices whose text contains TODO, FIXME, or HACK (case-insensitive).
+    // Returns 0-based logical line indices whose text contains TODO, FIXME, or NOTE (case-insensitive).
     public static IReadOnlyList<int> Detect(string text)
     {
         if (string.IsNullOrEmpty(text)) return Array.Empty<int>();
@@ -25,11 +25,9 @@ public static class MarkerLineDetector
 
     private static bool ContainsMarker(string text, int offset, int length)
     {
-        // Scan the span once, looking for TODO, FIXME, HACK case-insensitively.
-        // We avoid allocating a substring by walking the span manually.
         ReadOnlySpan<char> span = text.AsSpan(offset, length);
         return span.IndexOf("TODO",  StringComparison.OrdinalIgnoreCase) >= 0
             || span.IndexOf("FIXME", StringComparison.OrdinalIgnoreCase) >= 0
-            || span.IndexOf("HACK",  StringComparison.OrdinalIgnoreCase) >= 0;
+            || span.IndexOf("NOTE",  StringComparison.OrdinalIgnoreCase) >= 0;
     }
 }

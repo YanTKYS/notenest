@@ -1,3 +1,13 @@
+## v2.8.2 — NoteEditorHost 論理行表示整理・マーカー行ハイライト補正
+
+- **マーカー種別を TODO / FIXME / NOTE に統一した。** `MarkerLineDetector` が検出するキーワードを `MarkerExtractorService`（右ペイン）と揃え、HACK → NOTE に変更した。大文字小文字区別なし（`note` / `Note` も検出）。
+- **折り返し行（ワードラップ）でマーカーハイライトが全視覚行を覆うようにした。** 従来は論理行の最初の視覚行のみハイライトしていた。`HighlightBounds` により論理行の先頭文字と末尾文字の両 `GetRectFromCharacterIndex` 結果をまとめて全体の高さを算出し、折り返し行すべてを覆う矩形を描画する。
+- **行番号ガターが論理行番号のみを表示するようにした。** 折り返し視覚行の継続部分には行番号を表示せず、空行を挿入して EditorBox の視覚行と位置を揃える。`BuildLineNumberText` が `GetLineIndexFromCharacterIndex` で折り返し数を計測し、論理行番号のあとに必要数の空エントリを追加する。
+- **`TextBoxLineLayoutAdapter` を新設し、論理行と視覚行の対応計算を集約した。** `LogicalLineStartChar`（文字オフセット計算、テスト可能な静的メソッド）・`ExtraVisualLines`（折り返し数計測）・`BuildLineNumberText`（ガターテキスト生成）・`HighlightBounds`（ハイライト領域計算）を 1 クラスにまとめた。レイアウト依存呼び出しは `DispatcherPriority.Render` で行う。
+- **フォントサイズ変更・リサイズ時に行番号とハイライトを再計算するようにした。** `EditorFontSize` 変更・`Canvas.SizeChanged` とも `UpdateLayoutDependentUI`（行番号更新＋ハイライト再描画）を起動する。スクロール時は行番号テキストを再生成しない（座標のみ再描画）。
+- **保存形式変更なし。** NoteNest schema `1.4.1`・`.chatnest` / `.ideanest` / TempNest JSON 形式を維持する。ハイライト状態は `.notenest` に保存しない。
+- **外部依存追加なし。** ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.8.1 — TODO / FIXME / HACK 行ハイライト（H3b）
 
 - **NoteNest エディタで TODO / FIXME / HACK を含む行の薄い背景強調に対応した。** `NoteEditorHost` に `MarkerHighlightCanvas`（`IsHitTestVisible="False"`、`Panel.ZIndex="1"`）を追加し、該当行を薄く強調表示する。
