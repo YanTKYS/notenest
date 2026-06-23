@@ -19,6 +19,12 @@ namespace NestSuite.ChatNest;
 /// CH-6: 発言編集を <see cref="MessageViewModel"/> に委譲し、インライン編集を実現した。<br/>
 /// <see cref="Messages"/> の型を <see cref="ObservableCollection{MessageViewModel}"/> に変更した。<br/>
 /// ファイル保存用に <see cref="MessageModels"/> を提供する。</para>
+///
+/// <para><b>v2.7.11 変更点</b><br/>
+/// CH-10: <see cref="HandleCopyRequest"/> で発言本文のみのコピーを処理する。<br/>
+/// CH-5:  <see cref="SearchText"/> / <see cref="SearchNextCommand"/> / <see cref="SearchPreviousCommand"/> で
+///         会話内検索を提供する。<see cref="ScrollToMessageRequested"/> で View にスクロールを要求する。<br/>
+/// 検索状態は保存しない（<see cref="LoadMessages"/> / <see cref="Clear"/> でリセット）。</para>
 /// </summary>
 public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
 {
@@ -31,9 +37,17 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
     private DispatcherTimer? _copyStatusTimer;
     private bool _disposed;
 
+    // CH-5 search state
+    private string _searchText = string.Empty;
+    private bool _isSearchBarVisible;
+    private int _searchCurrentIndex = -1;
+    private readonly List<int> _searchResultIndices = new();
+
     private readonly ChatNestRelayCommand _postCommand;
     private readonly ChatNestRelayCommand _copyNestSuiteCommand;
     private readonly ChatNestRelayCommand _copyMarkdownCommand;
+    private readonly ChatNestRelayCommand _searchNextCommand;
+    private readonly ChatNestRelayCommand _searchPreviousCommand;
 
     public ObservableCollection<MessageViewModel> Messages { get; } = new();
     public Speaker[] Speakers { get; } = (Speaker[])Enum.GetValues(typeof(Speaker));
@@ -87,6 +101,56 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
         private set { _isDeleteConfirmVisible = value; OnPropertyChanged(); }
     }
 
+    // ── CH-5: 会話内検索 ─────────────────────────────────────────────────
+
+    /// <summary>CH-5: 検索バーの表示状態。</summary>
+    public bool IsSearchBarVisible
+    {
+        get => _isSearchBarVisible;
+        private set { _isSearchBarVisible = value; OnPropertyChanged(); }
+    }
+
+    /// <summary>CH-5: 検索語。空にすると検索状態を解除する。</summary>
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            if (_searchText == value) return;
+            _searchText = value;
+            OnPropertyChanged();
+            UpdateSearch();
+        }
+    }
+
+    /// <summary>CH-5: 検索結果件数と現在位置のサマリー。例: "2 / 5件"、"0件"。</summary>
+    public string SearchResultSummary
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_searchText)) return string.Empty;
+            if (_searchResultIndices.Count == 0) return "0件";
+            return $"{_searchCurrentIndex + 1} / {_searchResultIndices.Count}件";
+        }
+    }
+
+    /// <summary>CH-5: 検索バーを開くコマンド。</summary>
+    public ICommand OpenSearchCommand { get; }
+
+    /// <summary>CH-5: 検索バーを閉じるコマンド。検索状態もリセットする。</summary>
+    public ICommand CloseSearchCommand { get; }
+
+    /// <summary>CH-5: 次の検索結果へ移動するコマンド。</summary>
+    public ICommand SearchNextCommand => _searchNextCommand;
+
+    /// <summary>CH-5: 前の検索結果へ移動するコマンド。</summary>
+    public ICommand SearchPreviousCommand => _searchPreviousCommand;
+
+    /// <summary>CH-5: 指定インデックスのメッセージへのスクロールを View に要求するイベント。</summary>
+    public event EventHandler<int>? ScrollToMessageRequested;
+
+    // ── コマンド ──────────────────────────────────────────────────────────
+
     public ICommand PostCommand => _postCommand;
 
     /// <summary>v2.3.0 CH-4: 削除確認ダイアログで「削除」を選択した時のコマンド。</summary>
@@ -109,6 +173,11 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
         _copyNestSuiteCommand = new ChatNestRelayCommand(ExecuteCopyNestSuite, () => Messages.Count > 0);
         _copyMarkdownCommand  = new ChatNestRelayCommand(ExecuteCopyMarkdown,   () => Messages.Count > 0);
 
+        OpenSearchCommand  = new ChatNestRelayCommand(() => IsSearchBarVisible = true);
+        CloseSearchCommand = new ChatNestRelayCommand(ExecuteCloseSearch);
+        _searchNextCommand = new ChatNestRelayCommand(() => NavigateSearch(+1), () => _searchResultIndices.Count > 0);
+        _searchPreviousCommand = new ChatNestRelayCommand(() => NavigateSearch(-1), () => _searchResultIndices.Count > 0);
+
         Messages.CollectionChanged += OnMessagesCollectionChanged;
     }
 
@@ -126,6 +195,8 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
 
     public void Clear()
     {
+        ResetSearch();
+        IsSearchBarVisible = false;
         foreach (var m in Messages)
             m.PropertyChanged -= OnMessageViewModelPropertyChanged;
         Messages.Clear();
@@ -135,6 +206,8 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
 
     public void LoadMessages(IEnumerable<Message> messages)
     {
+        ResetSearch();
+        IsSearchBarVisible = false;
         foreach (var m in Messages)
             m.PropertyChanged -= OnMessageViewModelPropertyChanged;
         Messages.Clear();
@@ -199,14 +272,78 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
         return sb.ToString().TrimEnd();
     }
 
+    // ── CH-5: 検索 ────────────────────────────────────────────────────────
+
+    private void ExecuteCloseSearch()
+    {
+        ResetSearch();
+        IsSearchBarVisible = false;
+    }
+
+    private void ResetSearch()
+    {
+        foreach (var m in Messages)
+            m.IsSearchCurrent = false;
+        _searchText = string.Empty;
+        _searchResultIndices.Clear();
+        _searchCurrentIndex = -1;
+        OnPropertyChanged(nameof(SearchText));
+        OnPropertyChanged(nameof(SearchResultSummary));
+        _searchNextCommand.RaiseCanExecuteChanged();
+        _searchPreviousCommand.RaiseCanExecuteChanged();
+    }
+
+    private void UpdateSearch()
+    {
+        foreach (var m in Messages)
+            m.IsSearchCurrent = false;
+        _searchResultIndices.Clear();
+        _searchCurrentIndex = -1;
+
+        if (!string.IsNullOrEmpty(_searchText))
+        {
+            var query = _searchText.ToLowerInvariant();
+            for (int i = 0; i < Messages.Count; i++)
+            {
+                var m = Messages[i];
+                if (m.Text.ToLowerInvariant().Contains(query) ||
+                    m.Speaker.ToString().Contains(query, StringComparison.OrdinalIgnoreCase))
+                {
+                    _searchResultIndices.Add(i);
+                }
+            }
+            if (_searchResultIndices.Count > 0)
+            {
+                _searchCurrentIndex = 0;
+                Messages[_searchResultIndices[0]].IsSearchCurrent = true;
+                ScrollToMessageRequested?.Invoke(this, _searchResultIndices[0]);
+            }
+        }
+
+        OnPropertyChanged(nameof(SearchResultSummary));
+        _searchNextCommand.RaiseCanExecuteChanged();
+        _searchPreviousCommand.RaiseCanExecuteChanged();
+    }
+
+    private void NavigateSearch(int delta)
+    {
+        if (_searchResultIndices.Count == 0) return;
+        if (_searchCurrentIndex >= 0 && _searchCurrentIndex < _searchResultIndices.Count)
+            Messages[_searchResultIndices[_searchCurrentIndex]].IsSearchCurrent = false;
+        _searchCurrentIndex = (_searchCurrentIndex + delta + _searchResultIndices.Count) % _searchResultIndices.Count;
+        var msgIdx = _searchResultIndices[_searchCurrentIndex];
+        Messages[msgIdx].IsSearchCurrent = true;
+        ScrollToMessageRequested?.Invoke(this, msgIdx);
+        OnPropertyChanged(nameof(SearchResultSummary));
+    }
+
     // ── プライベート: MessageViewModel ファクトリ ─────────────────────────
 
     private MessageViewModel CreateMessageViewModel(Message model)
-        => new(model, HandleBeginEditRequest, HandleDeleteRequest, HandleEditCommitted);
+        => new(model, HandleBeginEditRequest, HandleDeleteRequest, HandleEditCommitted, HandleCopyRequest);
 
     private void HandleBeginEditRequest(MessageViewModel vm)
     {
-        // 他のメッセージを編集中の場合はキャンセルしてから開始する
         var current = Messages.FirstOrDefault(m => m.IsEditing && !ReferenceEquals(m, vm));
         current?.CancelEditCommand.Execute(null);
         vm.BeginEditInternal();
@@ -224,6 +361,9 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
         WorkspaceModified?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <summary>CH-10: 発言本文のみをコピーする。発言者名・タイムスタンプは含めない。</summary>
+    private void HandleCopyRequest(MessageViewModel vm) => CopyToClipboard(vm.Text);
+
     private void OnMessagesCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         if (e.OldItems != null)
@@ -234,6 +374,8 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
                 vm.PropertyChanged += OnMessageViewModelPropertyChanged;
         _copyNestSuiteCommand.RaiseCanExecuteChanged();
         _copyMarkdownCommand.RaiseCanExecuteChanged();
+        if (!string.IsNullOrEmpty(_searchText))
+            UpdateSearch();
     }
 
     private void OnMessageViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)

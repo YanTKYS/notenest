@@ -56,7 +56,7 @@
             <Setter Property="Padding" Value="20,9"/>
         </Style>
 
-        <!-- v1.16.5: コピーボタン用スタイル -->
+        <!-- v1.16.5: 会話全体コピーボタン用スタイル -->
         <Style x:Key="CopyButton" TargetType="Button">
             <Setter Property="FontFamily" Value="Yu Gothic UI, Meiryo UI, sans-serif"/>
             <Setter Property="FontSize" Value="11"/>
@@ -81,6 +81,70 @@
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="border" Property="Background" Value="#BDBDBD"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Cursor" Value="Arrow"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- v2.7.11 CH-10: 発言単体コピーボタン。低透明度で常時表示し、ホバーで鮮明になる -->
+        <Style x:Key="MessageCopyButton" TargetType="Button">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="2,0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#616161"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Opacity" Value="0.35"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="1"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- v2.7.11 CH-5: 検索バーボタン（前へ / 次へ / 閉じる） -->
+        <Style x:Key="SearchButton" TargetType="Button">
+            <Setter Property="FontFamily" Value="Yu Gothic UI, Meiryo UI, sans-serif"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="6,3"/>
+            <Setter Property="Foreground" Value="#546E7A"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#CFD8DC"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#B0BEC5"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="border" Property="Opacity" Value="0.4"/>
@@ -125,13 +189,25 @@
             </Setter>
         </Style>
 
-        <!-- v2.3.0: DataType を MessageViewModel に変更。削除ボタン廃止・右クリックメニュー追加・インライン編集追加 -->
+        <!-- v2.3.0: DataType を MessageViewModel に変更。v2.7.11: CH-7 speaker chip / CH-10 copy / CH-5 search highlight -->
         <DataTemplate x:Key="MessageTemplate" DataType="{x:Type cn:MessageViewModel}">
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="{Binding Speaker, Converter={StaticResource SpeakerAlign}}"
                         VerticalAlignment="Top"
-                        Margin="16,2"
+                        Margin="16,3"
                         MaxWidth="580">
+
+                <!-- CH-5: 現在の検索結果に背景ハイライトを付ける -->
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSearchCurrent}" Value="True">
+                                <Setter Property="Background" Value="#FFF8E1"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
 
                 <!-- CH-4/CH-6: 右クリックで編集・削除を選択する -->
                 <StackPanel.ContextMenu>
@@ -141,29 +217,53 @@
                     </ContextMenu>
                 </StackPanel.ContextMenu>
 
-                <!-- メタ情報（発言者・時刻） -->
+                <!-- CH-7: 発言者チップ + 時刻 + CH-10 コピーボタン -->
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Top"
-                            Margin="0,5,7,0">
-                    <TextBlock Text="{Binding Speaker}"
-                               FontSize="11"
-                               FontWeight="Bold"
-                               Foreground="{Binding Speaker, Converter={StaticResource SpeakerAccent}}"
-                               VerticalAlignment="Center"/>
+                            Margin="0,6,7,0">
+                    <!-- CH-7: 発言者ラベルをチップ形状で表示（背景色 + ボーダー + 太字） -->
+                    <Border Background="{Binding Speaker, Converter={StaticResource SpeakerBg}}"
+                            BorderBrush="{Binding Speaker, Converter={StaticResource SpeakerAccent}}"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="6,2"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Speaker}"
+                                   FontSize="11"
+                                   FontWeight="Bold"
+                                   Foreground="{Binding Speaker, Converter={StaticResource SpeakerAccent}}"
+                                   VerticalAlignment="Center"/>
+                    </Border>
                     <TextBlock Text="{Binding CreatedAt, StringFormat=HH:mm}"
                                FontSize="10"
                                Foreground="#C0C0C0"
                                Margin="5,0,3,0"
                                VerticalAlignment="Center"/>
+                    <!-- CH-10: 発言本文のみコピーするボタン（常時表示、ホバーで鮮明） -->
+                    <Button Content="📋"
+                            Style="{StaticResource MessageCopyButton}"
+                            Command="{Binding CopyMessageCommand}"
+                            ToolTip="本文をコピー"
+                            Margin="2,0,0,0"
+                            VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- 吹き出し -->
+                <!-- 吹き出し。CH-5: IsSearchCurrent で全辺ボーダー表示 -->
                 <Border Background="{Binding Speaker, Converter={StaticResource SpeakerBg}}"
                         BorderBrush="{Binding Speaker, Converter={StaticResource SpeakerAccent}}"
-                        BorderThickness="3,0,0,0"
                         CornerRadius="8"
                         Padding="10,6"
                         MaxWidth="460">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderThickness" Value="3,0,0,0"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSearchCurrent}" Value="True">
+                                    <Setter Property="BorderThickness" Value="3,2,2,2"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
                     <Grid>
                         <!-- 通常表示: 本文テキスト -->
                         <TextBlock Text="{Binding Text}"
@@ -221,21 +321,76 @@
         </DataTemplate>
     </UserControl.Resources>
 
+    <!-- v2.7.11: Row 0 = CH-5 検索バー（非表示時は高さゼロ）、Row 1 = チャットログ、Row 2 = 入力エリア -->
     <Grid Background="#F5F5F7">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- ========== CH-5: 検索バー ========== -->
+        <Border Grid.Row="0"
+                Background="#ECEFF1"
+                BorderBrush="#90A4AE"
+                BorderThickness="0,0,0,1"
+                Padding="10,5"
+                Visibility="{Binding IsSearchBarVisible, Converter={StaticResource BoolToVis}}">
+            <DockPanel>
+                <Button DockPanel.Dock="Right"
+                        Content="✕"
+                        Style="{StaticResource SearchButton}"
+                        Command="{Binding CloseSearchCommand}"
+                        ToolTip="検索を閉じる (Esc)"
+                        Margin="4,0,0,0"/>
+                <Button DockPanel.Dock="Right"
+                        Content="▲"
+                        Style="{StaticResource SearchButton}"
+                        Command="{Binding SearchPreviousCommand}"
+                        ToolTip="前の結果 (Shift+Enter)"
+                        Margin="2,0,0,0"/>
+                <Button DockPanel.Dock="Right"
+                        Content="▼"
+                        Style="{StaticResource SearchButton}"
+                        Command="{Binding SearchNextCommand}"
+                        ToolTip="次の結果 (Enter)"
+                        Margin="2,0,0,0"/>
+                <TextBlock DockPanel.Dock="Right"
+                           Text="{Binding SearchResultSummary}"
+                           FontSize="11"
+                           Foreground="#546E7A"
+                           VerticalAlignment="Center"
+                           MinWidth="44"
+                           TextAlignment="Right"
+                           Margin="8,0,0,0"/>
+                <TextBlock DockPanel.Dock="Left"
+                           Text="検索："
+                           FontSize="11"
+                           Foreground="#546E7A"
+                           VerticalAlignment="Center"
+                           Margin="0,0,6,0"/>
+                <TextBox x:Name="SearchBox"
+                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="12"
+                         Padding="6,3"
+                         BorderThickness="1"
+                         BorderBrush="#90A4AE"
+                         Background="White"
+                         VerticalContentAlignment="Center"
+                         PreviewKeyDown="SearchBox_PreviewKeyDown"/>
+            </DockPanel>
+        </Border>
+
         <!-- ========== CHAT LOG ========== -->
-        <ScrollViewer Grid.Row="0"
+        <ScrollViewer Grid.Row="1"
                       x:Name="ChatScrollViewer"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
                       Padding="0,8,0,8"
                       Background="Transparent"
                       ScrollChanged="ChatScrollViewer_ScrollChanged">
-            <ItemsControl ItemsSource="{Binding Messages}"
+            <ItemsControl x:Name="ChatItemsControl"
+                          ItemsSource="{Binding Messages}"
                           ItemTemplate="{StaticResource MessageTemplate}"
                           VirtualizingPanel.IsVirtualizing="False">
                 <ItemsControl.ItemsPanel>
@@ -247,7 +402,7 @@
         </ScrollViewer>
 
         <!-- Empty state -->
-        <StackPanel Grid.Row="0"
+        <StackPanel Grid.Row="1"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     IsHitTestVisible="False">
@@ -278,7 +433,7 @@
 
         <!-- CH-3: 最新へボタン（過去発言を読んでいるときのみ表示） -->
         <Button x:Name="ScrollToBottomButton"
-                Grid.Row="0"
+                Grid.Row="1"
                 Content="↓ 最新へ"
                 Visibility="Collapsed"
                 HorizontalAlignment="Right"
@@ -292,7 +447,7 @@
                 Click="ScrollToBottomButton_Click"/>
 
         <!-- ========== INPUT AREA ========== -->
-        <Border Grid.Row="1"
+        <Border Grid.Row="2"
                 Background="White"
                 Padding="16,12,16,14">
             <Border.Effect>
@@ -425,7 +580,7 @@
         </Border>
 
         <!-- CH-4: 発言削除確認ダイアログ（オーバーレイ）-->
-        <Grid Grid.Row="0" Grid.RowSpan="2"
+        <Grid Grid.Row="0" Grid.RowSpan="3"
               Visibility="{Binding IsDeleteConfirmVisible, Converter={StaticResource BoolToVis}}">
             <!-- 半透明バックドロップ -->
             <Border Background="#80000000"/>
