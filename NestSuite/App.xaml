@@ -13,6 +13,48 @@
             <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
             <conv:WorkspaceKindToAccentBrushConverter x:Key="KindToAccent"/>
 
+            <!-- SH-10: common controls resolve colors through theme resources. -->
+            <Style TargetType="Window">
+                <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            </Style>
+
+            <Style TargetType="Menu">
+                <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            </Style>
+
+            <Style TargetType="MenuItem">
+                <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            </Style>
+
+            <Style TargetType="TextBox">
+                <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                <Setter Property="SelectionBrush" Value="{DynamicResource SelectionBackgroundBrush}"/>
+                <Setter Property="CaretBrush" Value="{DynamicResource PrimaryTextBrush}"/>
+            </Style>
+
+            <Style TargetType="ListBox">
+                <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            </Style>
+
+            <Style TargetType="ComboBox">
+                <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            </Style>
+
             <!-- CheckBox: custom template so glyph colors use DynamicResource -->
             <Style TargetType="CheckBox">
                 <Setter Property="Foreground"               Value="{DynamicResource AppFg}"/>

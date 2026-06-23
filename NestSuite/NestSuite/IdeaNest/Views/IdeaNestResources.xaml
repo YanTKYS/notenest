@@ -10,18 +10,7 @@
     <conv:IdeaColorNameToBrushConverter x:Key="IdeaColorNameToBrush" />
     <conv:IdeaBodyTrimConverter x:Key="IdeaBodyTrim" />
 
-    <!-- IdeaNest color palette (static light theme) -->
-    <SolidColorBrush x:Key="IdeaAppBackgroundBrush" Color="#F6F7F9" />
-    <SolidColorBrush x:Key="IdeaSurfaceBrush" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="IdeaBorderBrush" Color="#E5E7EB" />
-    <SolidColorBrush x:Key="IdeaTextPrimaryBrush" Color="#1F2937" />
-    <SolidColorBrush x:Key="IdeaTextSecondaryBrush" Color="#6B7280" />
-    <SolidColorBrush x:Key="IdeaAccentBrush" Color="#E8773A" />
-    <SolidColorBrush x:Key="IdeaAccentHoverBrush" Color="#D6652A" />
-    <SolidColorBrush x:Key="IdeaAccentPressedBrush" Color="#B85320" />
-    <SolidColorBrush x:Key="IdeaChipBackgroundBrush" Color="#EEF2F7" />
-    <SolidColorBrush x:Key="IdeaChipForegroundBrush" Color="#475569" />
-    <SolidColorBrush x:Key="IdeaHoverOverlayBrush" Color="#F3F4F6" />
+    <!-- IdeaNest uses SH-10 brushes supplied by the active app theme. -->
 
     <!-- ID-9: Card hover / focus visual feedback -->
     <SolidColorBrush x:Key="IdeaCardHoverBorderBrush" Color="#9CA3AF" />
@@ -30,9 +19,9 @@
 
     <!-- Modern TextBox style (IdeaNest) -->
     <Style x:Key="IdeaModernTextBoxStyle" TargetType="TextBox">
-        <Setter Property="Background" Value="{StaticResource IdeaSurfaceBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource IdeaTextPrimaryBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource IdeaBorderBrush}" />
+        <Setter Property="Background" Value="{DynamicResource IdeaSurfaceBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource IdeaTextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource IdeaBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="10,8" />
         <Setter Property="FontSize" Value="13" />
@@ -54,7 +43,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource IdeaAccentBrush}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource IdeaAccentBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Bd" Property="Opacity" Value="0.6" />
@@ -75,8 +64,8 @@
     <!-- Card container style -->
     <Style x:Key="IdeaCardContainerStyle" TargetType="Border">
         <Setter Property="CornerRadius" Value="12" />
-        <Setter Property="Background" Value="{StaticResource IdeaSurfaceBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource IdeaBorderBrush}" />
+        <Setter Property="Background" Value="{DynamicResource IdeaSurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource IdeaBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Margin" Value="8" />
         <Setter Property="Effect">
@@ -88,12 +77,12 @@
         <Style.Triggers>
             <!-- ID-9: hover — border becomes visible, shadow deepens -->
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="{StaticResource IdeaCardHoverBorderBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource IdeaCardHoverBorderBrush}" />
                 <Setter Property="Effect"      Value="{StaticResource IdeaCardHoverShadow}" />
             </Trigger>
             <!-- ID-9: keyboard focus — accent border clearly marks the active card -->
             <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                <Setter Property="BorderBrush" Value="{StaticResource IdeaAccentBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource IdeaAccentBrush}" />
                 <Setter Property="Effect"      Value="{StaticResource IdeaCardHoverShadow}" />
             </Trigger>
         </Style.Triggers>
@@ -107,7 +96,7 @@
         <Setter Property="Margin" Value="2,0" />
         <Setter Property="MinWidth" Value="30" />
         <Setter Property="MinHeight" Value="30" />
-        <Setter Property="Foreground" Value="{StaticResource IdeaTextSecondaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource IdeaTextSecondaryBrush}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Template">
@@ -124,10 +113,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource IdeaHoverOverlayBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource IdeaHoverOverlayBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="#E5E7EB" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource IdeaBorderBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Bd" Property="Opacity" Value="0.45" />
@@ -146,8 +135,8 @@
     <!-- Secondary button: outlined, soft -->
     <Style x:Key="IdeaSecondaryButtonStyle" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource IdeaTextPrimaryBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource IdeaBorderBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource IdeaTextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource IdeaBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="14,8" />
         <Setter Property="Cursor" Value="Hand" />
@@ -169,10 +158,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource IdeaHoverOverlayBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource IdeaHoverOverlayBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="#E5E7EB" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource IdeaBorderBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Bd" Property="Opacity" Value="0.45" />
@@ -190,7 +179,7 @@
 
     <!-- Primary button (accent fill) -->
     <Style x:Key="IdeaPrimaryButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="{StaticResource IdeaAccentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource IdeaAccentBrush}" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="16,8" />
@@ -212,10 +201,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource IdeaAccentHoverBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource IdeaAccentHoverBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource IdeaAccentPressedBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource IdeaAccentPressedBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Bd" Property="Opacity" Value="0.45" />
@@ -235,7 +224,7 @@
     <Style x:Key="IdeaFloatingAddButtonStyle" TargetType="Button">
         <Setter Property="Width" Value="60" />
         <Setter Property="Height" Value="60" />
-        <Setter Property="Background" Value="{StaticResource IdeaAccentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource IdeaAccentBrush}" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FontSize" Value="30" />
@@ -256,10 +245,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource IdeaAccentHoverBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource IdeaAccentHoverBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource IdeaAccentPressedBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource IdeaAccentPressedBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Bd" Property="Opacity" Value="0.45" />
@@ -278,26 +267,26 @@
     <!-- Tag chip -->
     <Style x:Key="IdeaTagChipStyle" TargetType="Border">
         <Setter Property="CornerRadius" Value="9" />
-        <Setter Property="Background" Value="{StaticResource IdeaChipBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource IdeaChipBackgroundBrush}" />
         <Setter Property="Padding" Value="8,2" />
         <Setter Property="Margin" Value="0,0,4,4" />
     </Style>
 
     <Style x:Key="IdeaTagChipTextStyle" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource IdeaChipForegroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource IdeaChipForegroundBrush}" />
         <Setter Property="FontSize" Value="11" />
     </Style>
 
     <!-- Section header -->
     <Style x:Key="IdeaSectionHeaderStyle" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource IdeaTextSecondaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource IdeaTextSecondaryBrush}" />
         <Setter Property="FontSize" Value="11" />
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
     <!-- Field label -->
     <Style x:Key="IdeaFieldLabelStyle" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource IdeaTextSecondaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource IdeaTextSecondaryBrush}" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Margin" Value="0,0,0,6" />

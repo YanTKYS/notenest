@@ -37,6 +37,9 @@ public class UiSettingsService
     public static double ValidateNoteNestEditorFontSize(double size) =>
         size is 12 or 14 or 16 or 18 or 20 ? size : 14;
 
+    public static AppTheme NormalizeTheme(AppTheme theme) =>
+        Enum.IsDefined(typeof(AppTheme), theme) ? theme : AppTheme.Light;
+
     private static readonly string DataPath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                      "NoteNest", "ui-settings.json");
@@ -46,7 +49,9 @@ public class UiSettingsService
         try
         {
             if (!File.Exists(DataPath)) return new();
-            return JsonSerializer.Deserialize<UiSettings>(File.ReadAllText(DataPath)) ?? new();
+            var settings = JsonSerializer.Deserialize<UiSettings>(File.ReadAllText(DataPath)) ?? new();
+            settings.Theme = NormalizeTheme(settings.Theme);
+            return settings;
         }
         catch { return new(); }
     }

@@ -49,7 +49,7 @@
         </Style>
 
         <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource FlatButton}">
-            <Setter Property="Background" Value="#1976D2"/>
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="13"/>
@@ -62,8 +62,8 @@
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="Padding" Value="8,4"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Background" Value="#EEEEEE"/>
-            <Setter Property="Foreground" Value="#424242"/>
+            <Setter Property="Background" Value="{DynamicResource ChatCopyButtonBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -77,10 +77,10 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#E0E0E0"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource ChatCopyButtonHoverBackgroundBrush}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#BDBDBD"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource ChatCopyButtonPressedBackgroundBrush}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="border" Property="Opacity" Value="0.4"/>
@@ -102,7 +102,7 @@
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="2,0"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#616161"/>
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Opacity" Value="0.35"/>
             <Setter Property="Template">
@@ -128,7 +128,7 @@
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="6,3"/>
-            <Setter Property="Foreground" Value="#546E7A"/>
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
@@ -141,10 +141,10 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#CFD8DC"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#B0BEC5"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource SelectionBackgroundBrush}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="border" Property="Opacity" Value="0.4"/>
@@ -170,14 +170,14 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
                         <Border x:Name="border"
-                                Background="#F0F0F0"
+                                Background="{DynamicResource ChatChipBackgroundBrush}"
                                 CornerRadius="16"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#1976D2"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentBrush}"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -203,7 +203,7 @@
                         <Setter Property="Background" Value="Transparent"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsSearchCurrent}" Value="True">
-                                <Setter Property="Background" Value="#FFF8E1"/>
+                                <Setter Property="Background" Value="{DynamicResource SearchHighlightBrush}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -236,7 +236,7 @@
                     </Border>
                     <TextBlock Text="{Binding CreatedAt, StringFormat=HH:mm}"
                                FontSize="10"
-                               Foreground="#C0C0C0"
+                               Foreground="{DynamicResource MutedTextBrush}"
                                Margin="5,0,3,0"
                                VerticalAlignment="Center"/>
                     <!-- CH-10: 発言本文のみコピーするボタン（常時表示、ホバーで鮮明） -->
@@ -270,7 +270,7 @@
                                    TextWrapping="Wrap"
                                    FontSize="13"
                                    LineHeight="20"
-                                   Foreground="#212121">
+                                   Foreground="{DynamicResource ChatMessageTextBrush}">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Visibility" Value="Visible"/>
@@ -294,9 +294,9 @@
                                      FontSize="13"
                                      Padding="4,4"
                                      BorderThickness="1"
-                                     BorderBrush="#1976D2"
-                                     Background="White"
-                                     Foreground="#212121"
+                                     BorderBrush="{DynamicResource FocusBorderBrush}"
+                                     Background="{DynamicResource InputBackgroundBrush}"
+                                     Foreground="{DynamicResource ChatMessageTextBrush}"
                                      PreviewKeyDown="EditBox_PreviewKeyDown"
                                      IsVisibleChanged="EditBox_IsVisibleChanged"/>
                             <StackPanel Orientation="Horizontal"
@@ -308,7 +308,7 @@
                                         Command="{Binding CancelEditCommand}"/>
                                 <Button Content="確定(_K)"
                                         Style="{StaticResource FlatButton}"
-                                        Background="#1976D2"
+                                        Background="{DynamicResource AccentBrush}"
                                         Foreground="White"
                                         Padding="12,6"
                                         Command="{Binding CommitEditCommand}"/>
@@ -322,7 +322,7 @@
     </UserControl.Resources>
 
     <!-- v2.7.11: Row 0 = CH-5 検索バー（非表示時は高さゼロ）、Row 1 = チャットログ、Row 2 = 入力エリア -->
-    <Grid Background="#F5F5F7">
+    <Grid Background="{DynamicResource AppBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -331,8 +331,8 @@
 
         <!-- ========== CH-5: 検索バー ========== -->
         <Border Grid.Row="0"
-                Background="#ECEFF1"
-                BorderBrush="#90A4AE"
+                Background="{DynamicResource ChatSearchBarBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="0,0,0,1"
                 Padding="10,5"
                 Visibility="{Binding IsSearchBarVisible, Converter={StaticResource BoolToVis}}">
@@ -358,7 +358,7 @@
                 <TextBlock DockPanel.Dock="Right"
                            Text="{Binding SearchResultSummary}"
                            FontSize="11"
-                           Foreground="#546E7A"
+                           Foreground="{DynamicResource SecondaryTextBrush}"
                            VerticalAlignment="Center"
                            MinWidth="44"
                            TextAlignment="Right"
@@ -366,7 +366,7 @@
                 <TextBlock DockPanel.Dock="Left"
                            Text="検索："
                            FontSize="11"
-                           Foreground="#546E7A"
+                           Foreground="{DynamicResource SecondaryTextBrush}"
                            VerticalAlignment="Center"
                            Margin="0,0,6,0"/>
                 <TextBox x:Name="SearchBox"
@@ -374,8 +374,8 @@
                          FontSize="12"
                          Padding="6,3"
                          BorderThickness="1"
-                         BorderBrush="#90A4AE"
-                         Background="White"
+                         BorderBrush="{DynamicResource BorderBrush}"
+                         Background="{DynamicResource InputBackgroundBrush}"
                          VerticalContentAlignment="Center"
                          PreviewKeyDown="SearchBox_PreviewKeyDown"/>
             </DockPanel>
@@ -422,11 +422,11 @@
                        Margin="0,0,0,12"/>
             <TextBlock Text="発言者を選んで、考えを書き出そう"
                        FontSize="14"
-                       Foreground="#BDBDBD"
+                       Foreground="{DynamicResource MutedTextBrush}"
                        HorizontalAlignment="Center"/>
             <TextBlock Text="Ctrl / Shift + Enter で投稿"
                        FontSize="11"
-                       Foreground="#D0D0D0"
+                       Foreground="{DynamicResource MutedTextBrush}"
                        HorizontalAlignment="Center"
                        Margin="0,6,0,0"/>
         </StackPanel>
@@ -440,7 +440,7 @@
                 VerticalAlignment="Bottom"
                 Margin="0,0,16,12"
                 Style="{StaticResource FlatButton}"
-                Background="#1976D2"
+                Background="{DynamicResource AccentBrush}"
                 Foreground="White"
                 FontSize="12"
                 Padding="12,6"
@@ -448,7 +448,7 @@
 
         <!-- ========== INPUT AREA ========== -->
         <Border Grid.Row="2"
-                Background="White"
+                Background="{DynamicResource ChatInputPanelBackgroundBrush}"
                 Padding="16,12,16,14">
             <Border.Effect>
                 <DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="8" ShadowDepth="-2" Direction="90"/>
@@ -470,7 +470,7 @@
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="発言者："
                                    FontSize="11"
-                                   Foreground="#757575"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
                                    VerticalAlignment="Center"
                                    Margin="0,0,8,0"/>
                         <RadioButton Style="{StaticResource SpeakerToggle}"
@@ -494,7 +494,7 @@
                     <TextBlock Grid.Column="1"
                                Text="Ctrl / Shift + ← / → で切り替え"
                                FontSize="10"
-                               Foreground="#C8C8C8"
+                               Foreground="{DynamicResource MutedTextBrush}"
                                VerticalAlignment="Center"
                                Margin="12,0,6,0"/>
 
@@ -503,7 +503,7 @@
                                 VerticalAlignment="Center" Margin="8,0,0,0">
                         <TextBlock Text="{Binding CopyStatusText}"
                                    FontSize="10"
-                                   Foreground="#9E9E9E"
+                                   Foreground="{DynamicResource MutedTextBrush}"
                                    VerticalAlignment="Center"
                                    Margin="0,0,8,0">
                             <TextBlock.Style>
@@ -537,7 +537,7 @@
                     </Grid.ColumnDefinitions>
 
                     <Border Grid.Column="0"
-                            BorderBrush="#E0E0E0"
+                            BorderBrush="{DynamicResource BorderBrush}"
                             BorderThickness="1"
                             CornerRadius="8"
                             Margin="0,0,10,0">
@@ -585,7 +585,7 @@
             <!-- 半透明バックドロップ -->
             <Border Background="#80000000"/>
             <!-- ダイアログカード -->
-            <Border Background="White"
+            <Border Background="{DynamicResource OverlayCardBackgroundBrush}"
                     CornerRadius="12"
                     Padding="24"
                     HorizontalAlignment="Center"
@@ -598,7 +598,7 @@
                     <TextBlock Text="この発言を削除しますか？"
                                FontSize="14"
                                FontWeight="SemiBold"
-                               Foreground="#212121"
+                               Foreground="{DynamicResource ChatMessageTextBrush}"
                                Margin="0,0,0,16"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Content="キャンセル(_C)"
@@ -608,7 +608,7 @@
                                 Command="{Binding CancelDeleteCommand}"/>
                         <Button Content="削除(_D)"
                                 Style="{StaticResource FlatButton}"
-                                Background="#E53935"
+                                Background="{DynamicResource ErrorBrush}"
                                 Foreground="White"
                                 Padding="14,7"
                                 Command="{Binding ConfirmDeleteCommand}"/>
