@@ -1,3 +1,13 @@
+## v2.8.3 — H3b ハイライト描画安定化
+
+- **レイアウト変更後にハイライトが薄くなる問題を修正した。** 原因は `MarkerHighlightCanvas`（`Panel.ZIndex="1"`）が `EditorBox` の上に重なり、半透明ブラシを WPF のハードウェア合成レイヤーと二重合成していたこと。ウィンドウ幅・右ペイン幅・フォントサイズ変更時に中間レンダリングターゲットが再生成され、実効 Alpha が一定にならなかった。
+- **描画レイヤーを明示した。** `ZIndex 0`（背景 `Border`）→ `ZIndex 1`（`MarkerHighlightCanvas`）→ `ZIndex 2`（`EditorBox`、`Background=Transparent`）の順で積み、ハイライトがテキスト背景として機能するようにした。Alpha 合成が不要になり、レイアウト変更後も同じ色で表示される。
+- **`EditorBox` の背景を `Transparent` にし、背景色を専用 `Border` で提供するようにした。** `EditorBg` / `TaskCommentEditorBg` の DataTrigger 切替は `Border` 側に移した。TextBox の `Style` は削除し、`Background="Transparent"` を直接属性で指定した。
+- **`MarkerLineHighlightBrush` を完全不透明色に更新した。** Light `#66FFF2CC`（40% alpha）→ `#FFF2CC`（完全不透明）、Dark `#663A2F12`（40% alpha）→ `#3A2F12`（完全不透明）。テキストの下地として安定して表示されるため、Alpha チャンネルは不要になった。
+- **Light / Dark 両テーマで視認性を確認した。** テキストはブラシ色の上に描画されるため、White-on-Yellow / Dark-on-Amber のコントラストは維持される。選択範囲・検索ハイライト・現在行強調はすべて TextBox の内部描画であり `ZIndex 2` の上位で処理されるため、視認性の優先順は維持される。
+- **保存形式変更なし。** NoteNest schema `1.4.1`・`.chatnest` / `.ideanest` / TempNest JSON 形式を維持する。
+- **外部依存追加なし。** ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.8.2 — NoteEditorHost 論理行表示整理・マーカー行ハイライト補正
 
 - **マーカー種別を TODO / FIXME / NOTE に統一した。** `MarkerLineDetector` が検出するキーワードを `MarkerExtractorService`（右ペイン）と揃え、HACK → NOTE に変更した。大文字小文字区別なし（`note` / `Note` も検出）。

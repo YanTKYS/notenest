@@ -35,9 +35,37 @@
                      MinWidth="36"/>
         </Grid>
 
-        <!-- Editor TextBox -->
+        <!-- Editor area: background layer (ZIndex 0), marker highlight layer (ZIndex 1),
+             TextBox text layer (ZIndex 2) — explicit ZIndex stabilises compositing. -->
+
+        <!-- ZIndex 0: background provides EditorBg / TaskCommentEditorBg.
+             TextBox (ZIndex 2) is Transparent so this layer is always visible. -->
+        <Border Grid.Column="1"
+                Panel.ZIndex="0">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="{DynamicResource EditorBg}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsTaskCommentMode}" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource TaskCommentEditorBg}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
+
+        <!-- ZIndex 1: marker line highlight canvas (H3b) — TODO/FIXME/NOTE lines.
+             Above background, below TextBox text. IsHitTestVisible=False preserves input. -->
+        <Canvas Grid.Column="1"
+                x:Name="MarkerHighlightCanvas"
+                Panel.ZIndex="1"
+                IsHitTestVisible="False"/>
+
+        <!-- ZIndex 2: editor TextBox — Background=Transparent so canvas layers below show through -->
         <TextBox Grid.Column="1"
+                 Panel.ZIndex="2"
                  x:Name="EditorBox"
+                 Background="Transparent"
                  Text="{Binding EditorContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  FontFamily="{Binding EditorFontFamily}"
                  FontSize="{Binding EditorFontSize}"
@@ -66,23 +94,7 @@
                                           RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                 </ContextMenu>
             </TextBox.ContextMenu>
-            <TextBox.Style>
-                <Style TargetType="TextBox">
-                    <Setter Property="Background" Value="{DynamicResource EditorBg}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsTaskCommentMode}" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource TaskCommentEditorBg}"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBox.Style>
         </TextBox>
-
-        <!-- Marker line highlight overlay (H3b): TODO/FIXME/HACK lines, behind the autocomplete popup -->
-        <Canvas Grid.Column="1"
-                x:Name="MarkerHighlightCanvas"
-                Panel.ZIndex="1"
-                IsHitTestVisible="False"/>
 
         <!-- Note-link autocomplete popup (H1a) -->
         <Popup x:Name="CompletionPopup"
