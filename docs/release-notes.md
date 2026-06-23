@@ -1,3 +1,12 @@
+## v2.7.14 — Tab と Session の変換境界整理（TD-6）
+
+- **Tab と Session の変換境界を整理した。** `SessionTabMapper` を追加し、タブ一覧から `NestSuiteSessionState` を作る処理と、保存済みセッションの file path から復元対象 Workspace を判定する処理を一箇所に集約した。
+- **セッション保存・復元時の Workspace 別重複を削減した。** `SaveSession` は mapper 経由で保存状態を作成し、`TryRestoreSession` は mapper が作った復元対象を `LoadWorkspaceFileAt` へ渡す形に整理した。
+- **Tempタブはセッション対象外であることを明確化した。** TempNest と未保存タブは `SessionTabMapper` で明示的にセッション保存対象から除外する。起動時の Temp タブ左端固定仕様は変更しない。
+- **UI 変更なし。** タブ操作、終了確認、タブクローズ確認、最近ファイル、復元失敗時の扱いは既存挙動を維持する。
+- **セッション形式・保存形式に変更はない。** `NestSuiteSessionState` は従来どおり `FilePaths` / `ActiveFilePath` のみを保存する。NoteNest schema = `1.4.1`、TempNest JSON version、`.chatnest` / `.ideanest` 形式を維持する。
+- **外部依存追加なし。** ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.7.13 — 終了・タブクローズ確認フローのテスト容易化（TD-7）
 
 - **終了・タブクローズ時の未保存確認フローをテストしやすく整理した。** `CloseConfirmationService` を追加し、未保存有無、保存 / 破棄 / キャンセル、保存失敗時の中断、複数対象の途中キャンセル、CanClose=false タブ除外の判断を WPF UI から分離した。
