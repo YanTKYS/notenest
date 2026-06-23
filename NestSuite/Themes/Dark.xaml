@@ -70,4 +70,44 @@
     <SolidColorBrush x:Key="AppFg"    Color="#E0E0E0"/>
     <SolidColorBrush x:Key="EditorBg" Color="#1E1E1E"/>
 
+    <!-- SH-10 semantic theme resources -->
+    <SolidColorBrush x:Key="AppBackgroundBrush" Color="#1E1E1E"/>
+    <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#252526"/>
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#2D2D30"/>
+    <SolidColorBrush x:Key="EditorBackgroundBrush" Color="#1E1E1E"/>
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#E0E0E0"/>
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#AAAAAA"/>
+    <SolidColorBrush x:Key="MutedTextBrush" Color="#888888"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="#3E3E42"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="#6B9FFF"/>
+    <SolidColorBrush x:Key="HoverBackgroundBrush" Color="#333337"/>
+    <SolidColorBrush x:Key="FocusBorderBrush" Color="#6B9FFF"/>
+    <SolidColorBrush x:Key="SelectionBackgroundBrush" Color="#094771"/>
+    <SolidColorBrush x:Key="SearchHighlightBrush" Color="#6B4F00"/>
+    <SolidColorBrush x:Key="WarningBrush" Color="#FFB86C"/>
+    <SolidColorBrush x:Key="ErrorBrush" Color="#FF5555"/>
+    <SolidColorBrush x:Key="UnsavedIndicatorBrush" Color="#FF8C42"/>
+    <SolidColorBrush x:Key="InputBackgroundBrush" Color="#252526"/>
+    <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="#2A3A5F"/>
+    <SolidColorBrush x:Key="ChatSearchBarBackgroundBrush" Color="#252D33"/>
+    <SolidColorBrush x:Key="ChatMessageTextBrush" Color="#E6E6E6"/>
+    <SolidColorBrush x:Key="ChatInputPanelBackgroundBrush" Color="#252526"/>
+    <SolidColorBrush x:Key="ChatChipBackgroundBrush" Color="#333337"/>
+    <SolidColorBrush x:Key="ChatCopyButtonBackgroundBrush" Color="#333337"/>
+    <SolidColorBrush x:Key="ChatCopyButtonHoverBackgroundBrush" Color="#3E3E42"/>
+    <SolidColorBrush x:Key="ChatCopyButtonPressedBackgroundBrush" Color="#4A4A50"/>
+    <SolidColorBrush x:Key="OverlayCardBackgroundBrush" Color="#2D2D30"/>
+    <SolidColorBrush x:Key="IdeaAppBackgroundBrush" Color="#1E1E1E"/>
+    <SolidColorBrush x:Key="IdeaSurfaceBrush" Color="#2D2D30"/>
+    <SolidColorBrush x:Key="IdeaBorderBrush" Color="#3E3E42"/>
+    <SolidColorBrush x:Key="IdeaTextPrimaryBrush" Color="#E0E0E0"/>
+    <SolidColorBrush x:Key="IdeaTextSecondaryBrush" Color="#AAAAAA"/>
+    <SolidColorBrush x:Key="IdeaAccentBrush" Color="#FF9A5C"/>
+    <SolidColorBrush x:Key="IdeaAccentHoverBrush" Color="#E8773A"/>
+    <SolidColorBrush x:Key="IdeaAccentPressedBrush" Color="#C8612F"/>
+    <SolidColorBrush x:Key="IdeaChipBackgroundBrush" Color="#333337"/>
+    <SolidColorBrush x:Key="IdeaChipForegroundBrush" Color="#D0D0D0"/>
+    <SolidColorBrush x:Key="IdeaHoverOverlayBrush" Color="#333337"/>
+    <SolidColorBrush x:Key="IdeaCardHoverBorderBrush" Color="#6B7280"/>
+
 </ResourceDictionary>
