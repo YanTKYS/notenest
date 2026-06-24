@@ -84,6 +84,13 @@ public partial class NestSuiteShellWindow
 
             case NestSuiteWorkspaceKind.IdeaNest:
                 if (!ConfirmAndResetIdeaNest(tab)) return false;
+                // v2.9.3 SH-21: IdeaNest 別ウィンドウが開いていれば閉じる（確認後）
+                if (_detachedWindows.TryGetValue(tab.Id, out var dwIdea))
+                {
+                    dwIdea.OnDetachedClosed = null;
+                    dwIdea.Close();
+                    _detachedWindows.Remove(tab.Id);
+                }
                 break;
         }
 

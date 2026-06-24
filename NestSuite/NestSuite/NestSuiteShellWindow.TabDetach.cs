@@ -2,32 +2,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
+using NestSuite.IdeaNest.ViewModels;
+using NestSuite.IdeaNest.Views;
 using NestSuite.ViewModels;
 using NestSuite.Views;
 
 namespace NestSuite;
 
-/// <summary>v2.9.0 SH-21: NoteNest タブの別ウィンドウ分離／再統合処理。</summary>
+/// <summary>v2.9.0 SH-21: NoteNest / IdeaNest タブの別ウィンドウ分離／再統合処理。</summary>
 public partial class NestSuiteShellWindow
 {
     private readonly Dictionary<string, DetachedWorkspaceWindow> _detachedWindows = new();
 
     private void TabContextDetach_Click(object sender, RoutedEventArgs e)
     {
-        if (GetTabFromContextMenuItem(sender) is { } tab && tab.IsDetachable)
+        if (GetTabFromContextMenuItem(sender) is not { } tab || !tab.IsDetachable) return;
+        if (tab.IsNoteNest)
             DetachNoteNestTab(tab);
+        else if (tab.IsIdeaNest)
+            DetachIdeaNestTab(tab);
     }
 
     private void TabContextReturnDetached_Click(object sender, RoutedEventArgs e)
     {
         if (GetTabFromContextMenuItem(sender) is { } tab && tab.IsDetached)
-            ReturnNoteNestTab(tab.Id);
+            ReturnDetachedTab(tab.Id);
     }
 
     private void ReturnDetachedButton_Click(object sender, RoutedEventArgs e)
     {
         if (_selectedTab?.IsDetached == true)
-            ReturnNoteNestTab(_selectedTab.Id);
+            ReturnDetachedTab(_selectedTab.Id);
+    }
+
+    private void ReturnDetachedTab(string tabId)
+    {
+        if (!_detachedWindows.TryGetValue(tabId, out var dw)) return;
+        dw.OnDetachedClosed = null;
+        dw.Close();
+        var tab = _tabs.FirstOrDefault(t => t.Id == tabId);
+        if (tab?.IsNoteNest == true)
+            ReAttachNoteNestTab(tabId);
+        else if (tab?.IsIdeaNest == true)
+            ReAttachIdeaNestTab(tabId);
     }
 
     private void DetachNoteNestTab(NestSuiteDocumentTab tab)
@@ -36,10 +53,10 @@ public partial class NestSuiteShellWindow
         if (!_sessionManager.TryGet(tab.Id, out var session) || session == null) return;
 
         var vm = (MainViewModel)session.WorkspaceViewModel;
-        var detachedWindow = new DetachedWorkspaceWindow(tab.Id, tab.DisplayName) { Owner = this };
-
-        detachedWindow.WorkspaceView.DataContext = vm;
-        WireNoteNestViewCallbacks(vm, detachedWindow.WorkspaceView);
+        var view = new NoteNestWorkspaceView { DataContext = vm };
+        var detachedWindow = new DetachedWorkspaceWindow(tab.Id, tab.DisplayName, view) { Owner = this };
+        view.DialogHost = detachedWindow;
+        WireNoteNestViewCallbacks(vm, view);
 
         var capturedTabId = tab.Id;
         var capturedWindow = detachedWindow;
@@ -57,16 +74,32 @@ public partial class NestSuiteShellWindow
         detachedWindow.Show();
     }
 
-    /// <summary>
-    /// ユーザー操作（「このタブへ戻す」ボタン・コンテキストメニュー）で呼ぶ再統合エントリポイント。
-    /// 別ウィンドウを閉じてから ReAttachNoteNestTab を呼ぶ。
-    /// </summary>
-    private void ReturnNoteNestTab(string tabId)
+    private void DetachIdeaNestTab(NestSuiteDocumentTab tab)
     {
-        if (!_detachedWindows.TryGetValue(tabId, out var dw)) return;
-        dw.OnDetachedClosed = null;
-        dw.Close();
-        ReAttachNoteNestTab(tabId);
+        if (_detachedWindows.ContainsKey(tab.Id)) return;
+        if (!_sessionManager.TryGet(tab.Id, out var session) || session == null) return;
+
+        var vm = (IdeaNestWorkspaceViewModel)session.WorkspaceViewModel;
+        var view = new IdeaNestWorkspaceView
+        {
+            DataContext = vm,
+            ShowMenu = false
+        };
+
+        var detachedWindow = new DetachedWorkspaceWindow(tab.Id, tab.DisplayName, view) { Owner = this };
+
+        var capturedTabId = tab.Id;
+        var capturedWindow = detachedWindow;
+        detachedWindow.SaveAction = () => SaveIdeaNestForTabId(capturedTabId,
+            defaultName => capturedWindow.SelectIdeaNestSavePath(defaultName));
+        detachedWindow.OnDetachedClosed = ReAttachIdeaNestTab;
+
+        _detachedWindows[tab.Id] = detachedWindow;
+
+        ReplaceTab(tab, tab with { IsDetached = true });
+        ActivateTab(_tabs.First(t => t.Id == tab.Id));
+
+        detachedWindow.Show();
     }
 
     internal void ReAttachNoteNestTab(string tabId)
@@ -90,6 +123,22 @@ public partial class NestSuiteShellWindow
 
         // DataContext 更新と表示切替は ActivateTab に委ねる。
         // 別タブが選択中の場合は WorkspaceView.DataContext を上書きしない。
+        if (tab != null && _selectedTab?.Id == tabId)
+            ActivateTab(tab);
+    }
+
+    internal void ReAttachIdeaNestTab(string tabId)
+    {
+        if (!_detachedWindows.ContainsKey(tabId)) return;
+        _detachedWindows.Remove(tabId);
+
+        var tab = _tabs.FirstOrDefault(t => t.Id == tabId);
+        if (tab != null)
+        {
+            ReplaceTab(tab, tab with { IsDetached = false });
+            tab = _tabs.First(t => t.Id == tabId);
+        }
+
         if (tab != null && _selectedTab?.Id == tabId)
             ActivateTab(tab);
     }

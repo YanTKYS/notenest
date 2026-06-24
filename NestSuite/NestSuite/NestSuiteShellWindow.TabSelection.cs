@@ -63,16 +63,18 @@ public partial class NestSuiteShellWindow
             bool isChatNest = toolId == NestSuiteToolRegistry.ChatNestToolId;
             bool isIdeaNest = toolId == NestSuiteToolRegistry.IdeaNestToolId;
 
-            // v2.9.0 SH-21: 別ウィンドウ表示中の NoteNest タブにはプレースホルダーを出す
+            // v2.9.0 SH-21: 別ウィンドウ表示中のタブにはプレースホルダーを出す
             bool isDetachedNoteNest = isNoteNest && _detachedWindows.ContainsKey(tab.Id);
+            // v2.9.3 SH-21: IdeaNest も別ウィンドウ表示に対応
+            bool isDetachedIdeaNest = isIdeaNest && _detachedWindows.ContainsKey(tab.Id);
 
             // Workspace 表示切替（選択タブに対応する Workspace のみ表示）
             WorkspaceView.Visibility               = (isNoteNest && !isDetachedNoteNest) ? Visibility.Visible : Visibility.Collapsed;
             ChatWorkspaceView.Visibility           = isChatNest ? Visibility.Visible : Visibility.Collapsed;
-            IdeaNestWorkspaceView.Visibility       = isIdeaNest ? Visibility.Visible : Visibility.Collapsed;
+            IdeaNestWorkspaceView.Visibility       = (isIdeaNest && !isDetachedIdeaNest) ? Visibility.Visible : Visibility.Collapsed;
             TempNestWorkspaceView.Visibility       = Visibility.Collapsed;
             UnintegratedPlaceholder.Visibility     = tool.IsIntegrated ? Visibility.Collapsed : Visibility.Visible;
-            DetachedNoteNestPlaceholder.Visibility = isDetachedNoteNest ? Visibility.Visible : Visibility.Collapsed;
+            DetachedNoteNestPlaceholder.Visibility = (isDetachedNoteNest || isDetachedIdeaNest) ? Visibility.Visible : Visibility.Collapsed;
 
             // v1.9.5: NoteNest タブ切替時（非別ウィンドウ）に選択タブの MainViewModel に DataContext を差し替える
             if (isNoteNest && !isDetachedNoteNest &&
@@ -83,8 +85,9 @@ public partial class NestSuiteShellWindow
             if (isChatNest && _sessionManager.TryGet(tab.Id, out var chatSession) && chatSession != null)
                 ChatWorkspaceView.DataContext = chatSession.WorkspaceViewModel;
 
-            // v1.9.7: IdeaNest タブ切替時に選択タブの ViewModel に DataContext を差し替える
-            if (isIdeaNest && _sessionManager.TryGet(tab.Id, out var ideaNestSession) && ideaNestSession != null)
+            // v1.9.7: IdeaNest タブ切替時（非別ウィンドウ）に選択タブの ViewModel に DataContext を差し替える
+            if (isIdeaNest && !isDetachedIdeaNest &&
+                _sessionManager.TryGet(tab.Id, out var ideaNestSession) && ideaNestSession != null)
                 IdeaNestWorkspaceView.DataContext = ideaNestSession.WorkspaceViewModel;
             if (!tool.IsIntegrated)
             {
