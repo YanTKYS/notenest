@@ -1,3 +1,15 @@
+## v2.8.9 — GitHub Actions UI スモークテスト試験導入
+
+- **GitHub Actions の `workflow_dispatch` トリガーで起動する UI スモークテストワークフローを追加した。** `.github/workflows/ui-smoke.yml` を新設した。`windows-latest` ランナー上でアプリをビルドし、UI Automation を使って主要要素の存在を 60 秒以内に確認する。
+- **`NestSuite.UiSmoke` プロジェクトを新設した。** .NET 8 コンソールアプリとして `NestSuite.exe` を起動し、`System.Windows.Automation` API で `Shell.TabStrip` / `Shell.TempTab` / `Shell.StatusBar` の 3 要素を検出する。メインウィンドウ出現・各要素発見で PASS、60 秒以内に揃わなければ FAIL とする。テスト実行時は `APPDATA` を一時ディレクトリに向けてユーザーデータを汚染しない。
+- **`AutomationIds.Shell` に `TempTab` / `StatusBar` を追加した。** 既存の `TabStrip` / `TabAddButton` / `TabListButton` / Workspace 系に加え、ステータスバー Border と TempNest 固定タブ ListBoxItem の識別子を定義した。
+- **`NestSuiteDocumentTab` に `TabAutomationId` プロパティを追加した。** `WorkspaceKind.Temp` のタブのみ `"Shell.TempTab"` を返し、他は空文字とする。`NestSuiteShellWindow` の `ListBox.ItemContainerStyle` で `AutomationProperties.AutomationId` にバインドし、TempNest 固定タブの ListBoxItem を UI Automation から識別できるようにした。
+- **ステータスバー Border に `AutomationProperties.AutomationId="Shell.StatusBar"` を付与した。** `NestSuiteShellWindow.xaml` の下部ステータスバー `<Border>` に追加した。
+- **既存 CI・リリースワークフローへの影響なし。** `ui-smoke.yml` は `workflow_dispatch` 専用であり、既存の `ci.yml` / `release.yml` のトリガー・ビルド・テスト・成果物出力に変更はない。
+- **機能変更なし。** UI 挙動・見た目・保存形式に変更はない。
+- **保存形式変更なし。** NoteNest schema `1.4.1`・`.chatnest` / `.ideanest` / TempNest JSON 形式を維持する。
+- **外部依存追加なし。** ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.8.8 — TD-11 主要 UI 要素への AutomationProperties 補完
 
 - **NestSuite Shell・全 Workspace・全ダイアログの主要 UI 要素に `AutomationProperties.AutomationId` および `AutomationProperties.Name` を追加した。** タブストリップ・新規タブボタン・検索ボックス・エディタ・各種ボタン・ダイアログ入力欄など 60 件以上の要素を対象とした。スクリーンリーダーや UI オートメーションテストツールからの操作性が向上する。

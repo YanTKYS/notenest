@@ -7,6 +7,8 @@ public static class AutomationIds
         public const string TabStrip             = "Shell.TabStrip";
         public const string TabAddButton         = "Shell.TabAddButton";
         public const string TabListButton        = "Shell.TabListButton";
+        public const string TempTab              = "Shell.TempTab";
+        public const string StatusBar            = "Shell.StatusBar";
         public const string NoteNestWorkspace    = "Shell.NoteNestWorkspace";
         public const string ChatNestWorkspace    = "Shell.ChatNestWorkspace";
         public const string IdeaNestWorkspace    = "Shell.IdeaNestWorkspace";
