@@ -1,3 +1,17 @@
+## v2.9.3 — SH-21 IdeaNest Workspace 別ウィンドウ表示（最小試作）
+
+- **IdeaNest タブを右クリックで「別ウィンドウで表示」できるようになった。** タブのコンテキストメニューに「別ウィンドウで表示(_D)」が IdeaNest タブでも表示されるようになった。選択すると `DetachedWorkspaceWindow` に `IdeaNestWorkspaceView` を表示する別ウィンドウが開く。
+- **別ウィンドウは Shell と同じ `IdeaNestWorkspaceViewModel` を共有する。** 同一プロセス内の追加 Window として生成するため、カード・タグ・フィルター状態が即時同期される。Ctrl+S による上書き保存にも対応する。
+- **Shell 側のタブは閉じずにプレースホルダーを表示する。** 分離中の IdeaNest タブを選択すると「このWorkspaceは別ウィンドウで表示中です」プレースホルダーが表示される。「このタブへ戻す」ボタン・コンテキストメニュー切り替えも NoteNest と同様に動作する。
+- **`DetachedWorkspaceWindow` を Workspace 種別非依存に改修した。** コンストラクタが `UIElement workspaceContent` を受け取る形に変更し、`NoteNestWorkspaceView` / `IdeaNestWorkspaceView` どちらも同じウィンドウクラスでホストできるようにした。
+- **`NestSuiteDocumentTab.IsDetachable` を IdeaNest にも拡張した。** `(IsNoteNest || IsIdeaNest) && !IsDetached` に変更。`IsIdeaNest` プロパティを追加した。
+- **IdeaNest 別ウィンドウ表示中の SaveAs ダイアログが別ウィンドウ上に表示される。** `SaveIdeaNestForTabId(tabId, selectSavePath?)` を追加し、NoteNest と同様に SaveAs ダイアログの Owner を制御できるようにした。
+- **別ウィンドウを閉じると Shell タブへ自動的に再統合される。** `ReAttachIdeaNestTab` で `IsDetached` フラグを落とし、Shell 内表示に戻る。
+- **タブを閉じる際に IdeaNest 別ウィンドウも閉じる。** `CloseTab` の IdeaNest ケースに別ウィンドウ閉鎖処理を追加した。
+- **ChatNest / TempNest は対象外。** 単一インスタンス制約を維持する（同一タブを複数ウィンドウに分離不可）。
+- **保存形式変更なし。** NoteNest schema `1.4.1`・`.chatnest` / `.ideanest` / TempNest JSON 形式を維持する。セッション保存に分離状態は含まない。
+- **外部依存追加なし。** ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.9.2 — SH-21 別ウィンドウ表示時の保存・未保存・終了確認の整合確認
 
 - **別ウィンドウ側 Ctrl+S の SaveAs ダイアログが別ウィンドウ上に表示されるようになった。** 未保存（無題）ファイルを別ウィンドウ側で Ctrl+S した場合、従来は Shell を Owner とするダイアログが表示されていたが、別ウィンドウを Owner とするダイアログが表示されるよう修正した。

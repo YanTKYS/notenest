@@ -10,8 +10,9 @@ using NestSuite.Views;
 namespace NestSuite;
 
 /// <summary>
-/// v2.9.0 SH-21: NoteNest Workspace を Shell から分離して表示する別ウィンドウ。
-/// 同一プロセス内の追加 Window として生成し、同じ <see cref="MainViewModel"/> を共有する。
+/// v2.9.0 SH-21: Workspace を Shell から分離して表示する別ウィンドウ。
+/// 同一プロセス内の追加 Window として生成し、同じ ViewModel を共有する。
+/// v2.9.3 SH-21: NoteNest / IdeaNest 両方に対応するため WorkspaceHost に UIElement を受け取る形に変更。
 /// </summary>
 public partial class DetachedWorkspaceWindow : Window, IWorkspaceDialogHost
 {
@@ -26,13 +27,17 @@ public partial class DetachedWorkspaceWindow : Window, IWorkspaceDialogHost
     /// <summary>Ctrl+S が押されたときに呼ばれるコールバック。Shell が設定する。</summary>
     public Action? SaveAction { get; set; }
 
-    public DetachedWorkspaceWindow(string tabId, string title)
+    /// <summary>
+    /// v2.9.3 SH-21: workspaceContent に NoteNestWorkspaceView / IdeaNestWorkspaceView など任意の UIElement を受け取る。
+    /// NoteNest の場合は呼び出し元が DialogHost を設定してから渡す。
+    /// </summary>
+    public DetachedWorkspaceWindow(string tabId, string title, UIElement workspaceContent)
     {
         TabId = tabId;
         _dialogs = new DialogService(this);
         InitializeComponent();
         Title = title;
-        WorkspaceView.DialogHost = this;
+        WorkspaceHost.Children.Add(workspaceContent);
     }
 
     protected override void OnClosing(CancelEventArgs e)
@@ -52,11 +57,18 @@ public partial class DetachedWorkspaceWindow : Window, IWorkspaceDialogHost
         => SaveAction?.Invoke();
 
     /// <summary>
-    /// v2.9.2 SH-21: Shell の SaveNoteNestForTabId に渡すファイル選択ダイアログ。
+    /// v2.9.2 SH-21: Shell の SaveNoteNestForTabId に渡すファイル選択ダイアログ（NoteNest）。
     /// このウィンドウを Owner として SaveFileDialog を表示するため、Shell の _dialogs とは別インスタンスを使う。
     /// </summary>
     internal string? SelectProjectSavePath(string defaultFileName)
         => _dialogs.SelectProjectSavePath(defaultFileName);
+
+    /// <summary>
+    /// v2.9.3 SH-21: Shell の SaveIdeaNestForTabId に渡すファイル選択ダイアログ（IdeaNest）。
+    /// このウィンドウを Owner として SaveFileDialog を表示するため、Shell の _dialogs とは別インスタンスを使う。
+    /// </summary>
+    internal string? SelectIdeaNestSavePath(string defaultFileName)
+        => _dialogs.SelectIdeaNestSavePath(defaultFileName);
 
     // ── IWorkspaceDialogHost ──────────────────────────────────────────────────
 

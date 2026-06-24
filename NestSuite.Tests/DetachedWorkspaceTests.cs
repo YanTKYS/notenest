@@ -5,7 +5,7 @@ using Xunit;
 namespace NestSuite.Tests;
 
 /// <summary>
-/// v2.9.1 SH-21: NoteNest 別ウィンドウ表示 — タブ状態・フラグ・スキーマ整合のテスト。
+/// v2.9.1 SH-21: NoteNest / IdeaNest 別ウィンドウ表示 — タブ状態・フラグ・スキーマ整合のテスト。
 /// Shell UI（WPF）を必要とするウィンドウ操作は対象外。
 /// </summary>
 public class DetachedWorkspaceTests
@@ -19,11 +19,17 @@ public class DetachedWorkspaceTests
         Assert.True(tab.IsDetachable);
     }
 
+    [Fact]
+    public void IdeaNestTab_IsDetachable_WhenNotDetached()
+    {
+        var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.IdeaNest);
+        Assert.True(tab.IsDetachable);
+    }
+
     [Theory]
     [InlineData(NestSuiteWorkspaceKind.ChatNest)]
-    [InlineData(NestSuiteWorkspaceKind.IdeaNest)]
     [InlineData(NestSuiteWorkspaceKind.Temp)]
-    public void NonNoteNestTab_IsNotDetachable(NestSuiteWorkspaceKind kind)
+    public void NonDetachableTab_IsNotDetachable(NestSuiteWorkspaceKind kind)
     {
         var tab = kind == NestSuiteWorkspaceKind.Temp
             ? new NestSuiteDocumentTab { Id = "t", WorkspaceKind = kind, DisplayName = "Temp", CanClose = false }
@@ -35,6 +41,13 @@ public class DetachedWorkspaceTests
     public void NoteNestTab_IsNotDetachable_WhenAlreadyDetached()
     {
         var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.NoteNest) with { IsDetached = true };
+        Assert.False(tab.IsDetachable);
+    }
+
+    [Fact]
+    public void IdeaNestTab_IsNotDetachable_WhenAlreadyDetached()
+    {
+        var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.IdeaNest) with { IsDetached = true };
         Assert.False(tab.IsDetachable);
     }
 
@@ -161,8 +174,8 @@ public class DetachedWorkspaceTests
     // ── アプリバージョン ─────────────────────────────────────────────────
 
     [Fact]
-    public void ApplicationVersion_Is_2_9_2()
+    public void ApplicationVersion_Is_2_9_3()
     {
-        Assert.Equal("2.9.2", MainViewModel.ApplicationVersion);
+        Assert.Equal("2.9.3", MainViewModel.ApplicationVersion);
     }
 }
