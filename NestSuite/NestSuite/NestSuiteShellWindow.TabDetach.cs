@@ -50,11 +50,11 @@ public partial class NestSuiteShellWindow
         if (!_sessionManager.TryGet(tabId, out var session) || session == null) return;
         var vm = (MainViewModel)session.WorkspaceViewModel;
 
-        // Re-wire view callbacks back to shell's WorkspaceView
+        // 閉じた別ウィンドウへの参照を外す。選択中タブか否かに関係なく常に実施する。
         WireNoteNestViewCallbacks(vm, WorkspaceView);
-        WorkspaceView.DataContext = vm;
 
-        // If this was the selected tab, re-show workspace in shell
+        // DataContext 更新と表示切替は ActivateTab に委ねる。
+        // 別タブが選択中の場合は WorkspaceView.DataContext を上書きしない。
         var tab = _tabs.FirstOrDefault(t => t.Id == tabId);
         if (tab != null && _selectedTab?.Id == tabId)
             ActivateTab(tab);
