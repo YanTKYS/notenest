@@ -111,6 +111,8 @@
 
         <!-- NestSuite ステータスバー（プロジェクト名・未保存・選択ツール動的表示） -->
         <Border DockPanel.Dock="Bottom" Height="22"
+                AutomationProperties.AutomationId="Shell.StatusBar"
+                AutomationProperties.Name="Shell.StatusBar"
                 Background="{DynamicResource StatusBarBg}"
                 BorderBrush="{DynamicResource PaneBorder}"
                 BorderThickness="0,1,0,0">
@@ -204,6 +206,8 @@
                                 <Setter Property="Padding" Value="0"/>
                                 <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                                 <Setter Property="Height" Value="32"/>
+                                <Setter Property="AutomationProperties.AutomationId" Value="{Binding TabAutomationId}"/>
+                                <Setter Property="AutomationProperties.Name" Value="{Binding TabAutomationId}"/>
                             </Style>
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>

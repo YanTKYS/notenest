@@ -90,6 +90,13 @@ public sealed record NestSuiteDocumentTab
             : Path.GetFileNameWithoutExtension(DisplayName);
 
     /// <summary>
+    /// v2.8.9: UI Automation 用 AutomationId。TempNest 固定タブのみ設定し、他は空文字。
+    /// </summary>
+    public string TabAutomationId => WorkspaceKind == NestSuiteWorkspaceKind.Temp
+        ? AutomationIds.Shell.TempTab
+        : "";
+
+    /// <summary>
     /// v2.6.4: タブ見出し先頭の Workspace 種別プレフィックス。
     /// </summary>
     public string KindPrefix => WorkspaceKind switch
