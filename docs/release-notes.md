@@ -1,3 +1,15 @@
+## v2.9.4 — SH-21 ChatNest Workspace 別ウィンドウ表示（最小試作）
+
+- **ChatNest タブを右クリックで「別ウィンドウで表示」できるようになった。** タブのコンテキストメニューに「別ウィンドウで表示(_D)」が ChatNest タブでも表示されるようになった。選択すると `DetachedWorkspaceWindow` に `ChatNestWorkspaceView` を表示する別ウィンドウが開く。
+- **別ウィンドウは Shell と同じ `ChatNestWorkspaceViewModel` を共有する。** 同一プロセス内の追加 Window として生成するため、メッセージ・話者・検索状態が即時同期される。
+- **別ウィンドウ表示中に ChatNest の全操作が動作する。** Ctrl+Enter 送信、Ctrl+←/→ 話者切替、Ctrl+F 検索、発言編集・削除、単体コピーが別ウィンドウ内で動作する。Shift+←/→ はタブ切り替えとして Shell に委ねる（ChatNest 側で握らない）。
+- **Ctrl+S が別ウィンドウから対象 ChatNest タブを保存する。** `SaveChatNestForTabId(tabId, selectSavePath?)` を追加し、Shell の選択タブに依存せず対象タブの ID で保存先を特定する。SaveAs ダイアログは別ウィンドウを Owner として表示する。
+- **Shell 側のタブは閉じずにプレースホルダーを表示する。** 分離中の ChatNest タブを選択すると「このWorkspaceは別ウィンドウで表示中です」プレースホルダーが表示される。「このタブへ戻す」ボタン・コンテキストメニュー切り替えも NoteNest / IdeaNest と同様に動作する。
+- **`NestSuiteDocumentTab.IsChatNest` プロパティを追加した。** `IsDetachable` を `(IsNoteNest || IsIdeaNest || IsChatNest) && !IsDetached` に拡張した。NoteNest / IdeaNest の detached 挙動に変更なし。
+- **TempNest は引き続き対象外。** 単一インスタンス制約を維持する（同一タブを複数ウィンドウに分離不可）。
+- **保存形式変更なし。** NoteNest schema `1.4.1`・`.chatnest` / `.ideanest` / TempNest JSON 形式を維持する。セッション保存に分離状態は含まない。
+- **外部依存追加なし。** ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.9.3 — SH-21 IdeaNest Workspace 別ウィンドウ表示（最小試作）
 
 - **IdeaNest タブを右クリックで「別ウィンドウで表示」できるようになった。** タブのコンテキストメニューに「別ウィンドウで表示(_D)」が IdeaNest タブでも表示されるようになった。選択すると `DetachedWorkspaceWindow` に `IdeaNestWorkspaceView` を表示する別ウィンドウが開く。

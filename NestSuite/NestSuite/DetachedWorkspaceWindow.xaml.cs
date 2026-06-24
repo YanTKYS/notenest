@@ -70,6 +70,13 @@ public partial class DetachedWorkspaceWindow : Window, IWorkspaceDialogHost
     internal string? SelectIdeaNestSavePath(string defaultFileName)
         => _dialogs.SelectIdeaNestSavePath(defaultFileName);
 
+    /// <summary>
+    /// v2.9.4 SH-21: Shell の SaveChatNestForTabId に渡すファイル選択ダイアログ（ChatNest）。
+    /// このウィンドウを Owner として SaveFileDialog を表示するため、Shell の _dialogs とは別インスタンスを使う。
+    /// </summary>
+    internal string? SelectChatNestSavePath(string defaultFileName)
+        => _dialogs.SelectChatNestSavePath(defaultFileName);
+
     // ── IWorkspaceDialogHost ──────────────────────────────────────────────────
 
     string? IWorkspaceDialogHost.ShowInput(string title, string prompt, string initialText)

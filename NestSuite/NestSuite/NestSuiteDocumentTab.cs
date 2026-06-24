@@ -95,11 +95,14 @@ public sealed record NestSuiteDocumentTab
     /// <summary>v2.9.3 SH-21: IdeaNest タブかどうか。別ウィンドウ表示メニューの表示制御に使う。</summary>
     public bool IsIdeaNest => WorkspaceKind == NestSuiteWorkspaceKind.IdeaNest;
 
+    /// <summary>v2.9.4 SH-21: ChatNest タブかどうか。別ウィンドウ表示メニューの表示制御に使う。</summary>
+    public bool IsChatNest => WorkspaceKind == NestSuiteWorkspaceKind.ChatNest;
+
     /// <summary>v2.9.1 SH-21: 現在別ウィンドウで表示中かどうか。DetachNoteNestTab/ReAttachNoteNestTab で更新する。</summary>
     public bool IsDetached { get; init; }
 
-    /// <summary>v2.9.3 SH-21: 別ウィンドウに分離できるかどうか（NoteNest または IdeaNest かつ未分離）。</summary>
-    public bool IsDetachable => (IsNoteNest || IsIdeaNest) && !IsDetached;
+    /// <summary>v2.9.4 SH-21: 別ウィンドウに分離できるかどうか（NoteNest / IdeaNest / ChatNest かつ未分離）。</summary>
+    public bool IsDetachable => (IsNoteNest || IsIdeaNest || IsChatNest) && !IsDetached;
 
     /// <summary>
     /// v2.8.9: UI Automation 用 AutomationId。TempNest 固定タブのみ設定し、他は空文字。

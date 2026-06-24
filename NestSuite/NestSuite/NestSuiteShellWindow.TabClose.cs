@@ -80,6 +80,13 @@ public partial class NestSuiteShellWindow
 
             case NestSuiteWorkspaceKind.ChatNest:
                 if (!ConfirmAndResetChatNest(tab)) return false;
+                // v2.9.4 SH-21: ChatNest 別ウィンドウが開いていれば閉じる（確認後）
+                if (_detachedWindows.TryGetValue(tab.Id, out var dwChat))
+                {
+                    dwChat.OnDetachedClosed = null;
+                    dwChat.Close();
+                    _detachedWindows.Remove(tab.Id);
+                }
                 break;
 
             case NestSuiteWorkspaceKind.IdeaNest:
