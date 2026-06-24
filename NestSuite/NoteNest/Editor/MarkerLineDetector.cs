@@ -34,8 +34,35 @@ public static class MarkerLineDetector
         ReadOnlySpan<char> span = text.AsSpan(offset, length);
         if (span.IndexOf("FIXME", StringComparison.OrdinalIgnoreCase) >= 0) return LineHighlightKind.Fixme;
         if (span.IndexOf("TODO",  StringComparison.OrdinalIgnoreCase) >= 0) return LineHighlightKind.Todo;
-        if (span.IndexOf("NOTE",  StringComparison.OrdinalIgnoreCase) >= 0) return LineHighlightKind.Note;
+        if (ContainsNoteOutsideBrackets(span))                               return LineHighlightKind.Note;
         if (span.IndexOf("[[",    StringComparison.Ordinal)            >= 0) return LineHighlightKind.NoteLink;
         return null;
+    }
+
+    // Returns true if "NOTE" (case-insensitive) appears outside any [[...]] span.
+    // Content inside [[ ... ]] is skipped so that note titles like [[My Note]] do
+    // not falsely trigger the NOTE marker. Unclosed [[ consumes the rest of the line.
+    private static bool ContainsNoteOutsideBrackets(ReadOnlySpan<char> span)
+    {
+        int i = 0;
+        while (i < span.Length)
+        {
+            if (i + 1 < span.Length && span[i] == '[' && span[i + 1] == '[')
+            {
+                int closeIdx = -1;
+                for (int j = i + 2; j + 1 < span.Length; j++)
+                {
+                    if (span[j] == ']' && span[j + 1] == ']') { closeIdx = j + 2; break; }
+                }
+                if (closeIdx < 0) return false; // unclosed [[, nothing more to check
+                i = closeIdx;
+                continue;
+            }
+            if (i + 4 <= span.Length &&
+                span.Slice(i, 4).Equals("NOTE".AsSpan(), StringComparison.OrdinalIgnoreCase))
+                return true;
+            i++;
+        }
+        return false;
     }
 }
