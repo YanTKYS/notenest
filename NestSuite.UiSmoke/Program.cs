@@ -3,10 +3,9 @@ using System.Windows.Automation;
 
 namespace NestSuite.UiSmoke;
 
-// UI Automation requires STA thread for COM interop
-[STAThread]
 class Program
 {
+    [STAThread]
     static int Main(string[] args)
     {
         if (args.Length == 0)
