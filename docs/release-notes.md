@@ -1,3 +1,12 @@
+## v2.8.8 — TD-11 主要 UI 要素への AutomationProperties 補完
+
+- **NestSuite Shell・全 Workspace・全ダイアログの主要 UI 要素に `AutomationProperties.AutomationId` および `AutomationProperties.Name` を追加した。** タブストリップ・新規タブボタン・検索ボックス・エディタ・各種ボタン・ダイアログ入力欄など 60 件以上の要素を対象とした。スクリーンリーダーや UI オートメーションテストツールからの操作性が向上する。
+- **`AutomationIds` 定数クラスを新設した。** `Shell` / `NoteNest` / `Editor` / `IdeaNest` / `ChatNest` / `TempNest` / `Dialog` の 7 つのネストクラスで ID を管理する。命名規則は `<コンポーネント>.<要素>` の英数字ドット区切りで、ユーザーデータを含まない安定した識別子とした。
+- **`AutomationIdTests` を新設した。** ID のフォーマット（英数字ドット区切り）検証・ASCII 文字のみ（ユーザーデータ混入なし）・各コンポーネント内での一意性・プレフィックスの整合性を 9 件のテストで保証する。
+- **機能変更なし。** UI 挙動・見た目・キーボードナビゲーションに変更はない。AutomationProperties は既存の WPF レイアウトに付加情報を加えるだけであり、操作動作・外観・フォーカス順序のいずれも変更しない。
+- **保存形式変更なし。** NoteNest schema `1.4.1`・`.chatnest` / `.ideanest` / TempNest JSON 形式を維持する。
+- **外部依存追加なし。** ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.8.7 — TD-17 ダイアログコンポーネントのロジックテスト追加
 
 - **主要ダイアログのロジック部分に単体テストを追加した。** `FindReplaceDialog` / `NotePickerDialog` / `BrokenLinksDialog` / `InputDialog` / `FontSettingsDialog` のロジックを pure helper / service として切り出し、WPF UI 表示なしにテストできるようにした。

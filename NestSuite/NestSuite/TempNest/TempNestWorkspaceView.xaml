@@ -27,14 +27,20 @@
                                VerticalAlignment="Center"
                                Visibility="{Binding Slot1.ShowCopyFeedback, Converter={StaticResource BoolToVis}}"/>
                     <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
+                            AutomationProperties.AutomationId="TempNest.Slot1.CopyButton"
+                            AutomationProperties.Name="TempNest.Slot1.CopyButton"
                             Command="{Binding Slot1.CopyBodyCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                     <Button Content="クリア" Padding="8,3" FontSize="11"
+                            AutomationProperties.AutomationId="TempNest.Slot1.ClearButton"
+                            AutomationProperties.Name="TempNest.Slot1.ClearButton"
                             Command="{Binding Slot1.ClearCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                 </StackPanel>
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
                     <TextBox Text="{Binding Slot1.Title, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.AutomationId="TempNest.Slot1.TitleBox"
+                             AutomationProperties.Name="TempNest.Slot1.TitleBox"
                              BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
                              Background="Transparent" Foreground="{DynamicResource AppFg}"
                              FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4"
@@ -58,6 +64,8 @@
                 </Grid>
                 <Grid>
                     <TextBox Text="{Binding Slot1.Body, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.AutomationId="TempNest.Slot1.BodyBox"
+                             AutomationProperties.Name="TempNest.Slot1.BodyBox"
                              AcceptsReturn="True" TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"
                              BorderThickness="0" Background="Transparent"
@@ -98,14 +106,20 @@
                                VerticalAlignment="Center"
                                Visibility="{Binding Slot2.ShowCopyFeedback, Converter={StaticResource BoolToVis}}"/>
                     <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
+                            AutomationProperties.AutomationId="TempNest.Slot2.CopyButton"
+                            AutomationProperties.Name="TempNest.Slot2.CopyButton"
                             Command="{Binding Slot2.CopyBodyCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                     <Button Content="クリア" Padding="8,3" FontSize="11"
+                            AutomationProperties.AutomationId="TempNest.Slot2.ClearButton"
+                            AutomationProperties.Name="TempNest.Slot2.ClearButton"
                             Command="{Binding Slot2.ClearCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                 </StackPanel>
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
                     <TextBox Text="{Binding Slot2.Title, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.AutomationId="TempNest.Slot2.TitleBox"
+                             AutomationProperties.Name="TempNest.Slot2.TitleBox"
                              BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
                              Background="Transparent" Foreground="{DynamicResource AppFg}"
                              FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4"
@@ -129,6 +143,8 @@
                 </Grid>
                 <Grid>
                     <TextBox Text="{Binding Slot2.Body, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.AutomationId="TempNest.Slot2.BodyBox"
+                             AutomationProperties.Name="TempNest.Slot2.BodyBox"
                              AcceptsReturn="True" TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"
                              BorderThickness="0" Background="Transparent"
@@ -169,14 +185,20 @@
                                VerticalAlignment="Center"
                                Visibility="{Binding Slot3.ShowCopyFeedback, Converter={StaticResource BoolToVis}}"/>
                     <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
+                            AutomationProperties.AutomationId="TempNest.Slot3.CopyButton"
+                            AutomationProperties.Name="TempNest.Slot3.CopyButton"
                             Command="{Binding Slot3.CopyBodyCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                     <Button Content="クリア" Padding="8,3" FontSize="11"
+                            AutomationProperties.AutomationId="TempNest.Slot3.ClearButton"
+                            AutomationProperties.Name="TempNest.Slot3.ClearButton"
                             Command="{Binding Slot3.ClearCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                 </StackPanel>
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
                     <TextBox Text="{Binding Slot3.Title, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.AutomationId="TempNest.Slot3.TitleBox"
+                             AutomationProperties.Name="TempNest.Slot3.TitleBox"
                              BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
                              Background="Transparent" Foreground="{DynamicResource AppFg}"
                              FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4"
@@ -200,6 +222,8 @@
                 </Grid>
                 <Grid>
                     <TextBox Text="{Binding Slot3.Body, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.AutomationId="TempNest.Slot3.BodyBox"
+                             AutomationProperties.Name="TempNest.Slot3.BodyBox"
                              AcceptsReturn="True" TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"
                              BorderThickness="0" Background="Transparent"
@@ -240,14 +264,20 @@
                                VerticalAlignment="Center"
                                Visibility="{Binding Slot4.ShowCopyFeedback, Converter={StaticResource BoolToVis}}"/>
                     <Button Content="コピー" Padding="8,3" Margin="0,0,4,0" FontSize="11"
+                            AutomationProperties.AutomationId="TempNest.Slot4.CopyButton"
+                            AutomationProperties.Name="TempNest.Slot4.CopyButton"
                             Command="{Binding Slot4.CopyBodyCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                     <Button Content="クリア" Padding="8,3" FontSize="11"
+                            AutomationProperties.AutomationId="TempNest.Slot4.ClearButton"
+                            AutomationProperties.Name="TempNest.Slot4.ClearButton"
                             Command="{Binding Slot4.ClearCommand}"
                             Background="Transparent" BorderBrush="{DynamicResource PaneBorder}" BorderThickness="1"/>
                 </StackPanel>
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
                     <TextBox Text="{Binding Slot4.Title, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.AutomationId="TempNest.Slot4.TitleBox"
+                             AutomationProperties.Name="TempNest.Slot4.TitleBox"
                              BorderThickness="0,0,0,1" BorderBrush="{DynamicResource PaneBorder}"
                              Background="Transparent" Foreground="{DynamicResource AppFg}"
                              FontSize="12" FontWeight="SemiBold" Padding="0,0,0,4"
@@ -271,6 +301,8 @@
                 </Grid>
                 <Grid>
                     <TextBox Text="{Binding Slot4.Body, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.AutomationId="TempNest.Slot4.BodyBox"
+                             AutomationProperties.Name="TempNest.Slot4.BodyBox"
                              AcceptsReturn="True" TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"
                              BorderThickness="0" Background="Transparent"

@@ -16,16 +16,24 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" x:Name="PromptLabel" Text="" FontSize="13"/>
+        <TextBlock Grid.Row="0" x:Name="PromptLabel" Text="" FontSize="13"
+                   AutomationProperties.AutomationId="Dialog.PromptLabel"
+                   AutomationProperties.Name="Dialog.PromptLabel"/>
 
         <TextBox  Grid.Row="2" x:Name="InputBox" FontSize="13"
+                  AutomationProperties.AutomationId="Dialog.InputBox"
+                  AutomationProperties.Name="Dialog.InputBox"
                   Padding="4,3" KeyDown="InputBox_KeyDown"/>
 
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="OK" Width="80" Margin="0,0,8,0"
+                    AutomationProperties.AutomationId="Dialog.OkButton"
+                    AutomationProperties.Name="Dialog.OkButton"
                     Click="OK_Click" IsDefault="True"
                     Background="#2B5CE6" Foreground="White" BorderThickness="0" Padding="6,4"/>
             <Button Content="キャンセル" Width="88" IsCancel="True"
+                    AutomationProperties.AutomationId="Dialog.CancelButton"
+                    AutomationProperties.Name="Dialog.CancelButton"
                     Click="Cancel_Click" Padding="6,4"/>
         </StackPanel>
     </Grid>

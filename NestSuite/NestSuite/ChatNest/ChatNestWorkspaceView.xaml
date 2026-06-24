@@ -370,6 +370,8 @@
                            VerticalAlignment="Center"
                            Margin="0,0,6,0"/>
                 <TextBox x:Name="SearchBox"
+                         AutomationProperties.AutomationId="ChatNest.SearchBox"
+                         AutomationProperties.Name="ChatNest.SearchBox"
                          Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="12"
                          Padding="6,3"
@@ -433,6 +435,8 @@
 
         <!-- CH-3: 最新へボタン（過去発言を読んでいるときのみ表示） -->
         <Button x:Name="ScrollToBottomButton"
+                AutomationProperties.AutomationId="ChatNest.ScrollToBottomButton"
+                AutomationProperties.Name="ChatNest.ScrollToBottomButton"
                 Grid.Row="1"
                 Content="↓ 最新へ"
                 Visibility="Collapsed"
@@ -474,18 +478,26 @@
                                    VerticalAlignment="Center"
                                    Margin="0,0,8,0"/>
                         <RadioButton Style="{StaticResource SpeakerToggle}"
+                                     AutomationProperties.AutomationId="ChatNest.SpeakerSelf"
+                                     AutomationProperties.Name="ChatNest.SpeakerSelf"
                                      Content="自分"
                                      IsChecked="{Binding SelectedSpeaker, Converter={StaticResource RadioConverter}, ConverterParameter=自分, Mode=TwoWay}"
                                      GroupName="Speaker"/>
                         <RadioButton Style="{StaticResource SpeakerToggle}"
+                                     AutomationProperties.AutomationId="ChatNest.SpeakerRefute"
+                                     AutomationProperties.Name="ChatNest.SpeakerRefute"
                                      Content="反論"
                                      IsChecked="{Binding SelectedSpeaker, Converter={StaticResource RadioConverter}, ConverterParameter=反論, Mode=TwoWay}"
                                      GroupName="Speaker"/>
                         <RadioButton Style="{StaticResource SpeakerToggle}"
+                                     AutomationProperties.AutomationId="ChatNest.SpeakerSupplement"
+                                     AutomationProperties.Name="ChatNest.SpeakerSupplement"
                                      Content="補足"
                                      IsChecked="{Binding SelectedSpeaker, Converter={StaticResource RadioConverter}, ConverterParameter=補足, Mode=TwoWay}"
                                      GroupName="Speaker"/>
                         <RadioButton Style="{StaticResource SpeakerToggle}"
+                                     AutomationProperties.AutomationId="ChatNest.SpeakerConclusion"
+                                     AutomationProperties.Name="ChatNest.SpeakerConclusion"
                                      Content="結論"
                                      IsChecked="{Binding SelectedSpeaker, Converter={StaticResource RadioConverter}, ConverterParameter=結論, Mode=TwoWay}"
                                      GroupName="Speaker"/>
@@ -542,6 +554,8 @@
                             CornerRadius="8"
                             Margin="0,0,10,0">
                         <TextBox x:Name="InputBox"
+                                 AutomationProperties.AutomationId="ChatNest.InputBox"
+                                 AutomationProperties.Name="ChatNest.InputBox"
                                  Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
                                  AcceptsReturn="True"
                                  TextWrapping="Wrap"
@@ -572,6 +586,8 @@
                     </Border>
 
                     <Button Grid.Column="1"
+                            AutomationProperties.AutomationId="ChatNest.PostButton"
+                            AutomationProperties.Name="ChatNest.PostButton"
                             Style="{StaticResource PrimaryButton}"
                             Content="投稿"
                             Width="70"

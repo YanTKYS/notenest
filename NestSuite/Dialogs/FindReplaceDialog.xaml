@@ -32,6 +32,8 @@
         <!-- 検索 -->
         <TextBlock Grid.Row="0" Grid.Column="0" Text="検索:" VerticalAlignment="Center"/>
         <TextBox   Grid.Row="0" Grid.Column="1" x:Name="FindBox" FontSize="13" Padding="4,3"
+                   AutomationProperties.AutomationId="Dialog.FindBox"
+                   AutomationProperties.Name="Dialog.FindBox"
                    KeyDown="FindBox_KeyDown"/>
 
         <!-- 件数表示 -->
@@ -40,14 +42,20 @@
 
         <!-- 置換 -->
         <TextBlock Grid.Row="4" Grid.Column="0" Text="置換:" VerticalAlignment="Center"/>
-        <TextBox   Grid.Row="4" Grid.Column="1" x:Name="ReplaceBox" FontSize="13" Padding="4,3"/>
+        <TextBox   Grid.Row="4" Grid.Column="1" x:Name="ReplaceBox" FontSize="13" Padding="4,3"
+                   AutomationProperties.AutomationId="Dialog.ReplaceBox"
+                   AutomationProperties.Name="Dialog.ReplaceBox"/>
 
         <!-- チェックボックス -->
         <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
             <CheckBox x:Name="CaseCheck" Content="大文字/小文字を区別する(_S)" FontSize="12"
+                      AutomationProperties.AutomationId="Dialog.CaseCheckBox"
+                      AutomationProperties.Name="Dialog.CaseCheckBox"
                       Margin="0,0,20,0"
                       Checked="CaseCheck_Changed" Unchecked="CaseCheck_Changed"/>
             <CheckBox x:Name="AllNotesCheck" Content="全ノートを検索(_G)" FontSize="12"
+                      AutomationProperties.AutomationId="Dialog.AllNotesCheckBox"
+                      AutomationProperties.Name="Dialog.AllNotesCheckBox"
                       Checked="AllNotes_Changed" Unchecked="AllNotes_Changed"/>
         </StackPanel>
 
@@ -61,14 +69,24 @@
         <StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2"
                     Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="次を検索(_N)" Width="90" Margin="0,0,5,0" IsDefault="True"
+                    AutomationProperties.AutomationId="Dialog.FindNextButton"
+                    AutomationProperties.Name="Dialog.FindNextButton"
                     Click="FindNext_Click" Padding="6,4"/>
             <Button Content="前を検索(_P)" Width="90" Margin="0,0,5,0"
+                    AutomationProperties.AutomationId="Dialog.FindPrevButton"
+                    AutomationProperties.Name="Dialog.FindPrevButton"
                     Click="FindPrev_Click" Padding="6,4"/>
             <Button x:Name="ReplaceButton" Content="置換(_R)" Width="70" Margin="0,0,5,0"
+                    AutomationProperties.AutomationId="Dialog.ReplaceButton"
+                    AutomationProperties.Name="Dialog.ReplaceButton"
                     Click="Replace_Click" Padding="6,4"/>
             <Button x:Name="ReplaceAllButton" Content="すべて置換(_A)" Width="92" Margin="0,0,5,0"
+                    AutomationProperties.AutomationId="Dialog.ReplaceAllButton"
+                    AutomationProperties.Name="Dialog.ReplaceAllButton"
                     Click="ReplaceAll_Click" Padding="6,4"/>
-            <Button Content="閉じる(_C)" Width="70" Click="Close_Click" Padding="6,4"/>
+            <Button Content="閉じる(_C)" Width="70" Click="Close_Click" Padding="6,4"
+                    AutomationProperties.AutomationId="Dialog.CloseButton"
+                    AutomationProperties.Name="Dialog.CloseButton"/>
         </StackPanel>
 
         <!-- 全ノート検索結果 (AllNotesCheck 有効時のみ表示) -->
@@ -78,6 +96,8 @@
                 BorderBrush="{DynamicResource PaneBorder}" BorderThickness="0,1,0,0"
                 Margin="0,4,0,0">
             <ListBox x:Name="AllNotesResultList"
+                     AutomationProperties.AutomationId="Dialog.AllNotesResultList"
+                     AutomationProperties.Name="Dialog.AllNotesResultList"
                      SelectionMode="Single"
                      FontSize="12"
                      BorderThickness="0"

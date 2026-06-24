@@ -85,6 +85,8 @@
                 <!-- Search box -->
                 <Grid Grid.Column="1">
                     <TextBox x:Name="SearchBox"
+                             AutomationProperties.AutomationId="IdeaNest.SearchBox"
+                             AutomationProperties.Name="IdeaNest.SearchBox"
                              Style="{StaticResource IdeaSearchTextBoxStyle}"
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                              ToolTip="タイトル・本文・タグを検索 (Ctrl+F)"
@@ -356,6 +358,8 @@
             </Border>
 
             <Grid Grid.Column="1" x:Name="CardArea"
+                  AutomationProperties.AutomationId="IdeaNest.CardArea"
+                  AutomationProperties.Name="IdeaNest.CardArea"
                   Background="Transparent"
                   Focusable="True"
                   FocusVisualStyle="{x:Null}"
@@ -546,6 +550,8 @@
 
                 <!-- Floating action button: 新規アイデア -->
                 <Button Style="{StaticResource IdeaFloatingAddButtonStyle}"
+                        AutomationProperties.AutomationId="IdeaNest.AddIdeaButton"
+                        AutomationProperties.Name="IdeaNest.AddIdeaButton"
                         Content="＋"
                         ToolTip="新しいアイデアを追加 (Ctrl+Shift+N)"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom"

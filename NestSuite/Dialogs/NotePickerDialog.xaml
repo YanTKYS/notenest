@@ -23,6 +23,8 @@
         <!-- L2: ノートタイトル絞り込み TextBox -->
         <Grid Grid.Row="2">
             <TextBox x:Name="NoteFilterBox"
+                     AutomationProperties.AutomationId="Dialog.NoteFilterBox"
+                     AutomationProperties.Name="Dialog.NoteFilterBox"
                      FontSize="12" Padding="6,4"
                      TextChanged="NoteFilter_TextChanged"/>
             <TextBlock Text="ノートを絞り込む..."
@@ -45,15 +47,21 @@
         </Grid>
 
         <ListBox Grid.Row="4" x:Name="NoteList"
+                 AutomationProperties.AutomationId="Dialog.NoteList"
+                 AutomationProperties.Name="Dialog.NoteList"
                  DisplayMemberPath="DisplayText"
                  FontSize="13"
                  MouseDoubleClick="NoteList_MouseDoubleClick"/>
 
         <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="OK" Width="80" Margin="0,0,8,0" IsDefault="True"
+                    AutomationProperties.AutomationId="Dialog.OkButton"
+                    AutomationProperties.Name="Dialog.OkButton"
                     Click="OK_Click"
                     Background="#2B5CE6" Foreground="White" BorderThickness="0" Padding="6,4"/>
             <Button Content="キャンセル" Width="88" IsCancel="True"
+                    AutomationProperties.AutomationId="Dialog.CancelButton"
+                    AutomationProperties.Name="Dialog.CancelButton"
                     Click="Cancel_Click" Padding="6,4"/>
         </StackPanel>
     </Grid>
