@@ -111,7 +111,7 @@ public class MainViewModelPartialTests
     public void DeleteNotebook_RemovesAllNotesAndClearsTaskLinks()
     {
         var main = new MainViewModel();
-        int baseline = main.Notes.AllNotes.Count;
+        int baseline = main.Notes.AllNotes.Count();
         var nb = main.Notes.AddNotebook("NB");
         var noteA = main.Notes.AddNote(nb, "A")!;
         main.Notes.AddNote(nb, "B");
@@ -120,7 +120,7 @@ public class MainViewModelPartialTests
 
         main.DeleteNotebook(nb);
 
-        Assert.Equal(baseline, main.Notes.AllNotes.Count);
+        Assert.Equal(baseline, main.Notes.AllNotes.Count());
         Assert.Null(task.LinkedNoteId);
     }
 
