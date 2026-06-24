@@ -23,6 +23,8 @@
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="フォント:" VerticalAlignment="Center"/>
         <ComboBox  Grid.Row="0" Grid.Column="1" x:Name="FontFamilyBox"
+                   AutomationProperties.AutomationId="Dialog.FontFamilyBox"
+                   AutomationProperties.Name="Dialog.FontFamilyBox"
                    FontSize="13" SelectedValuePath="Content"
                    SelectionChanged="FontFamilyBox_SelectionChanged">
             <ComboBoxItem Content="Yu Gothic UI"/>
@@ -39,6 +41,8 @@
         <TextBlock Grid.Row="2" Grid.Column="0" Text="サイズ:" VerticalAlignment="Center"/>
         <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
             <TextBox x:Name="FontSizeBox" Width="60" FontSize="13" Padding="4,3"
+                     AutomationProperties.AutomationId="Dialog.FontSizeBox"
+                     AutomationProperties.Name="Dialog.FontSizeBox"
                      TextChanged="FontSizeBox_TextChanged"/>
             <TextBlock Text="pt" VerticalAlignment="Center" Margin="6,0,0,0" Foreground="Gray"/>
         </StackPanel>
@@ -53,9 +57,13 @@
         <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
                     Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="OK" Width="80" Margin="0,0,8,0" IsDefault="True"
+                    AutomationProperties.AutomationId="Dialog.OkButton"
+                    AutomationProperties.Name="Dialog.OkButton"
                     Click="OK_Click"
                     Background="#2B5CE6" Foreground="White" BorderThickness="0" Padding="6,4"/>
             <Button Content="キャンセル" Width="88" IsCancel="True"
+                    AutomationProperties.AutomationId="Dialog.CancelButton"
+                    AutomationProperties.Name="Dialog.CancelButton"
                     Click="Cancel_Click" Padding="6,4"/>
         </StackPanel>
     </Grid>

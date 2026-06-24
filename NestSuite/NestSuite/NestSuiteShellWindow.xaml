@@ -146,6 +146,8 @@
                 <DockPanel>
                     <!-- v2.2.0 SH-5: 新規タブ追加ボタン。クリックで NoteNest/IdeaNest/ChatNest 選択メニューを表示 -->
                     <Button DockPanel.Dock="Right"
+                            AutomationProperties.AutomationId="Shell.TabAddButton"
+                            AutomationProperties.Name="Shell.TabAddButton"
                             Content="＋"
                             FontSize="14"
                             Width="36"
@@ -165,6 +167,8 @@
                     </Button>
                     <!-- v2.7.9 SH-6: タブ一覧ボタン。クリックで開いているタブをドロップダウン一覧表示 -->
                     <Button DockPanel.Dock="Right"
+                            AutomationProperties.AutomationId="Shell.TabListButton"
+                            AutomationProperties.Name="Shell.TabListButton"
                             Content="▾"
                             FontSize="12"
                             Width="28"
@@ -175,6 +179,8 @@
                             ToolTip="タブ一覧"
                             Click="TabListButton_Click"/>
                     <ListBox x:Name="TabStrip"
+                             AutomationProperties.AutomationId="Shell.TabStrip"
+                             AutomationProperties.Name="Shell.TabStrip"
                              BorderThickness="0"
                              Background="{DynamicResource GroupHeaderBg}"
                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
@@ -255,13 +261,25 @@
             <Grid Grid.Row="1">
                 <!-- v1.10.2: Visibility="Collapsed" デフォルトにした。ActivateTab が表示を制御する。
                      起動時にタブ未選択の瞬間 NoteNest Workspace が見えるちらつきを防ぐ。 -->
-                <views:NoteNestWorkspaceView x:Name="WorkspaceView" Visibility="Collapsed"/>
+                <views:NoteNestWorkspaceView x:Name="WorkspaceView"
+                                             AutomationProperties.AutomationId="Shell.NoteNestWorkspace"
+                                             AutomationProperties.Name="Shell.NoteNestWorkspace"
+                                             Visibility="Collapsed"/>
                 <!-- v1.7.0: ChatNest 統合検証用 Workspace（ChatNest タブ選択時に表示） -->
-                <chatnest:ChatNestWorkspaceView x:Name="ChatWorkspaceView" Visibility="Collapsed"/>
+                <chatnest:ChatNestWorkspaceView x:Name="ChatWorkspaceView"
+                                                AutomationProperties.AutomationId="Shell.ChatNestWorkspace"
+                                                AutomationProperties.Name="Shell.ChatNestWorkspace"
+                                                Visibility="Collapsed"/>
                 <!-- v1.8.0: IdeaNest 統合検証用 Workspace（IdeaNest タブ選択時に表示） -->
-                <ideanest:IdeaNestWorkspaceView x:Name="IdeaNestWorkspaceView" ShowMenu="False" Visibility="Collapsed"/>
+                <ideanest:IdeaNestWorkspaceView x:Name="IdeaNestWorkspaceView"
+                                                AutomationProperties.AutomationId="Shell.IdeaNestWorkspace"
+                                                AutomationProperties.Name="Shell.IdeaNestWorkspace"
+                                                ShowMenu="False" Visibility="Collapsed"/>
                 <!-- v2.6.0: TempNest 固定タブ Workspace（ファイル型でない内部 JSON 管理の一時メモ） -->
-                <tempnest:TempNestWorkspaceView x:Name="TempNestWorkspaceView" Visibility="Collapsed"/>
+                <tempnest:TempNestWorkspaceView x:Name="TempNestWorkspaceView"
+                                                AutomationProperties.AutomationId="Shell.TempNestWorkspace"
+                                                AutomationProperties.Name="Shell.TempNestWorkspace"
+                                                Visibility="Collapsed"/>
                 <!-- 未統合ツールタブ選択時のプレースホルダー -->
                 <Border x:Name="UnintegratedPlaceholder" Visibility="Collapsed"
                         Background="{DynamicResource SidebarBg}">

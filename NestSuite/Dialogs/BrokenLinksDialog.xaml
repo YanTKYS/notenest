@@ -16,7 +16,9 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="HeaderText" Grid.Row="0" FontSize="13"/>
+        <TextBlock x:Name="HeaderText" Grid.Row="0" FontSize="13"
+                   AutomationProperties.AutomationId="Dialog.HeaderText"
+                   AutomationProperties.Name="Dialog.HeaderText"/>
 
         <Grid Grid.Row="2">
             <TextBlock x:Name="EmptyMessage"
@@ -27,6 +29,8 @@
                        Foreground="#2E7D32"
                        Visibility="Collapsed"/>
             <ListView x:Name="ResultList"
+                      AutomationProperties.AutomationId="Dialog.ResultList"
+                      AutomationProperties.Name="Dialog.ResultList"
                       FontSize="12"
                       SelectionMode="Single"
                       Visibility="Collapsed"
@@ -44,6 +48,8 @@
 
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="NavigateButton"
+                    AutomationProperties.AutomationId="Dialog.NavigateButton"
+                    AutomationProperties.Name="Dialog.NavigateButton"
                     Content="このノートへ移動"
                     Width="130"
                     Margin="0,0,8,0"
@@ -54,6 +60,8 @@
                     BorderThickness="0"
                     Padding="6,4"/>
             <Button Content="閉じる"
+                    AutomationProperties.AutomationId="Dialog.CloseButton"
+                    AutomationProperties.Name="Dialog.CloseButton"
                     Width="80"
                     IsCancel="True"
                     Click="Close_Click"
