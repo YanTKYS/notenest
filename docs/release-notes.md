@@ -1,3 +1,17 @@
+## v2.8.5 — NoteEditorHost 行表示・ハイライト回帰テスト追加
+
+- **NoteEditorHost の行表示・ハイライト周辺の回帰テストを追加した。** v2.8.1〜v2.8.4 で高度化した行表示・ハイライトロジックについて、`NoteEditorHostHighlightRegressionTests` を新設しテストで固定した。
+- **TODO / FIXME / NOTE / NoteLink 行ハイライト判定をテストで固定した。** マーカー種別判定・大文字小文字区別なし・HACK 除外・空行・空白行のいずれも例外にならないことを確認するテストを追加した。
+- **`[[ノート名]]` タイトル内の "note" が NOTE 種別と誤判定されないことをリグレッションテストで固定した。** v2.8.4 ホットフィックスで修正した `ContainsNoteOutsideBrackets` の挙動を Theory テストとして明示した。
+- **優先度（FIXME > TODO > NOTE > NoteLink）のテストを補強した。** TODO > NoteLink、FIXME > NoteLink など、既存カバレッジにない組み合わせを追加した。
+- **`TextBoxLineLayoutAdapter.LogicalLineStartChar` の境界ケーステストを補強した。** 先頭改行・改行のみ・長い単一行・日本語テキスト・大きな行インデックスのいずれも例外なく正常動作することを確認した。
+- **`ThemeService.ThemeChanged` static event の購読・発火・購読解除をテストで固定した。** `Application.Current` 不要のリフレクションベース発火で、WPF 起動なしに event 機構を検証する。
+- **Light / Dark テーマの種別別ハイライトブラシ（8 キー）の存在と Color 値非空をテストで確認した。** テーマ XAML 変更時の回帰検出力を高めた。
+- **`.notenest` に `LineHighlightKind` / `LineHighlightInfo` が混入しないことを保存形式テストで固定した。**
+- **機能変更なし。** アプリの動作・UI・保存形式・ハイライト挙動に変更はない。
+- **保存形式変更なし。** NoteNest schema `1.4.1`・`.chatnest` / `.ideanest` / TempNest JSON 形式を維持する。
+- **外部依存追加なし。** ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.8.4 — H3b マーカー行ハイライト拡張・テーマ反映修正
 
 - **テーマ切替時にハイライト色が即時反映されるようにした。** `ThemeService.Apply()` が ResourceDictionary を差し替えた後に `static event ThemeChanged` を発火し、`NoteEditorHost` がこれを購読して `DispatcherPriority.Render` で `UpdateMarkerHighlights()` を再実行する。キャンバス上の `Rectangle.Fill` が古いブラシ参照を保持したままになる問題を解消した。
