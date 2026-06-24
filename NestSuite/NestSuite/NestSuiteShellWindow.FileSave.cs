@@ -139,6 +139,32 @@ public partial class NestSuiteShellWindow
         }
     }
 
+    /// <summary>
+    /// v2.9.4 SH-21: 別ウィンドウ内の Ctrl+S から呼ばれる（ChatNest）。タブ ID を直接受け取り保存する。
+    /// selectSavePath を受け取り、SaveAs ダイアログを呼び出し側の Window に出せるようにした。
+    /// null の場合は Shell の _dialogs を使う。
+    /// </summary>
+    internal void SaveChatNestForTabId(string tabId, Func<string, string?>? selectSavePath = null)
+    {
+        var tab = _tabs.FirstOrDefault(t => t.Id == tabId);
+        if (tab == null || tab.WorkspaceKind != NestSuiteWorkspaceKind.ChatNest) return;
+        if (!_sessionManager.TryGet(tabId, out var session) || session == null) return;
+        if (tab.FilePath != null)
+        {
+            TrySaveChatNestToPath(session, tab.FilePath);
+        }
+        else
+        {
+            var selector = selectSavePath ?? _dialogs.SelectChatNestSavePath;
+            var defaultName = "chat.chatnest";
+            var rawPath = selector(defaultName);
+            if (rawPath == null) return;
+            var normalizedPath = NormalizeFilePath(rawPath);
+            if (CheckAndActivateDuplicateTabForSave(NestSuiteWorkspaceKind.ChatNest, normalizedPath, tabId)) return;
+            TrySaveChatNestToPath(session, normalizedPath);
+        }
+    }
+
     private void SaveActiveTab()
     {
         switch (_selectedTab?.WorkspaceKind)

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
+using NestSuite.ChatNest;
 using NestSuite.IdeaNest.ViewModels;
 using NestSuite.IdeaNest.Views;
 using NestSuite.ViewModels;
@@ -9,7 +10,7 @@ using NestSuite.Views;
 
 namespace NestSuite;
 
-/// <summary>v2.9.0 SH-21: NoteNest / IdeaNest タブの別ウィンドウ分離／再統合処理。</summary>
+/// <summary>v2.9.0 SH-21: NoteNest / IdeaNest / ChatNest タブの別ウィンドウ分離／再統合処理。</summary>
 public partial class NestSuiteShellWindow
 {
     private readonly Dictionary<string, DetachedWorkspaceWindow> _detachedWindows = new();
@@ -21,6 +22,8 @@ public partial class NestSuiteShellWindow
             DetachNoteNestTab(tab);
         else if (tab.IsIdeaNest)
             DetachIdeaNestTab(tab);
+        else if (tab.IsChatNest)
+            DetachChatNestTab(tab);
     }
 
     private void TabContextReturnDetached_Click(object sender, RoutedEventArgs e)
@@ -45,6 +48,8 @@ public partial class NestSuiteShellWindow
             ReAttachNoteNestTab(tabId);
         else if (tab?.IsIdeaNest == true)
             ReAttachIdeaNestTab(tabId);
+        else if (tab?.IsChatNest == true)
+            ReAttachChatNestTab(tabId);
     }
 
     private void DetachNoteNestTab(NestSuiteDocumentTab tab)
@@ -102,6 +107,31 @@ public partial class NestSuiteShellWindow
         detachedWindow.Show();
     }
 
+    private void DetachChatNestTab(NestSuiteDocumentTab tab)
+    {
+        if (_detachedWindows.ContainsKey(tab.Id)) return;
+        if (!_sessionManager.TryGet(tab.Id, out var session) || session == null) return;
+
+        var vm = (ChatNestWorkspaceViewModel)session.WorkspaceViewModel;
+        // v2.9.4 SH-21: 新規 View を生成してデタッチウィンドウに渡す。
+        // Shell 側の ChatWorkspaceView とは独立したインスタンスを使用する（WPF single-parent 制約）。
+        var view = new ChatNestWorkspaceView { DataContext = vm };
+        var detachedWindow = new DetachedWorkspaceWindow(tab.Id, tab.DisplayName, view) { Owner = this };
+
+        var capturedTabId = tab.Id;
+        var capturedWindow = detachedWindow;
+        detachedWindow.SaveAction = () => SaveChatNestForTabId(capturedTabId,
+            defaultName => capturedWindow.SelectChatNestSavePath(defaultName));
+        detachedWindow.OnDetachedClosed = ReAttachChatNestTab;
+
+        _detachedWindows[tab.Id] = detachedWindow;
+
+        ReplaceTab(tab, tab with { IsDetached = true });
+        ActivateTab(_tabs.First(t => t.Id == tab.Id));
+
+        detachedWindow.Show();
+    }
+
     internal void ReAttachNoteNestTab(string tabId)
     {
         if (!_detachedWindows.ContainsKey(tabId)) return;
@@ -141,6 +171,25 @@ public partial class NestSuiteShellWindow
             session?.WorkspaceViewModel is IdeaNestWorkspaceViewModel ideaNestVm)
             ideaNestVm.SetOwnerResolver(() => Window.GetWindow(this.IdeaNestWorkspaceView));
 
+        var tab = _tabs.FirstOrDefault(t => t.Id == tabId);
+        if (tab != null)
+        {
+            ReplaceTab(tab, tab with { IsDetached = false });
+            tab = _tabs.First(t => t.Id == tabId);
+        }
+
+        if (tab != null && _selectedTab?.Id == tabId)
+            ActivateTab(tab);
+    }
+
+    internal void ReAttachChatNestTab(string tabId)
+    {
+        if (!_detachedWindows.ContainsKey(tabId)) return;
+        _detachedWindows.Remove(tabId);
+
+        // v2.9.4 SH-21: ChatNest の DataContextChanged / event subscription は
+        // ChatNestWorkspaceView が自動で管理するため、ActivateTab 経由の再表示で正しく再接続される。
+        // IdeaNest のような外部 owner resolver や NoteNest のような view callback の再バインドは不要。
         var tab = _tabs.FirstOrDefault(t => t.Id == tabId);
         if (tab != null)
         {

@@ -5,7 +5,7 @@ using Xunit;
 namespace NestSuite.Tests;
 
 /// <summary>
-/// v2.9.1 SH-21: NoteNest / IdeaNest 別ウィンドウ表示 — タブ状態・フラグ・スキーマ整合のテスト。
+/// v2.9.1 SH-21: NoteNest / IdeaNest / ChatNest 別ウィンドウ表示 — タブ状態・フラグ・スキーマ整合のテスト。
 /// Shell UI（WPF）を必要とするウィンドウ操作は対象外。
 /// </summary>
 public class DetachedWorkspaceTests
@@ -26,14 +26,17 @@ public class DetachedWorkspaceTests
         Assert.True(tab.IsDetachable);
     }
 
-    [Theory]
-    [InlineData(NestSuiteWorkspaceKind.ChatNest)]
-    [InlineData(NestSuiteWorkspaceKind.Temp)]
-    public void NonDetachableTab_IsNotDetachable(NestSuiteWorkspaceKind kind)
+    [Fact]
+    public void ChatNestTab_IsDetachable_WhenNotDetached()
     {
-        var tab = kind == NestSuiteWorkspaceKind.Temp
-            ? new NestSuiteDocumentTab { Id = "t", WorkspaceKind = kind, DisplayName = "Temp", CanClose = false }
-            : NestSuiteTabFactory.CreateUntitled(kind);
+        var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.ChatNest);
+        Assert.True(tab.IsDetachable);
+    }
+
+    [Fact]
+    public void TempTab_IsNotDetachable()
+    {
+        var tab = new NestSuiteDocumentTab { Id = "t", WorkspaceKind = NestSuiteWorkspaceKind.Temp, DisplayName = "Temp", CanClose = false };
         Assert.False(tab.IsDetachable);
     }
 
@@ -48,6 +51,13 @@ public class DetachedWorkspaceTests
     public void IdeaNestTab_IsNotDetachable_WhenAlreadyDetached()
     {
         var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.IdeaNest) with { IsDetached = true };
+        Assert.False(tab.IsDetachable);
+    }
+
+    [Fact]
+    public void ChatNestTab_IsNotDetachable_WhenAlreadyDetached()
+    {
+        var tab = NestSuiteTabFactory.CreateUntitled(NestSuiteWorkspaceKind.ChatNest) with { IsDetached = true };
         Assert.False(tab.IsDetachable);
     }
 
@@ -174,8 +184,8 @@ public class DetachedWorkspaceTests
     // ── アプリバージョン ─────────────────────────────────────────────────
 
     [Fact]
-    public void ApplicationVersion_Is_2_9_3()
+    public void ApplicationVersion_Is_2_9_4()
     {
-        Assert.Equal("2.9.3", MainViewModel.ApplicationVersion);
+        Assert.Equal("2.9.4", MainViewModel.ApplicationVersion);
     }
 }
