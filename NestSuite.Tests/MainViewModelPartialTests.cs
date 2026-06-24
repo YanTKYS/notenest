@@ -111,6 +111,7 @@ public class MainViewModelPartialTests
     public void DeleteNotebook_RemovesAllNotesAndClearsTaskLinks()
     {
         var main = new MainViewModel();
+        int baseline = main.Notes.AllNotes.Count;
         var nb = main.Notes.AddNotebook("NB");
         var noteA = main.Notes.AddNote(nb, "A")!;
         main.Notes.AddNote(nb, "B");
@@ -119,7 +120,7 @@ public class MainViewModelPartialTests
 
         main.DeleteNotebook(nb);
 
-        Assert.Empty(main.Notes.AllNotes);
+        Assert.Equal(baseline, main.Notes.AllNotes.Count);
         Assert.Null(task.LinkedNoteId);
     }
 
@@ -336,6 +337,7 @@ public class MainViewModelPartialTests
     public void MarkerPanel_AggregatesMarkersAcrossMultipleNotes()
     {
         var main = new MainViewModel();
+        int baseline = main.MarkerCount;
         var nb = main.Notes.AddNotebook("NB");
         var note1 = main.Notes.AddNote(nb, "N1")!;
         var note2 = main.Notes.AddNote(nb, "N2")!;
@@ -343,31 +345,33 @@ public class MainViewModelPartialTests
         note1.Content = "[TODO] task one";
         note2.Content = "[FIXME] bug one\n[NOTE] info one";
 
-        Assert.Equal(3, main.MarkerCount);
+        Assert.Equal(baseline + 3, main.MarkerCount);
     }
 
     [Fact]
     public void MarkerPanel_EmptyNoteContent_ProducesNoMarkers()
     {
         var main = new MainViewModel();
+        int baseline = main.MarkerCount;
         var nb = main.Notes.AddNotebook("NB");
         var note = main.Notes.AddNote(nb, "Empty")!;
         note.Content = "";
-        Assert.Equal(0, main.MarkerCount);
+        Assert.Equal(baseline, main.MarkerCount);
     }
 
     [Fact]
     public void MarkerPanel_DeleteNote_RemovesItsMarkers()
     {
         var main = new MainViewModel();
+        int baseline = main.MarkerCount;
         var nb = main.Notes.AddNotebook("NB");
         var note = main.Notes.AddNote(nb, "N")!;
         note.Content = "[TODO] task\n[FIXME] bug";
-        Assert.Equal(2, main.MarkerCount);
+        Assert.Equal(baseline + 2, main.MarkerCount);
 
         main.DeleteNote(note);
 
-        Assert.Equal(0, main.MarkerCount);
+        Assert.Equal(baseline, main.MarkerCount);
     }
 
     // ── Links (NoteLinkPanel refresh via MainViewModel) ───────────────────────
