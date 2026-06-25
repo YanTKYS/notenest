@@ -139,12 +139,41 @@ public class AtomicFileWriterTests : IDisposable
         Assert.NotEqual(0xEF, bytes[0]);
     }
 
+    // ── IdeaNest 事前バックアップ + AtomicFileWriter の組み合わせ ──────────
+
+    [Fact]
+    public void IdeaNestWorkspaceService_Save_CreatesPreWriteBackup()
+    {
+        // IdeaNestWorkspaceService は AtomicFileWriter に移行後も
+        // File.Copy による事前バックアップを維持していることを確認する。
+        var path = Path.Combine(_tempDir, "test.ideanest");
+        var workspace = new NestSuite.IdeaNest.Models.Workspace
+        {
+            Ideas = [new NestSuite.IdeaNest.Models.Idea { Id = "first", Title = "First" }]
+        };
+        NestSuite.IdeaNest.Services.IdeaNestWorkspaceService.Save(path, workspace);
+
+        workspace.Ideas[0].Title = "Updated";
+        NestSuite.IdeaNest.Services.IdeaNestWorkspaceService.Save(path, workspace);
+
+        Assert.True(File.Exists(path + ".bak"), ".bak が作成されていること");
+        Assert.False(File.Exists(path + ".tmp"), ".tmp が残っていないこと");
+    }
+
+    [Fact]
+    public void IdeaNestWorkspaceService_Save_NoTmpRemaining()
+    {
+        var path = Path.Combine(_tempDir, "notmp.ideanest");
+        NestSuite.IdeaNest.Services.IdeaNestWorkspaceService.Save(path, new NestSuite.IdeaNest.Models.Workspace());
+        Assert.False(File.Exists(path + ".tmp"));
+    }
+
     // ── バージョン / スキーマ ────────────────────────────────────────────
 
     [Fact]
-    public void ApplicationVersion_Is_2_9_8()
+    public void ApplicationVersion_Is_2_9_9()
     {
-        Assert.Equal("2.9.8", MainViewModel.ApplicationVersion);
+        Assert.Equal("2.9.9", MainViewModel.ApplicationVersion);
     }
 
     [Fact]

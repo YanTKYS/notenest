@@ -1,3 +1,14 @@
+## v2.9.9 — 保存・終了確認まわりの回帰テスト拡充・docs 整理
+
+- **v2.9.7〜v2.9.8 の変更に対する回帰テストを追加した。** `AppExitAndTabCloseRegressionTests.cs`（アプリ終了・タブクローズ確認フロー）と `FormatSchemaRegressionTests.cs`（保存形式・スキーマ非変更）を新設した。
+- **アプリ終了時の複数 NoteNest タブ確認フローをテストで固定した。** `CloseConfirmationService.EvaluateMany` を使い、Cancel/Save/SaveFail/Discard のすべての終了パスを回帰テストで担保する。
+- **SaveAs キャンセル時に閉じないことをテストで固定した。** `save` 関数が `false` を返す場合（SaveAs キャンセル含む）は `EvaluateSingle` が `Cancel` を返しウィンドウを閉じないことを確認する。
+- **保存形式定数・JSON キー名を自動テストで固定した。** NoteNest schema `1.4.1`・IdeaNest `1.1.4`・ChatNest `0.4.1`・TempNest version `1`・セッション形式（`FilePaths` / `ActiveFilePath`）の非変更を `FormatSchemaRegressionTests` で確認する。
+- **IdeaNest 事前バックアップが AtomicFileWriter 移行後も維持されることを確認した。** `AtomicFileWriterTests` に `IdeaNestWorkspaceService_Save_CreatesPreWriteBackup` を追加した。
+- **`docs/testing/nestsuite-release-checklist.md` に保存・終了確認の手動確認項目を追加した。** v2.9.7〜v2.9.9 対応の手動確認項目を Section 18 として整理した。
+- **`docs/backlog.md` を最新化した。** SH-21・TD-20〜TD-22 を完了済みとしてマークし、残課題がないことを明示した。
+- **新機能追加なし。** 保存形式変更なし。セッション形式変更なし。NoteNest schema `1.4.1` を維持。外部依存追加なし。ErrorLogService 方針変更なし。
+
 ## v2.9.8 — NoteNest・IdeaNest・ChatNest 保存処理の共通化と tmp cleanup
 
 - **3 サービスの保存処理を `AtomicFileWriter` に共通化した。** `ProjectFileService`（NoteNest）・`ChatNestFileService`・`IdeaNestWorkspaceService` が個別に持っていた tmp 書き込み → replace/move パターンを `NestSuite.Services.AtomicFileWriter.WriteAllText` に集約した。
