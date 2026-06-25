@@ -6,7 +6,7 @@ using Xunit;
 namespace NestSuite.Tests;
 
 /// <summary>
-/// v2.9.9: NoteNest 未保存終了確認の Save / Discard / Cancel 化 — ロジック回帰テスト。
+/// v2.10.0: NoteNest 未保存終了確認の Save / Discard / Cancel 化 — ロジック回帰テスト。
 /// CloseConfirmationService.EvaluateSingle を使用する。WPF UI は対象外（手動確認）。
 /// </summary>
 public class NoteNestCloseConfirmationTests
@@ -166,7 +166,7 @@ public class NoteNestCloseConfirmationTests
     public void OldYesNoDialog_WouldNotOfferSaveOption()
     {
         // 旧 ConfirmTabClose は Discard/Cancel しか選択肢がなかった。
-        // v2.9.9 以降は Save が選択できる。このテストは旧パスの仕様を記録する。
+        // v2.10.0 以降は Save が選択できる。このテストは旧パスの仕様を記録する。
         var wasDiscardOrCancel = true;
         bool oldBehaviorCanClose(bool isModified, bool userSaidYes)
         {
@@ -184,7 +184,7 @@ public class NoteNestCloseConfirmationTests
     [Fact]
     public void ApplicationVersion_Is_2_9_7()
     {
-        Assert.Equal("2.9.9", MainViewModel.ApplicationVersion);
+        Assert.Equal("2.10.0", MainViewModel.ApplicationVersion);
     }
 
     [Fact]

@@ -1,3 +1,11 @@
+## v2.10.0 — 安定化リリース・docs 整理・既知制限整理
+
+- **安定化リリース。新機能追加なし。** v2.9.x シリーズで実施した別ウィンドウ表示・保存処理改善・終了確認改善・回帰テスト拡充を v2.10.0 としてまとめた。
+- **`docs/architecture/workspace-detached-window.md` を新規作成した。** `DetachedWorkspaceWindow` の設計概要（対応 Workspace・ViewModel 共有・セッション非保存・Owner 制約）をアーキテクチャドキュメントとして整理した。
+- **`docs/design/nestsuite-known-limitations.md` を最新化した。** TempNest 非対応・別ウィンドウ状態未保存・Z-order 制約・レイアウト未保存・Always on Top 非対応を「Workspace 別ウィンドウ表示」節として追記した。バージョン表記を v2.10.0 に更新した。
+- **`README.md` を更新した。** 別ウィンドウ表示機能の説明と既知の制限の概要テーブルを追加した。`docs/design/nestsuite-known-limitations.md` と `docs/architecture/workspace-detached-window.md` へのリンクをドキュメント表に追加した。
+- **新機能追加なし。** 保存形式変更なし。セッション形式変更なし。NoteNest schema `1.4.1` を維持。外部依存追加なし。ErrorLogService の方針変更なし。
+
 ## v2.9.9 — 保存・終了確認まわりの回帰テスト拡充・docs 整理
 
 - **v2.9.7〜v2.9.8 の変更に対する回帰テストを追加した。** `AppExitAndTabCloseRegressionTests.cs`（アプリ終了・タブクローズ確認フロー）と `FormatSchemaRegressionTests.cs`（保存形式・スキーマ非変更）を新設した。
