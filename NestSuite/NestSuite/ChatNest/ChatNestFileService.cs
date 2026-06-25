@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NestSuite.Services;
 
 namespace NestSuite.ChatNest;
 
@@ -36,13 +37,7 @@ public static class ChatNestFileService
         };
 
         var json = JsonSerializer.Serialize(data, JsonOptions);
-        var tmp  = path + ".tmp";
-        File.WriteAllText(tmp, json, System.Text.Encoding.UTF8);
-
-        if (File.Exists(path))
-            File.Replace(tmp, path, null);
-        else
-            File.Move(tmp, path);
+        AtomicFileWriter.WriteAllText(path, json, System.Text.Encoding.UTF8);
     }
 
     /// <summary>.chatnest ファイルを読み込み、Message リストを返す。</summary>

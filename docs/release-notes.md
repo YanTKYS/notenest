@@ -1,3 +1,12 @@
+## v2.9.8 — NoteNest・IdeaNest・ChatNest 保存処理の共通化と tmp cleanup
+
+- **3 サービスの保存処理を `AtomicFileWriter` に共通化した。** `ProjectFileService`（NoteNest）・`ChatNestFileService`・`IdeaNestWorkspaceService` が個別に持っていた tmp 書き込み → replace/move パターンを `NestSuite.Services.AtomicFileWriter.WriteAllText` に集約した。
+- **保存先ディレクトリが存在しない場合も自動作成するようになった。** 従来 `ChatNestFileService` は保存先ディレクトリを作成していなかった。`AtomicFileWriter` が `Directory.CreateDirectory` を呼ぶため、全サービスでディレクトリ不在による IOException が発生しなくなった。
+- **tmp ファイルの cleanup を finally ブロックで確実に行うようになった。** 従来 `ProjectFileService` と `ChatNestFileService` は tmp cleanup を持っていなかった。また `IdeaNestWorkspaceService` は finally 内の `File.Delete` に catch がなく、削除失敗時に主例外が隠れる問題があった。`AtomicFileWriter.TryDeleteTemp` は catch して `ErrorLogService` に記録するため、主例外を隠さずに cleanup 失敗を記録できる。
+- **エンコーディング・バックアップ方針はサービスごとに維持する。** NoteNest は BOM 付き UTF-8 + `.bak` 置換バックアップ、ChatNest は BOM 付き UTF-8・バックアップなし、IdeaNest は BOM なし UTF-8・事前 `File.Copy` バックアップのままとした。
+- **保存形式変更なし。** NoteNest schema `1.4.1`・`.chatnest` / `.ideanest` / TempNest JSON 形式を維持する。セッション形式変更なし。
+- **外部依存追加なし。** ErrorLogService の方針（Error のみ / Info・Warning なし）に変更はない。
+
 ## v2.9.7 — NoteNest 未保存終了確認の Save / Discard / Cancel 化
 
 - **NoteNest 未保存状態でタブ・アプリを閉じる際に保存の選択肢が表示されるようになった。** 従来の「終了しますか？（はい/いいえ）」を「保存して閉じますか？（保存/保存しない/キャンセル）」の3択へ変更した。「保存しないまま閉じる」事故を防ぐことが目的。
