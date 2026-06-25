@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using NestSuite.IdeaNest.Models;
+using NestSuite.Services;
 
 namespace NestSuite.IdeaNest.Services;
 
@@ -73,34 +74,14 @@ public static class IdeaNestWorkspaceService
 
     public static void Save(string path, Workspace workspace)
     {
-        var directory = Path.GetDirectoryName(Path.GetFullPath(path));
-        if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
         if (File.Exists(path))
         {
             var bakPath = path + ".bak";
-            try
-            {
-                File.Copy(path, bakPath, overwrite: true);
-            }
-            catch
-            {
-                // Best-effort backup; do not block save on .bak failure.
-            }
+            try { File.Copy(path, bakPath, overwrite: true); }
+            catch { }
         }
 
         var json = JsonSerializer.Serialize(workspace, JsonOptions);
-        var tempPath = path + ".tmp";
-        try
-        {
-            File.WriteAllText(tempPath, json, new UTF8Encoding(false));
-            if (File.Exists(path))
-                File.Replace(tempPath, path, destinationBackupFileName: null);
-            else
-                File.Move(tempPath, path);
-        }
-        finally
-        {
-            if (File.Exists(tempPath)) File.Delete(tempPath);
-        }
+        AtomicFileWriter.WriteAllText(path, json, new UTF8Encoding(false));
     }
 }
