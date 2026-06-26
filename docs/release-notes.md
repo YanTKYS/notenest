@@ -1,3 +1,13 @@
+## v2.10.4 — SH-20 すべて保存コマンド
+
+- **SH-20: ファイルメニューに「すべて保存」コマンドを追加した。** メニュー「ファイル > すべて保存」（Ctrl+Shift+S）で、未保存の全タブ（NoteNest / IdeaNest / ChatNest）を一括保存する。TempNest は保存対象外（CanClose=false のタブは除外される）。
+- **保存パスがないタブは SaveAs ダイアログへ進む。** 保存先未設定の未保存タブが含まれる場合は SaveAs ダイアログを表示し、キャンセル時はそこで中断する。保存失敗時も中断する。
+- **保存結果をステータスバーに通知する。** 全タブ保存成功時は「N 件保存しました」、対象タブなし時は「保存が必要なタブはありません」、中断時は「すべて保存を中断しました」を表示する。
+- **`NestSuiteShellWindow.SaveAll.cs` を新規追加した。** `SaveAllCommand`（`RoutedCommand`）・`SaveAllTabs()`・`TrySaveTabForSaveAll()` を partial class として実装した。既存の `TrySaveNoteNestForClose` パターンに倣い、各 Workspace 種別ごとに `ApplySavedWorkspaceState(showNotification: false)` を呼ぶことで個別通知を抑制し、最終件数通知のみを表示する。
+- **`NestSuiteShellWindow.xaml` に CommandBinding・メニュー項目を追加した。** `xmlns:local="clr-namespace:NestSuite"` を追加し、`SaveAllCommand` の `CommandBinding` と「すべて保存(_A)」メニュー項目（`InputGestureText="Ctrl+Shift+S"`）を追加した。「名前を付けて保存」のアクセラレータキーを `_N` に変更した。
+- **新規テスト `SaveAllCommandTests` を追加した。** backlog の SH-20 完了マーク・release-notes の v2.10.4 エントリ・バージョン 2.10.4 を回帰テストで固定した。
+- **保存形式変更なし。** NoteNest schema `1.4.1` を維持。TempNest JSON version 変更なし。セッション形式変更なし。外部依存追加なし。
+
 ## v2.10.3 — backlog 棚卸し + 軽量改善まとめ
 
 - **TN-2: TempNest スロットのクリア確認ダイアログを実装した。** 本文またはタイトルが空でないスロットで「クリア」ボタンを押すと「スロットの内容をクリアしますか？」確認ダイアログを表示し、キャンセル時は内容を保持する。空スロットは既存どおり無効状態。`TempNestSlotViewModel.ConfirmClear` コールバックを追加し、View の DataContextChanged で MessageBox を接続した。TempNest JSON version・保存形式は変更しない。
