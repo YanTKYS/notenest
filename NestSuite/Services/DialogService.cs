@@ -116,6 +116,9 @@ public sealed class DialogService
     public string? SelectIdeaNestSavePath(string defaultFileName) =>
         SelectSaveFilePath("IdeaNest ファイル (*.ideanest)|*.ideanest", ".ideanest", defaultFileName);
 
+    public string? SelectMarkdownExportPath(string defaultFileName) =>
+        SelectSaveFilePath("Markdown (*.md)|*.md|テキスト (*.txt)|*.txt|すべてのファイル (*.*)|*.*", ".md", defaultFileName);
+
     public void ShowProjectInfo(string information) =>
         new ProjectInfoDialog(information) { Owner = _owner }.ShowDialog();
 
