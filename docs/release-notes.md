@@ -1,3 +1,15 @@
+## v2.10.5 — M10 ノートの Markdown エクスポート
+
+- **M10: NoteNest ノートの Markdown エクスポートを追加した。** ファイルメニュー「エクスポート」サブメニュー（ファイル > エクスポート）から 3 つの操作を提供する。
+- **選択中ノートを Markdown としてクリップボードにコピーできるようになった。** 「ファイル > エクスポート > 選択中ノートを Markdown としてコピー」で、`# タイトル\n\n本文` 形式の Markdown 文字列をクリップボードに設定する。コピー成功時はステータスバーに「Markdown をコピーしました」を表示する。
+- **選択中ノートを Markdown ファイルとして保存できるようになった。** 「ファイル > エクスポート > 選択中ノートを Markdown として保存」で SaveFileDialog を表示し `.md` ファイルとして保存する。
+- **全ノートを 1 つの Markdown ファイルとして保存できるようになった。** 「ファイル > エクスポート > 全ノートを Markdown として保存」で、先頭に `# プロジェクト名`、各ノートを `## タイトル` で区切り `---` を挿入した形式で保存する。
+- **`NoteNestMarkdownExportService` を新規追加した。** `BuildCurrentNoteMarkdown(note)` と `BuildAllNotesMarkdown(projectName, notes)` で Markdown 文字列を生成する。UI 処理（クリップボード・ファイル保存・ダイアログ）から分離されており、単体テスト可能。
+- **ファイル保存には `AtomicFileWriter` を使用する。** 既存保存処理と同じ tmp 経由 atomic write・ディレクトリ自動作成・tmp cleanup 方針に従う。保存失敗時は既存の `LogAndShowSaveError` でエラーダイアログとログ記録を行う。
+- **空タイトルは「無題ノート」として出力される。** タイトル内の改行文字は半角スペースに置換する。本文は原則そのまま出力し、`[[ノートリンク]]` も変換しない。
+- **新規テスト `MarkdownExportTests` を追加した。** `NoteNestMarkdownExportService` の単体テスト（タイトル形式・空タイトル・空本文・ノートリンク・H1/H2/区切り）と、backlog の M10 完了マーク・release-notes v2.10.5 エントリを回帰テストで固定した。
+- **保存形式変更なし。** NoteNest schema `1.4.1` を維持。`.notenest` 保存形式変更なし。TempNest JSON version 変更なし。セッション形式変更なし。外部依存追加なし。
+
 ## v2.10.4 — SH-20 すべて保存コマンド
 
 - **SH-20: ファイルメニューに「すべて保存」コマンドを追加した。** メニュー「ファイル > すべて保存」（Ctrl+Shift+S）で、未保存の全タブ（NoteNest / IdeaNest / ChatNest）を一括保存する。TempNest は保存対象外（CanClose=false のタブは除外される）。

@@ -35,6 +35,13 @@
                           InputGestureText="Ctrl+Shift+S"/>
                 <MenuItem Header="名前を付けて保存(_N)..." Click="MenuSaveAs_Click"/>
                 <Separator/>
+                <!-- v2.10.5 M10: NoteNest Markdown エクスポート -->
+                <MenuItem Header="エクスポート(_E)">
+                    <MenuItem Header="選択中ノートを Markdown としてコピー(_M)" Click="MenuExportNoteMarkdownCopy_Click"/>
+                    <MenuItem Header="選択中ノートを Markdown として保存(_S)..." Click="MenuExportNoteMarkdownSave_Click"/>
+                    <MenuItem Header="全ノートを Markdown として保存(_A)..." Click="MenuExportAllNotesMarkdownSave_Click"/>
+                </MenuItem>
+                <Separator/>
                 <MenuItem Header="終了(_X)" Click="MenuExit_Click"/>
             </MenuItem>
             <MenuItem Header="ツール(_T)">
