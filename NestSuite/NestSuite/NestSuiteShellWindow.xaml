@@ -14,7 +14,7 @@
         <!-- v1.16.1: Ctrl+S で SaveActiveTab() を実行する。ApplicationCommands.Save は Ctrl+S ジェスチャを内包する -->
         <CommandBinding Command="ApplicationCommands.Save" Executed="CommandSave_Executed"/>
         <!-- v2.10.4 SH-20: Ctrl+Shift+S ですべて保存を実行する -->
-        <CommandBinding Command="local:NestSuiteShellWindow.SaveAllCommand" Executed="CommandSaveAll_Executed"/>
+        <CommandBinding Command="{x:Static local:NestSuiteShellWindow.SaveAllCommand}" Executed="CommandSaveAll_Executed"/>
     </Window.CommandBindings>
     <DockPanel>
         <!-- ファイルメニュー: 新規/開くはツール横断、保存系は選択中タブの WorkspaceKind に応じて処理する -->
@@ -31,7 +31,7 @@
                 </MenuItem>
                 <Separator/>
                 <MenuItem Header="上書き保存(_S)" Command="ApplicationCommands.Save"/>
-                <MenuItem Header="すべて保存(_A)" Command="local:NestSuiteShellWindow.SaveAllCommand"
+                <MenuItem Header="すべて保存(_A)" Command="{x:Static local:NestSuiteShellWindow.SaveAllCommand}"
                           InputGestureText="Ctrl+Shift+S"/>
                 <MenuItem Header="名前を付けて保存(_N)..." Click="MenuSaveAs_Click"/>
                 <Separator/>
