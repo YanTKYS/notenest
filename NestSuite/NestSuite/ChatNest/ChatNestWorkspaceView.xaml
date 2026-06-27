@@ -215,6 +215,14 @@
                     </Style>
                 </StackPanel.Style>
 
+                <!-- CH-4/CH-6: 右クリックで編集・削除を選択する（プロパティ要素はコンテンツより前） -->
+                <StackPanel.ContextMenu>
+                    <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                        <MenuItem Header="編集(_E)" Command="{Binding BeginEditCommand}"/>
+                        <MenuItem Header="削除(_D)" Command="{Binding RequestDeleteCommand}"/>
+                    </ContextMenu>
+                </StackPanel.ContextMenu>
+
                 <!-- CH-13: ドラッグ並び替えハンドル（ホバーで鮮明、ドラッグで並び替え） -->
                 <TextBlock Text="⠿"
                            FontSize="14"
@@ -235,14 +243,6 @@
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
-
-                <!-- CH-4/CH-6: 右クリックで編集・削除を選択する -->
-                <StackPanel.ContextMenu>
-                    <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-                        <MenuItem Header="編集(_E)" Command="{Binding BeginEditCommand}"/>
-                        <MenuItem Header="削除(_D)" Command="{Binding RequestDeleteCommand}"/>
-                    </ContextMenu>
-                </StackPanel.ContextMenu>
 
                 <!-- CH-7: 発言者チップ + 時刻 + CH-10 コピーボタン -->
                 <StackPanel Orientation="Horizontal"
