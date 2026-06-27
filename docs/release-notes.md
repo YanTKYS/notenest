@@ -1,3 +1,14 @@
+## v2.10.13 — TD-26 GuardNest 第一段階整理
+
+- **TD-26: 保存安全性・終了確認・エラー案内まわりの責務境界を整理した。** `AtomicFileWriter` / `CloseConfirmationService` / `FileErrorMessages` / `ErrorLogService` の役割を確認・文書化した。
+- **`AtomicFileWriter` が tmp 経由 atomic write と tmp cleanup の責務を担うことを文書化した。** `WriteAllText()` は `.tmp` ファイルに書き込み後 `File.Replace()` または `File.Move()` で置換し、finally で `.tmp` を削除する。
+- **`CloseConfirmationService` が Save / Discard / Cancel 判断と CanClose=false タブ除外の責務を担うことを文書化した。** `EvaluateSingle()` / `EvaluateMany()` が WPF UI に依存しない純粋なロジックとして設計されていることを確認した。
+- **`FileErrorMessages` が例外種別ごとのユーザー向けメッセージ生成を担うことを文書化した。** `ex.Message` をそのまま表示せず、例外型別に短く具体的な日本語メッセージを返す。
+- **`ErrorLogService` が Error レベルのみ・本文 / タイトル / 個人情報を出さない方針を維持することを確認した。** `LogInfo` / `LogWarning` メソッドが存在しないことをテストで固定した。
+- **保存失敗時 dirty 維持・tmp cleanup・Save / Discard / Cancel 判断の回帰確認を `GuardNestTD26Tests` で補強した。** 15 tests 新規追加。
+- **`docs/architecture/sessionnest-guardnest-policy.md` に TD-26 整理内容を追記した。**
+- **UI 変更なし。保存形式変更なし。session 形式変更なし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+
 ## v2.10.12 — TD-25 SessionNest 第一段階整理
 
 - **TD-25: `session.json` 読込 / 保存 / 復元まわりの責務境界を整理した。** `SessionTabMapper` / `NestSuiteWorkspaceSessionManager` / `NestSuiteSessionStateService` / `SavedWorkspaceStateUpdater` が SessionNest 責務をそれぞれ担うことを確認・文書化した。

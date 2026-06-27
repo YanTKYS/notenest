@@ -8,7 +8,7 @@ using Xunit;
 namespace NestSuite.Tests;
 
 /// <summary>
-/// v2.10.12 TD-25: SessionNest 第一段階整理の回帰テスト。
+/// v2.10.13 TD-25: SessionNest 第一段階整理の回帰テスト。
 /// session.json 読込 / 保存 / 復元まわりの責務境界確認。
 /// TempNest session 対象外・detached 状態非保存をテストで固定する。
 /// </summary>
@@ -22,7 +22,7 @@ public class SessionNestTD25Tests
     [Fact]
     public void ApplicationVersion_Is_2_10_12()
     {
-        Assert.Equal("2.10.12", MainViewModel.ApplicationVersion);
+        Assert.Equal("2.10.13", MainViewModel.ApplicationVersion);
     }
 
     [Fact]
@@ -216,6 +216,6 @@ public class SessionNestTD25Tests
     {
         var path = Path.Combine(RepoRoot, "docs", "release-notes.md");
         Assert.True(File.Exists(path));
-        Assert.Contains("v2.10.12", File.ReadAllText(path));
+        Assert.Contains("v2.10.13", File.ReadAllText(path));
     }
 }
