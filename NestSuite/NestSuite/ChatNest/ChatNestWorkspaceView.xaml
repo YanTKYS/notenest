@@ -237,11 +237,13 @@
                                    Foreground="{Binding Speaker, Converter={StaticResource SpeakerAccent}}"
                                    VerticalAlignment="Center"/>
                     </Border>
+                    <!-- CH-8: タイムスタンプ非表示時は Collapsed。ShowTimestamps は UserControl の DataContext (ChatNestWorkspaceViewModel) が持つ -->
                     <TextBlock Text="{Binding CreatedAt, StringFormat=HH:mm}"
                                FontSize="10"
                                Foreground="{DynamicResource MutedTextBrush}"
                                Margin="5,0,3,0"
-                               VerticalAlignment="Center"/>
+                               VerticalAlignment="Center"
+                               Visibility="{Binding DataContext.ShowTimestamps, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource BoolToVis}}"/>
                     <!-- CH-10: 発言本文のみコピーするボタン（常時表示、ホバーで鮮明） -->
                     <Button Content="📋"
                             Style="{StaticResource MessageCopyButton}"
@@ -506,12 +508,23 @@
                                      GroupName="Speaker"/>
                     </StackPanel>
 
-                    <TextBlock Grid.Column="1"
-                               Text="Ctrl + ← / → で切り替え"
-                               FontSize="10"
-                               Foreground="{DynamicResource MutedTextBrush}"
-                               VerticalAlignment="Center"
-                               Margin="12,0,6,0"/>
+                    <!-- CH-8: ショートカットヒント + タイムスタンプ表示切替チェックボックス -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                VerticalAlignment="Center" Margin="12,0,6,0">
+                        <TextBlock Text="Ctrl + ← / → で切り替え"
+                                   FontSize="10"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   VerticalAlignment="Center"/>
+                        <CheckBox x:Name="ShowTimestampsCheckBox"
+                                  AutomationProperties.AutomationId="ChatNest.ShowTimestampsCheckBox"
+                                  AutomationProperties.Name="ChatNest.ShowTimestampsCheckBox"
+                                  Content="発言時刻を表示"
+                                  IsChecked="{Binding ShowTimestamps, Mode=TwoWay}"
+                                  FontSize="10"
+                                  Foreground="{DynamicResource SecondaryTextBrush}"
+                                  VerticalAlignment="Center"
+                                  Margin="16,0,0,0"/>
+                    </StackPanel>
 
                     <!-- v1.16.5: コピーボタン群 + 状態テキスト -->
                     <StackPanel Grid.Column="2" Orientation="Horizontal"
@@ -540,6 +553,14 @@
                                 Content="Copy Markdown"
                                 Command="{Binding CopyMarkdownCommand}"
                                 ToolTip="Markdown 形式でコピー"
+                                Margin="4,0,0,0"/>
+                        <!-- CH-14: 会話整形コピー -->
+                        <Button Style="{StaticResource CopyButton}"
+                                AutomationProperties.AutomationId="ChatNest.CopyConversationButton"
+                                AutomationProperties.Name="ChatNest.CopyConversationButton"
+                                Content="会話をコピー"
+                                Command="{Binding CopyConversationCommand}"
+                                ToolTip="発言者: 本文 形式で会話全体をコピー"
                                 Margin="4,0,0,0"/>
                     </StackPanel>
                 </Grid>
