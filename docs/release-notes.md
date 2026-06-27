@@ -4,7 +4,7 @@
 - **`SessionNestTD25Tests` を削除し、session.json / TempNest session 対象外 / detached 非保存の確認を `SessionTabMapperTests` へ集約した。**
 - **`GuardNestTD26Tests` を削除し、AtomicFileWriter / CloseConfirmationService / FileErrorMessages / ErrorLogService 境界確認を `AtomicFileWriterTests` へ集約した。**
 - **`LightImprovementsV2103Tests` を削除し、TempNest スロット clear 回帰確認と関連 docs 確認を `TempNestTests` へ集約した。**
-- **テストクラス数 96 → 93 に削減。変更前から増加なし。テストロジックの意味変更なし。**
+- **テストクラス数 94 → 91 に削減（TD-28 起点の累計では 96 → 91）。変更前から増加なし。テストロジックの意味変更なし。**
 - **backlog ID はテストクラス名ではなく、移動先クラス内のコメント・メソッド名・docs 対応表で追跡する。**
 - **アプリ本体の挙動変更なし。UI 変更なし。保存形式変更なし。session 形式変更なし。NoteNest schema `1.4.1` 維持。**
 
