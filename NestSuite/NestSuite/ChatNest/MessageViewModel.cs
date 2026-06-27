@@ -16,6 +16,7 @@ public class MessageViewModel : INotifyPropertyChanged
     private bool _isEditing;
     private string _editingText = string.Empty;
     private bool _isSearchCurrent;
+    private bool _isDragging;
 
     private readonly Action<MessageViewModel> _onBeginEditRequested;
     private readonly Action<MessageViewModel> _onRequestDelete;
@@ -50,6 +51,13 @@ public class MessageViewModel : INotifyPropertyChanged
     {
         get => _isSearchCurrent;
         set { _isSearchCurrent = value; OnPropertyChanged(); }
+    }
+
+    /// <summary>CH-13: ドラッグ中の視覚フィードバック用フラグ。View が設定し、Opacity バインディングに使用する。</summary>
+    public bool IsDragging
+    {
+        get => _isDragging;
+        set { _isDragging = value; OnPropertyChanged(); }
     }
 
     public ChatNestRelayCommand BeginEditCommand { get; }
