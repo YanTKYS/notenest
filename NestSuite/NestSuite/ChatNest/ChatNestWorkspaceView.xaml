@@ -192,7 +192,7 @@
             </Setter>
         </Style>
 
-        <!-- v2.3.0: DataType を MessageViewModel に変更。v2.7.11: CH-7 speaker chip / CH-10 copy / CH-5 search highlight -->
+        <!-- v2.3.0: DataType を MessageViewModel に変更。v2.7.11: CH-7 speaker chip / CH-10 copy / CH-5 search highlight。v2.10.9: CH-13 drag handle -->
         <DataTemplate x:Key="MessageTemplate" DataType="{x:Type cn:MessageViewModel}">
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="{Binding Speaker, Converter={StaticResource SpeakerAlign}}"
@@ -200,7 +200,7 @@
                         Margin="16,3"
                         MaxWidth="580">
 
-                <!-- CH-5: 現在の検索結果に背景ハイライトを付ける -->
+                <!-- CH-5: 現在の検索結果に背景ハイライト。CH-13: ドラッグ中は半透明 -->
                 <StackPanel.Style>
                     <Style TargetType="StackPanel">
                         <Setter Property="Background" Value="Transparent"/>
@@ -208,9 +208,33 @@
                             <DataTrigger Binding="{Binding IsSearchCurrent}" Value="True">
                                 <Setter Property="Background" Value="{DynamicResource SearchHighlightBrush}"/>
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding IsDragging}" Value="True">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </StackPanel.Style>
+
+                <!-- CH-13: ドラッグ並び替えハンドル（ホバーで鮮明、ドラッグで並び替え） -->
+                <TextBlock Text="⠿"
+                           FontSize="14"
+                           Cursor="SizeNS"
+                           VerticalAlignment="Center"
+                           Margin="0,0,4,0"
+                           ToolTip="ドラッグして並び替え"
+                           PreviewMouseLeftButtonDown="DragHandle_PreviewMouseLeftButtonDown">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Opacity" Value="0.2"/>
+                            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Opacity" Value="0.8"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
 
                 <!-- CH-4/CH-6: 右クリックで編集・削除を選択する -->
                 <StackPanel.ContextMenu>
@@ -399,7 +423,11 @@
             <ItemsControl x:Name="ChatItemsControl"
                           ItemsSource="{Binding Messages}"
                           ItemTemplate="{StaticResource MessageTemplate}"
-                          VirtualizingPanel.IsVirtualizing="False">
+                          VirtualizingPanel.IsVirtualizing="False"
+                          AllowDrop="True"
+                          Drop="ChatItemsControl_Drop"
+                          DragOver="ChatItemsControl_DragOver"
+                          DragLeave="ChatItemsControl_DragLeave">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel/>
@@ -407,6 +435,16 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </ScrollViewer>
+
+        <!-- CH-13: ドラッグ挿入位置インジケーター（ScrollViewer と同セル・上レイヤー）-->
+        <Canvas Grid.Row="1" IsHitTestVisible="False">
+            <Rectangle x:Name="DragInsertionIndicator"
+                       Height="2"
+                       Fill="{DynamicResource AccentBrush}"
+                       Visibility="Collapsed"
+                       Canvas.Left="16"
+                       Canvas.Top="0"/>
+        </Canvas>
 
         <!-- Empty state -->
         <StackPanel Grid.Row="1"

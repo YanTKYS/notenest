@@ -217,6 +217,17 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
 
     public void MarkSaved() => IsDirty = false;
 
+    /// <summary>CH-13: 指定インデックスの発言を別インデックスへ移動する。同一位置・範囲外は無視する。</summary>
+    public void MoveMessage(int oldIndex, int newIndex)
+    {
+        if (oldIndex < 0 || oldIndex >= Messages.Count) return;
+        if (newIndex < 0 || newIndex >= Messages.Count) return;
+        if (oldIndex == newIndex) return;
+        Messages.Move(oldIndex, newIndex);
+        IsDirty = true;
+        WorkspaceModified?.Invoke(this, EventArgs.Empty);
+    }
+
     public void Clear()
     {
         ResetSearch();
