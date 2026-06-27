@@ -1,3 +1,14 @@
+## v2.10.16 — TD-30 テストクラス乱立抑制・集約方針の明文化
+
+- **TD-30: テストクラスを課題番号・バージョン単位で乱立させない方針を `docs/development/nestsuite-development-guidelines.md` §7 に追記した。**
+- **新規テストは既存テストクラスへの追加を優先する方針を明記した。**
+- **`CH8CH14Tests`・`TD25Tests`・`V2103Tests` のような課題番号・バージョン中心の命名を避ける方針を明記した。**
+- **backlog ID はコメントまたは `Trait("Backlog", "...")` で追跡する方針を明記した。**
+- **`docs/development/test-classification-analysis.md` §8 に v2.10.16 対応記録（追補）を追記した。**
+- **`TestClassificationAnalysisTests.cs` に TD-30 ルール固定テスト 5 件を追加した（既存クラスへ追加し、新規テストクラスを作成しないことでルールを実践）。**
+- **既存テストクラスの大規模リネーム・移動・統合は未実施。テストロジック変更なし。**
+- **アプリ本体の挙動変更なし。UI 変更なし。保存形式変更なし。session 形式変更なし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+
 ## v2.10.15 — TD-29 NoteNest schema テスト集約・重複 schema テスト抑制
 
 - **TD-29: 各機能テストクラスに散在していた `NoteNestSchemaVersion_Remains_1_4_1` メソッド（20 ファイル）を削除し、`ApplicationVersionTests.cs` に集約した。**

@@ -74,4 +74,57 @@ public class TestClassificationAnalysisTests
         Assert.Contains("TD-28", text);
         Assert.Contains("NoteNest schema `1.4.1` 維持", text);
     }
+
+    // TD-30: テストクラス乱立抑制・集約方針の明文化 (v2.10.16)
+
+    [Fact]
+    public void DevelopmentGuidelines_ContainTestClassConsolidationPolicy()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "development", "nestsuite-development-guidelines.md");
+        var text = File.ReadAllText(path);
+
+        Assert.Contains("テストクラス乱立抑制・集約方針", text);
+        Assert.Contains("backlog ID、version番号、実装時期だけを理由に新しいテストクラスを作成しない", text);
+        Assert.Contains("既存テストクラスへ追加できないか確認する", text);
+    }
+
+    [Fact]
+    public void DevelopmentGuidelines_ContainBacklogIdTrackingPolicy()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "development", "nestsuite-development-guidelines.md");
+        var text = File.ReadAllText(path);
+
+        Assert.Contains("Trait", text);
+        Assert.Contains("メソッドコメント", text);
+    }
+
+    [Fact]
+    public void AnalysisDocument_ContainsTD30Supplement()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "development", "test-classification-analysis.md");
+        var text = File.ReadAllText(path);
+
+        Assert.Contains("TD-30", text);
+        Assert.Contains("v2.10.16", text);
+    }
+
+    [Fact]
+    public void Backlog_ContainsTD30Completion()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "backlog.md");
+        var text = File.ReadAllText(path);
+
+        Assert.Contains("TD-30", text);
+        Assert.Contains("テストクラス乱立抑制", text);
+    }
+
+    [Fact]
+    public void ReleaseNotes_ContainV21016()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "release-notes.md");
+        var text = File.ReadAllText(path);
+
+        Assert.Contains("v2.10.16", text);
+        Assert.Contains("TD-30", text);
+    }
 }
