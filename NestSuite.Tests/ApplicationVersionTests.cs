@@ -1,3 +1,5 @@
+using System.IO;
+using System.Linq;
 using NestSuite.Models;
 using NestSuite.ViewModels;
 using Xunit;
@@ -25,5 +27,22 @@ public class ApplicationVersionTests
     {
         Assert.Equal("2.10.13", MainViewModel.ApplicationVersion);
         Assert.Equal("1.4.1", Project.CurrentSchemaVersion);
+    }
+
+    [Fact]
+    public void ApplicationVersion_IsNotTested_InOtherTestClasses()
+    {
+        var thisFile = "ApplicationVersionTests.cs";
+        var testDir  = Path.GetFullPath(
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "NestSuite.Tests"));
+
+        var offenders = Directory
+            .GetFiles(testDir, "*.cs", SearchOption.TopDirectoryOnly)
+            .Where(f => Path.GetFileName(f) != thisFile)
+            .Where(f => File.ReadAllText(f).Contains("ApplicationVersion_Is_"))
+            .Select(Path.GetFileName)
+            .ToList();
+
+        Assert.Empty(offenders);
     }
 }
