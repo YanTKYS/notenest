@@ -17,7 +17,7 @@ public class ApplicationVersionTests
     {
         var viewModel = new MainViewModel();
 
-        Assert.EndsWith(" - ver2.10.5", viewModel.WindowTitle);
+        Assert.EndsWith(" - ver2.10.6", viewModel.WindowTitle);
     }
 
     [Fact]
