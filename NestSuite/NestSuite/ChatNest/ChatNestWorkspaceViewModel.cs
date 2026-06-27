@@ -436,11 +436,7 @@ public class ChatNestWorkspaceViewModel : INotifyPropertyChanged, IDisposable
 
     private void ExecuteCopyConversation()
     {
-        if (Messages.Count == 0)
-        {
-            ShowCopyStatus("コピーする発言がありません");
-            return;
-        }
+        if (Messages.Count == 0) return;
         CopyToClipboard(ChatNestExportFormatter.BuildPlainTextConversation(MessageModels), "会話をコピーしました");
     }
 
