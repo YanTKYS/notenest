@@ -153,7 +153,7 @@ public class ChatNestCH13DragReorderTests
         var vm = new ChatNestWorkspaceViewModel();
         vm.LoadMessages(new[] { msg, new Message { Speaker = Speaker.反論, Text = "B" } });
         vm.MoveMessage(0, 1);
-        Assert.Equal(msg.Id, vm.MessageModels.First().Id);
+        Assert.Equal(msg.Id, vm.MessageModels.Last().Id);
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class ChatNestCH13DragReorderTests
         var vm = new ChatNestWorkspaceViewModel();
         vm.LoadMessages(new[] { msg, new Message { Speaker = Speaker.反論, Text = "B" } });
         vm.MoveMessage(0, 1);
-        Assert.Equal(originalTime, vm.MessageModels.First().CreatedAt);
+        Assert.Equal(originalTime, vm.MessageModels.Last().CreatedAt);
     }
 
     [Fact]
