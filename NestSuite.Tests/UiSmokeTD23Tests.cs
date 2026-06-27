@@ -109,12 +109,12 @@ public class UiSmokeTD23Tests
     }
 
     [Fact]
-    public void SmokeProgram_CoversLaunchButtonIds()
+    public void SmokeProgram_CoversToolMenuIds()
     {
         var src = ReadSmokeProgram();
-        Assert.Contains("Shell.NoteNestLaunchButton", src);
-        Assert.Contains("Shell.IdeaNestLaunchButton", src);
-        Assert.Contains("Shell.ChatNestLaunchButton", src);
+        Assert.Contains("Shell.MenuToolNoteNest", src);
+        Assert.Contains("Shell.MenuToolIdeaNest", src);
+        Assert.Contains("Shell.MenuToolChatNest", src);
     }
 
     [Fact]

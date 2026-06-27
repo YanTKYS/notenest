@@ -136,11 +136,11 @@ class Program
         if (!CheckRequiredElements(mainWindow, proc, TimeSpan.FromSeconds(15), "TempNest", TempNestElements))
             return 1;
 
-        // 4. NoteNest — click launcher, then check workspace elements
+        // 4. NoteNest — invoke menu item, then check workspace elements
         Console.WriteLine("Navigating to NoteNest...");
-        if (!ClickElementByPoint(mainWindow, "Shell.NoteNestLaunchButton"))
+        if (!InvokeToolMenuItem(mainWindow, "Shell.MenuToolNoteNest"))
         {
-            Console.Error.WriteLine("FAIL: Could not click Shell.NoteNestLaunchButton");
+            Console.Error.WriteLine("FAIL: Could not invoke Shell.MenuToolNoteNest");
             return 1;
         }
         Thread.Sleep(800);
@@ -149,9 +149,9 @@ class Program
 
         // 5. IdeaNest
         Console.WriteLine("Navigating to IdeaNest...");
-        if (!ClickElementByPoint(mainWindow, "Shell.IdeaNestLaunchButton"))
+        if (!InvokeToolMenuItem(mainWindow, "Shell.MenuToolIdeaNest"))
         {
-            Console.Error.WriteLine("FAIL: Could not click Shell.IdeaNestLaunchButton");
+            Console.Error.WriteLine("FAIL: Could not invoke Shell.MenuToolIdeaNest");
             return 1;
         }
         Thread.Sleep(800);
@@ -160,9 +160,9 @@ class Program
 
         // 6. ChatNest
         Console.WriteLine("Navigating to ChatNest...");
-        if (!ClickElementByPoint(mainWindow, "Shell.ChatNestLaunchButton"))
+        if (!InvokeToolMenuItem(mainWindow, "Shell.MenuToolChatNest"))
         {
-            Console.Error.WriteLine("FAIL: Could not click Shell.ChatNestLaunchButton");
+            Console.Error.WriteLine("FAIL: Could not invoke Shell.MenuToolChatNest");
             return 1;
         }
         Thread.Sleep(800);
@@ -237,6 +237,51 @@ class Program
             Console.WriteLine($"PASS [{group}]: '{id}' found");
         }
         return true;
+    }
+
+    static bool InvokeToolMenuItem(AutomationElement root, string menuItemId)
+    {
+        try
+        {
+            // Expand the parent ツール menu so children become accessible
+            var toolMenu = root.FindFirst(
+                TreeScope.Descendants,
+                new PropertyCondition(AutomationElement.AutomationIdProperty, "Shell.ToolMenu"));
+            if (toolMenu != null &&
+                toolMenu.TryGetCurrentPattern(ExpandCollapsePattern.Pattern, out var ecObj) &&
+                ecObj is ExpandCollapsePattern ec)
+            {
+                ec.Expand();
+                Thread.Sleep(150);
+            }
+
+            var el = root.FindFirst(
+                TreeScope.Descendants,
+                new PropertyCondition(AutomationElement.AutomationIdProperty, menuItemId));
+            if (el == null)
+            {
+                Console.Error.WriteLine($"  [invoke] MenuItem '{menuItemId}' not found");
+                return false;
+            }
+
+            if (el.TryGetCurrentPattern(InvokePattern.Pattern, out var invokeObj) &&
+                invokeObj is InvokePattern invoke)
+            {
+                invoke.Invoke();
+                Console.WriteLine($"  [invoke] Invoked '{menuItemId}'");
+                Thread.Sleep(50);
+                return true;
+            }
+
+            // Fallback: click by point if InvokePattern not supported
+            Console.WriteLine($"  [invoke] InvokePattern not available for '{menuItemId}', falling back to click");
+            return ClickElementByPoint(root, menuItemId);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"  [invoke] Exception invoking '{menuItemId}': {ex.Message}");
+            return false;
+        }
     }
 
     static bool ClickElementByPoint(AutomationElement root, string automationId)
