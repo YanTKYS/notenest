@@ -37,10 +37,10 @@ public class ApplicationVersionTests
             Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "NestSuite.Tests"));
 
         var offenders = Directory
-            .GetFiles(testDir, "*.cs", SearchOption.TopDirectoryOnly)
+            .GetFiles(testDir, "*.cs", SearchOption.AllDirectories)
             .Where(f => Path.GetFileName(f) != thisFile)
-            .Where(f => File.ReadAllText(f).Contains("ApplicationVersion_Is_"))
-            .Select(Path.GetFileName)
+            .Where(f => File.ReadAllText(f).Contains("MainViewModel.ApplicationVersion"))
+            .Select(f => Path.GetRelativePath(testDir, f))
             .ToList();
 
         Assert.Empty(offenders);
