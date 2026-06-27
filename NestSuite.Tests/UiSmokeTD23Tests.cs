@@ -84,8 +84,8 @@ public class UiSmokeTD23Tests
     public void SmokeProgram_CoversNoteNestElements()
     {
         var src = ReadSmokeProgram();
-        Assert.Contains("NoteNest.WorkspaceRoot", src);
         Assert.Contains("NoteNest.NotebookTree", src);
+        Assert.Contains("NoteNest.AddNoteButton", src);
         Assert.Contains("NoteNest.EditorHost", src);
     }
 
@@ -93,8 +93,7 @@ public class UiSmokeTD23Tests
     public void SmokeProgram_CoversIdeaNestElements()
     {
         var src = ReadSmokeProgram();
-        Assert.Contains("IdeaNest.WorkspaceRoot", src);
-        Assert.Contains("IdeaNest.CardArea", src);
+        Assert.Contains("IdeaNest.SearchBox", src);
         Assert.Contains("IdeaNest.AddIdeaButton", src);
     }
 
@@ -102,10 +101,9 @@ public class UiSmokeTD23Tests
     public void SmokeProgram_CoversChatNestElements()
     {
         var src = ReadSmokeProgram();
-        Assert.Contains("ChatNest.WorkspaceRoot", src);
-        Assert.Contains("ChatNest.MessageList", src);
         Assert.Contains("ChatNest.InputBox", src);
         Assert.Contains("ChatNest.PostButton", src);
+        Assert.Contains("ChatNest.ShowTimestampsCheckBox", src);
     }
 
     [Fact]

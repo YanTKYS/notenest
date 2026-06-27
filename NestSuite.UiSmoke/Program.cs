@@ -31,27 +31,27 @@ class Program
         "TempNest.Slot1.ClearButton",
     ];
 
+    // NoteNest: TreeView, Button, UserControl subclass — all have AutomationPeer
     static readonly string[] NoteNestElements =
     [
-        "NoteNest.WorkspaceRoot",
-        "NoteNest.NotebookTree",
-        "NoteNest.EditorHost",
-        "NoteNest.RightPaneTabControl",
+        "NoteNest.NotebookTree",   // TreeView
+        "NoteNest.AddNoteButton",  // Button (left pane, always visible)
+        "NoteNest.EditorHost",     // NoteEditorHost : UserControl
     ];
 
+    // IdeaNest: TextBox and Button — have AutomationPeer
     static readonly string[] IdeaNestElements =
     [
-        "IdeaNest.WorkspaceRoot",
-        "IdeaNest.CardArea",
-        "IdeaNest.AddIdeaButton",
+        "IdeaNest.SearchBox",      // TextBox
+        "IdeaNest.AddIdeaButton",  // Button
     ];
 
+    // ChatNest: TextBox, Button, CheckBox — have AutomationPeer
     static readonly string[] ChatNestElements =
     [
-        "ChatNest.WorkspaceRoot",
-        "ChatNest.MessageList",
-        "ChatNest.InputBox",
-        "ChatNest.PostButton",
+        "ChatNest.InputBox",                // TextBox
+        "ChatNest.PostButton",              // Button
+        "ChatNest.ShowTimestampsCheckBox",  // CheckBox
     ];
 
     // ── Entry point ───────────────────────────────────────────────────────────
