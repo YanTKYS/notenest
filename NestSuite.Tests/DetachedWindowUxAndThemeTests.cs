@@ -108,12 +108,6 @@ public class DetachedWindowUxAndThemeTests
     // ── バージョン ───────────────────────────────────────────────────────
 
     [Fact]
-    public void ApplicationVersion_Is_2_9_7()
-    {
-        Assert.Equal("2.10.13", MainViewModel.ApplicationVersion);
-    }
-
-    [Fact]
     public void NoteNestSchemaVersion_Remains_1_4_1()
     {
         Assert.Equal("1.4.1", Project.CurrentSchemaVersion);

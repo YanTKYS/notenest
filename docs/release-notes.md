@@ -1,4 +1,4 @@
-## v2.10.13 — TD-26 GuardNest 第一段階整理
+## v2.10.13 — TD-26 GuardNest 第一段階整理 / TD-27 ApplicationVersion テスト集約
 
 - **TD-26: 保存安全性・終了確認・エラー案内まわりの責務境界を整理した。** `AtomicFileWriter` / `CloseConfirmationService` / `FileErrorMessages` / `ErrorLogService` の役割を確認・文書化した。
 - **`AtomicFileWriter` が tmp 経由 atomic write と tmp cleanup の責務を担うことを文書化した。** `WriteAllText()` は `.tmp` ファイルに書き込み後 `File.Replace()` または `File.Move()` で置換し、finally で `.tmp` を削除する。
@@ -8,6 +8,9 @@
 - **保存失敗時 dirty 維持・tmp cleanup・Save / Discard / Cancel 判断の回帰確認を `GuardNestTD26Tests` で補強した。** 15 tests 新規追加。
 - **`docs/architecture/sessionnest-guardnest-policy.md` に TD-26 整理内容を追記した。**
 - **UI 変更なし。保存形式変更なし。session 形式変更なし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+- **TD-27: 各機能テストクラスに散在していた `ApplicationVersion_Is_*` テストメソッドを削除し、`ApplicationVersionTests.cs` に集約した。** 20 ファイルから削除。`ApplicationVersion_IsNotTested_InOtherTestClasses` テストを追加して再散在を自動検出できるようにした。
+- **`docs/development/nestsuite-development-guidelines.md` §7 に ApplicationVersion テスト集約ルールを追記した。** `ApplicationVersion_Is_*` は各機能テストクラスに追加しない方針を明文化した。
+- **アプリバージョン 2.10.13 維持。アプリ本体の挙動変更なし。**
 
 ## v2.10.12 — TD-25 SessionNest 第一段階整理
 

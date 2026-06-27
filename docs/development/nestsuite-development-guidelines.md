@@ -97,6 +97,11 @@
 | バージョンテスト | `NestSuite.Tests/ApplicationVersionTests.cs`（期待値を同じバージョンに更新） |
 | 保存スキーマテスト | 保存スキーマを変更しない限り `Project.CurrentSchemaVersion` 期待値は変更しない |
 
+> **ApplicationVersion テスト集約ルール（v2.10.13 TD-27 追加）**
+> `ApplicationVersion_Is_*` メソッドを各機能テストクラスに追加しない。
+> アプリバージョンの確認は `ApplicationVersionTests.cs` に集約する。
+> `ApplicationVersionTests.IsNotTested_InOtherTestClasses` がこのルールを自動検出する。
+
 ---
 
 ## 8. docs 更新
