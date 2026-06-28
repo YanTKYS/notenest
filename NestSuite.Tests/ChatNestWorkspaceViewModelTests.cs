@@ -14,8 +14,7 @@ namespace NestSuite.Tests;
 /// </summary>
 public class ChatNestWorkspaceViewModelTests
 {
-    private static readonly string RepoRoot =
-        Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+    private static readonly string RepoRoot = TestPaths.RepoRoot;
     [Fact]
     public void Post_WithText_AddsMessageWithSelectedSpeaker()
     {
@@ -664,10 +663,5 @@ public class ChatNestWorkspaceViewModelTests
         return vm;
     }
 
-    private string ReadBacklog()
-    {
-        var path = Path.Combine(RepoRoot, "docs", "backlog.md");
-        Assert.True(File.Exists(path), $"backlog.md not found: {path}");
-        return File.ReadAllText(path);
-    }
+    private string ReadBacklog() => TestPaths.ReadBacklog();
 }

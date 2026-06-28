@@ -8,7 +8,7 @@ namespace NestSuite.Tests;
 public class BrokenLinkCheckerServiceTests
 {
     private static NoteViewModel MakeNote(string title, string content = "") =>
-        new(new Note { Title = title, Content = content });
+        TestFactories.MakeNote(title, content);
 
     [Fact]
     public void ExistingLink_IsNotBroken()

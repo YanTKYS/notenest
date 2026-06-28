@@ -9,7 +9,7 @@ namespace NestSuite.Tests;
 public class NotePickerFilterServiceTests
 {
     private static NoteViewModel MakeNote(string title) =>
-        new(new Note { Title = title });
+        TestFactories.MakeNote(title);
 
     // ── FilterByTitle ────────────────────────────────────────────────────────
 
