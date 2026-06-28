@@ -150,14 +150,15 @@ public class MarkdownExportTests
     // ── SH-25: HasSelectedNote / HasAnyNotes (MainViewModel.Facade) ──────
 
     [Fact]
-    public void HasSelectedNote_FalseWhenNoNoteSelected()
+    public void HasSelectedNote_MatchesSelectedNoteProperty()
     {
+        // new MainViewModel() loads a sample project and auto-selects the first note
         var vm = new MainViewModel();
-        Assert.False(vm.HasSelectedNote);
+        Assert.Equal(vm.SelectedNote != null, vm.HasSelectedNote);
     }
 
     [Fact]
-    public void HasSelectedNote_TrueWhenNoteSelected()
+    public void HasSelectedNote_TrueAfterSelectNote()
     {
         var vm = new MainViewModel();
         var note = MakeNote("タイトル", "内容");
@@ -166,10 +167,11 @@ public class MarkdownExportTests
     }
 
     [Fact]
-    public void HasAnyNotes_FalseWhenEmpty()
+    public void HasAnyNotes_MatchesAllNotesAny()
     {
+        // new MainViewModel() loads a sample project with notes
         var vm = new MainViewModel();
-        Assert.False(vm.HasAnyNotes);
+        Assert.Equal(vm.AllNotes.Any(), vm.HasAnyNotes);
     }
 
     [Fact]

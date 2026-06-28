@@ -435,4 +435,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         => _dialogs.GetFindReplaceState(fallbackSearch, fallbackReplace, fallbackLeft, fallbackTop);
 
     void IWorkspaceDialogHost.CloseFindReplace() => _dialogs.CloseFindReplace();
+
+    string? IWorkspaceDialogHost.SelectMarkdownSavePath(string defaultFileName)
+        => _dialogs.SelectMarkdownExportPath(defaultFileName);
 }

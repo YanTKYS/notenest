@@ -1,7 +1,6 @@
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Win32;
 using NestSuite.NoteNest.Editor;
 using NestSuite.Services;
 using NestSuite.ViewModels;
@@ -202,7 +201,7 @@ public partial class NoteNestWorkspaceView : UserControl
         var note = ViewModel.SelectedNote;
         if (note == null) return;
         var defaultName = BuildMarkdownDefaultFileName(note.Title);
-        var path = SelectMarkdownSavePath(defaultName);
+        var path = Host.SelectMarkdownSavePath(defaultName);
         if (path == null) return;
         var markdown = NoteNestMarkdownExportService.BuildCurrentNoteMarkdown(note);
         SaveMarkdownFile(path, markdown);
@@ -211,7 +210,7 @@ public partial class NoteNestWorkspaceView : UserControl
     private void ExportAllNotesMarkdownSave_Click(object sender, RoutedEventArgs e)
     {
         var defaultName = BuildMarkdownDefaultFileName(ViewModel.ProjectName);
-        var path = SelectMarkdownSavePath(defaultName);
+        var path = Host.SelectMarkdownSavePath(defaultName);
         if (path == null) return;
         var markdown = NoteNestMarkdownExportService.BuildAllNotesMarkdown(ViewModel.ProjectName, ViewModel.AllNotes);
         SaveMarkdownFile(path, markdown);
@@ -228,18 +227,6 @@ public partial class NoteNestWorkspaceView : UserControl
             ErrorLogService.Log("MarkdownExport", ex, "NoteNest");
             ShowError("Markdown ファイルの保存に失敗しました。", "保存エラー");
         }
-    }
-
-    private static string? SelectMarkdownSavePath(string defaultFileName)
-    {
-        var dlg = new SaveFileDialog
-        {
-            Title = "Markdown として保存",
-            Filter = "Markdown ファイル (*.md)|*.md|すべてのファイル (*.*)|*.*",
-            DefaultExt = ".md",
-            FileName = defaultFileName,
-        };
-        return dlg.ShowDialog() == true ? dlg.FileName : null;
     }
 
     private static string BuildMarkdownDefaultFileName(string name)
