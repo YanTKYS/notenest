@@ -172,8 +172,7 @@ public class AtomicFileWriterTests : IDisposable
 
     // ── バージョン / スキーマ ────────────────────────────────────────────
 
-    private static readonly string RepoRoot =
-        Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+    private static readonly string RepoRoot = TestPaths.RepoRoot;
 
 
     // ── バージョン ────────────────────────────────────────────────────────

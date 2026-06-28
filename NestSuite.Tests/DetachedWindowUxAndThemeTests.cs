@@ -12,8 +12,7 @@ namespace NestSuite.Tests;
 /// </summary>
 public class DetachedWindowUxAndThemeTests
 {
-    private static readonly string RepoRoot =
-        Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+    private static readonly string RepoRoot = TestPaths.RepoRoot;
 
     // ── DetachedWorkspaceWindow 最小幅 ───────────────────────────────────
 

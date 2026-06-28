@@ -10,7 +10,7 @@ namespace NestSuite.Tests;
 public class BrokenLinksDialogLogicTests
 {
     private static NoteViewModel MakeNote(string title, string content = "") =>
-        new(new Note { Title = title, Content = content });
+        TestFactories.MakeNote(title, content);
 
     // ── GetHeaderText ────────────────────────────────────────────────────────
 

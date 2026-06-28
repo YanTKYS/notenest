@@ -246,42 +246,25 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     private void SaveWindowSize()
     {
         var s = _uiSettingsService.Load();
-        switch (WindowState)
+        if (WindowState == WindowState.Normal)
         {
-            case WindowState.Normal:
-                s.NestSuiteWindowWidth  = Width;
-                s.NestSuiteWindowHeight = Height;
-                s.NestSuiteWindowLeft   = Left;
-                s.NestSuiteWindowTop    = Top;
-                s.NestSuiteIsWindowMaximized = false;
-                break;
-            case WindowState.Maximized:
+            s.NestSuiteWindowWidth  = Width;
+            s.NestSuiteWindowHeight = Height;
+            s.NestSuiteWindowLeft   = Left;
+            s.NestSuiteWindowTop    = Top;
+        }
+        else
+        {
+            var rb = RestoreBounds;
+            if (!rb.IsEmpty)
             {
-                var rb = RestoreBounds;
-                if (!rb.IsEmpty)
-                {
-                    if (rb.Width  > 0) s.NestSuiteWindowWidth  = rb.Width;
-                    if (rb.Height > 0) s.NestSuiteWindowHeight = rb.Height;
-                    s.NestSuiteWindowLeft = rb.Left;
-                    s.NestSuiteWindowTop  = rb.Top;
-                }
-                s.NestSuiteIsWindowMaximized = true;
-                break;
-            }
-            case WindowState.Minimized:
-            {
-                var rb = RestoreBounds;
-                if (!rb.IsEmpty)
-                {
-                    if (rb.Width  > 0) s.NestSuiteWindowWidth  = rb.Width;
-                    if (rb.Height > 0) s.NestSuiteWindowHeight = rb.Height;
-                    s.NestSuiteWindowLeft = rb.Left;
-                    s.NestSuiteWindowTop  = rb.Top;
-                }
-                s.NestSuiteIsWindowMaximized = false;
-                break;
+                if (rb.Width  > 0) s.NestSuiteWindowWidth  = rb.Width;
+                if (rb.Height > 0) s.NestSuiteWindowHeight = rb.Height;
+                s.NestSuiteWindowLeft = rb.Left;
+                s.NestSuiteWindowTop  = rb.Top;
             }
         }
+        s.NestSuiteIsWindowMaximized = WindowState == WindowState.Maximized;
         _uiSettingsService.Save(s);
     }
 

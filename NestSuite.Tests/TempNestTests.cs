@@ -197,8 +197,7 @@ public class TempNestTests
         Assert.Equal(original.Body, restored.Body);
     }
 
-    private static readonly string RepoRoot =
-        Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+    private static readonly string RepoRoot = TestPaths.RepoRoot;
 
     // ── バージョン ────────────────────────────────────────────────────────
 
@@ -310,11 +309,6 @@ public class TempNestTests
 
     // ── helpers ──────────────────────────────────────────────────────────
 
-    private string ReadBacklog()
-    {
-        var path = Path.Combine(RepoRoot, "docs", "backlog.md");
-        Assert.True(File.Exists(path), $"backlog.md not found: {path}");
-        return File.ReadAllText(path);
-    }
+    private string ReadBacklog() => TestPaths.ReadBacklog();
 
 }

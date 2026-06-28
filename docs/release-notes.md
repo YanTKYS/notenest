@@ -7,6 +7,15 @@
 
 ---
 
+## v2.11.0 — コード品質リファクタリング
+
+- **NestSuiteShellWindow の `SaveWindowSize()` で Maximized/Minimized 分岐の重複コードを統合した。**
+- **NestSuiteShellWindow の 14 個の partial ファイルから未使用 `using` ディレクティブを削除した（各ファイル 17 行 → 必要最小限に削減）。**
+- **テスト共通ヘルパー `TestPaths`（`RepoRoot` / `ReadBacklog()` / `ReadReleaseNotes()`）と `TestFactories`（`MakeNote()`）を `TestHelpers.cs` に集約し、18 テストファイルの重複定義を委譲形式に置き換えた。**
+- **保存形式変更なし。session 形式変更なし。NoteNest schema `1.4.1` 維持。`.ideanest` 保存形式変更なし。外部依存追加なし。**
+
+---
+
 ## v2.10.22 — ID-14 IdeaNest 新規カードのサンプル表示削減
 
 - **ID-14: IdeaNest 新規カード作成時のタグ入力欄のサンプル文言 (ToolTip: 「タグをカンマ区切りで入力 (例: アイデア, メモ, 仕事)」) を削除した。**

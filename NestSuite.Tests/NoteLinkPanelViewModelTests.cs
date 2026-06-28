@@ -6,7 +6,7 @@ namespace NestSuite.Tests;
 public class NoteLinkPanelViewModelTests
 {
     private static NoteViewModel MakeNote(string title, string content = "") =>
-        new NoteViewModel(new NestSuite.Models.Note { Title = title, Content = content });
+        TestFactories.MakeNote(title, content);
 
     [Fact]
     public void Refresh_WithNull_ClearsAllAndHasNoteIsFalse()

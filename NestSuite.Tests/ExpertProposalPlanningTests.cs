@@ -11,8 +11,7 @@ namespace NestSuite.Tests;
 /// </summary>
 public class ExpertProposalPlanningTests
 {
-    private static readonly string RepoRoot =
-        Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+    private static readonly string RepoRoot = TestPaths.RepoRoot;
 
     // ── planning doc の存在と必須分類 ─────────────────────────────────────
 
@@ -258,19 +257,9 @@ public class ExpertProposalPlanningTests
         return File.ReadAllText(path);
     }
 
-    private string ReadBacklog()
-    {
-        var path = Path.Combine(RepoRoot, "docs", "backlog.md");
-        Assert.True(File.Exists(path), $"backlog.md not found: {path}");
-        return File.ReadAllText(path);
-    }
+    private string ReadBacklog() => TestPaths.ReadBacklog();
 
-    private string ReadReleaseNotes()
-    {
-        var path = Path.Combine(RepoRoot, "docs", "release-notes.md");
-        Assert.True(File.Exists(path), $"release-notes.md not found: {path}");
-        return File.ReadAllText(path);
-    }
+    private string ReadReleaseNotes() => TestPaths.ReadReleaseNotes();
 
     private string ReadGuidelines()
     {

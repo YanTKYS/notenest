@@ -11,8 +11,7 @@ namespace NestSuite.Tests;
 /// </summary>
 public class MarkdownExportTests
 {
-    private static readonly string RepoRoot =
-        Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+    private static readonly string RepoRoot = TestPaths.RepoRoot;
 
     // ── バージョン ────────────────────────────────────────────────────────
 
@@ -204,12 +203,7 @@ public class MarkdownExportTests
     // ── helpers ──────────────────────────────────────────────────────────
 
     private static NoteViewModel MakeNote(string title, string content)
-        => new NoteViewModel(new Note { Title = title, Content = content });
+        => TestFactories.MakeNote(title, content);
 
-    private string ReadBacklog()
-    {
-        var path = Path.Combine(RepoRoot, "docs", "backlog.md");
-        Assert.True(File.Exists(path), $"backlog.md not found: {path}");
-        return File.ReadAllText(path);
-    }
+    private string ReadBacklog() => TestPaths.ReadBacklog();
 }
