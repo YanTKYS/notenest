@@ -48,14 +48,6 @@ public partial class NestSuiteShellWindow
         ActivateTab(tab);
     }
 
-    private static void UpdateSidebarHighlight(Border border, string borderToolId, string selectedToolId)
-    {
-        if (borderToolId == selectedToolId)
-            border.SetResourceReference(Border.BackgroundProperty, "SelectedNoteBg");
-        else
-            border.ClearValue(Border.BackgroundProperty);
-    }
-
     private void TabStrip_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (_isActivatingTab) return;

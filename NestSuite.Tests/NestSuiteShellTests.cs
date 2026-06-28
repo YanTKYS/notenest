@@ -1520,7 +1520,68 @@ public class NestSuiteShellTests
         Assert.Contains("TempNest.Slot1.ClearButton", src);
     }
 
+    // ── SH-25: Shell 上部バー削除・メニュー導線整理 ──────────────────────
+
+    [Fact]
+    public void ShellXaml_DoesNotContain_TopBarLaunchButtons()
+    {
+        var src = ReadShellXaml();
+        Assert.DoesNotContain("Shell.NoteNestLaunchButton", src);
+        Assert.DoesNotContain("Shell.IdeaNestLaunchButton", src);
+        Assert.DoesNotContain("Shell.ChatNestLaunchButton", src);
+    }
+
+    [Fact]
+    public void ShellXaml_DoesNotContain_NoteExportMenuItems()
+    {
+        // SH-25: NoteNest エクスポートメニューは Shell File メニューから NoteNestWorkspaceView の右クリックへ移管した
+        var src = ReadShellXaml();
+        Assert.DoesNotContain("MenuExportNoteMarkdownCopy_Click", src);
+        Assert.DoesNotContain("MenuExportNoteMarkdownSave_Click", src);
+        Assert.DoesNotContain("MenuExportAllNotesMarkdownSave_Click", src);
+    }
+
+    [Fact]
+    public void ShellXaml_ToolMenu_HasDescriptions()
+    {
+        // SH-25: ツールメニュー項目に説明文を追加した
+        var src = ReadShellXaml();
+        Assert.Contains("ノートをプロジェクト単位で管理", src);
+        Assert.Contains("アイデアをカード形式で整理", src);
+        Assert.Contains("チャット形式でブレスト記録", src);
+    }
+
+    [Fact]
+    public void NoteNestWorkspaceViewXaml_Contains_ExportContextMenu()
+    {
+        // SH-25: NoteNestWorkspaceView に Markdown エクスポートの右クリックメニューが追加された
+        var path = Path.Combine(RepoRoot, "NestSuite", "Views", "NoteNestWorkspaceView.xaml");
+        var src = File.ReadAllText(path);
+        Assert.Contains("ExportNoteMarkdownCopy_Click", src);
+        Assert.Contains("ExportNoteMarkdownSave_Click", src);
+        Assert.Contains("ExportAllNotesMarkdownSave_Click", src);
+    }
+
+    [Fact]
+    public void ReleaseNotes_Contains_SH25()
+    {
+        Assert.Contains("SH-25", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
+    }
+
+    [Fact]
+    public void ReleaseNotes_Contains_V21021()
+    {
+        Assert.Contains("v2.10.21", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
+    }
+
     // ── helpers ──────────────────────────────────────────────────────────
+
+    private string ReadShellXaml()
+    {
+        var path = Path.Combine(RepoRoot, "NestSuite", "NestSuite", "NestSuiteShellWindow.xaml");
+        Assert.True(File.Exists(path), $"NestSuiteShellWindow.xaml not found: {path}");
+        return File.ReadAllText(path);
+    }
 
     private string ReadBacklog()
     {

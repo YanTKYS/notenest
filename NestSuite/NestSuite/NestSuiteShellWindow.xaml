@@ -35,32 +35,25 @@
                           InputGestureText="Ctrl+Shift+S"/>
                 <MenuItem Header="名前を付けて保存(_N)..." Click="MenuSaveAs_Click"/>
                 <Separator/>
-                <!-- v2.10.5 M10: NoteNest Markdown エクスポート -->
-                <MenuItem Header="エクスポート(_E)">
-                    <MenuItem Header="選択中ノートを Markdown としてコピー(_M)" Click="MenuExportNoteMarkdownCopy_Click"/>
-                    <MenuItem Header="選択中ノートを Markdown として保存(_S)..." Click="MenuExportNoteMarkdownSave_Click"/>
-                    <MenuItem Header="全ノートを Markdown として保存(_A)..." Click="MenuExportAllNotesMarkdownSave_Click"/>
-                </MenuItem>
-                <Separator/>
                 <MenuItem Header="終了(_X)" Click="MenuExit_Click"/>
             </MenuItem>
             <MenuItem Header="ツール(_T)"
                       AutomationProperties.AutomationId="Shell.ToolMenu"
                       AutomationProperties.Name="Shell.ToolMenu">
                 <!-- v1.7.3: ツール選択はタブランチャーとして機能する。既存タブがあれば移動、なければ新規作成 -->
-                <MenuItem x:Name="ToolMenuNoteNest" Header="NoteNest"
+                <MenuItem x:Name="ToolMenuNoteNest" Header="NoteNest — ノートをプロジェクト単位で管理"
                           AutomationProperties.AutomationId="Shell.MenuToolNoteNest"
                           AutomationProperties.Name="Shell.MenuToolNoteNest"
                           Tag="NoteNest"
                           IsCheckable="True" IsChecked="True"
                           Click="MenuTool_Click"/>
-                <MenuItem x:Name="ToolMenuIdeaNest" Header="IdeaNest"
+                <MenuItem x:Name="ToolMenuIdeaNest" Header="IdeaNest — アイデアをカード形式で整理"
                           AutomationProperties.AutomationId="Shell.MenuToolIdeaNest"
                           AutomationProperties.Name="Shell.MenuToolIdeaNest"
                           Tag="IdeaNest"
                           IsCheckable="True"
                           Click="MenuTool_Click"/>
-                <MenuItem x:Name="ToolMenuChatNest" Header="ChatNest"
+                <MenuItem x:Name="ToolMenuChatNest" Header="ChatNest — チャット形式でブレスト記録"
                           AutomationProperties.AutomationId="Shell.MenuToolChatNest"
                           AutomationProperties.Name="Shell.MenuToolChatNest"
                           Tag="ChatNest"
@@ -85,55 +78,6 @@
                 <MenuItem Header="NestSuite について" Click="MenuAbout_Click"/>
             </MenuItem>
         </Menu>
-
-        <!-- NestSuite ヘッダーバー（v1.16.2: ツールランチャーを右側へ移動） -->
-        <Border DockPanel.Dock="Top" Height="32"
-                Background="{DynamicResource GroupHeaderBg}"
-                BorderBrush="{DynamicResource PaneBorder}"
-                BorderThickness="0,0,0,1">
-            <DockPanel>
-                <!-- v1.16.2 fix: DockPanel.Dock="Right" を先に配置し、TextBlock が残り左領域を埋める。
-                     ツールランチャーがヘッダー右端に固定される -->
-                <StackPanel DockPanel.Dock="Right"
-                            Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0">
-                    <Border x:Name="NoteNestToolBorder"
-                            AutomationProperties.AutomationId="Shell.NoteNestLaunchButton"
-                            AutomationProperties.Name="Shell.NoteNestLaunchButton"
-                            Tag="NoteNest"
-                            CornerRadius="4" Margin="2,2" Padding="8,4"
-                            Cursor="Hand"
-                            MouseLeftButtonDown="ToolBorder_MouseDown">
-                        <TextBlock x:Name="NoteNestToolLabel"
-                                   Text="NoteNest" FontSize="12"
-                                   Foreground="{DynamicResource PrimaryFg}"/>
-                    </Border>
-                    <Border x:Name="IdeaNestToolBorder"
-                            AutomationProperties.AutomationId="Shell.IdeaNestLaunchButton"
-                            AutomationProperties.Name="Shell.IdeaNestLaunchButton"
-                            Tag="IdeaNest"
-                            CornerRadius="4" Margin="2,2" Padding="8,4"
-                            Cursor="Hand"
-                            MouseLeftButtonDown="ToolBorder_MouseDown">
-                        <TextBlock Text="IdeaNest" FontSize="12"
-                                   Foreground="{DynamicResource PrimaryFg}"/>
-                    </Border>
-                    <Border x:Name="ChatNestToolBorder"
-                            AutomationProperties.AutomationId="Shell.ChatNestLaunchButton"
-                            AutomationProperties.Name="Shell.ChatNestLaunchButton"
-                            Tag="ChatNest"
-                            CornerRadius="4" Margin="2,2" Padding="8,4"
-                            Cursor="Hand"
-                            MouseLeftButtonDown="ToolBorder_MouseDown">
-                        <TextBlock Text="ChatNest" FontSize="12"
-                                   Foreground="{DynamicResource PrimaryFg}"/>
-                    </Border>
-                </StackPanel>
-                <TextBlock DockPanel.Dock="Left"
-                           Text="NestSuite" FontWeight="Bold" FontSize="13"
-                           VerticalAlignment="Center" Margin="12,0"
-                           Foreground="{DynamicResource PrimaryFg}"/>
-            </DockPanel>
-        </Border>
 
         <!-- NestSuite ステータスバー（プロジェクト名・未保存・選択ツール動的表示） -->
         <Border DockPanel.Dock="Bottom" Height="22"

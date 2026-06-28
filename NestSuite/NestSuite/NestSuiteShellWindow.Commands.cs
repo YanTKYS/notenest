@@ -24,11 +24,7 @@ public partial class NestSuiteShellWindow
 
     private void MenuExit_Click(object sender, RoutedEventArgs e) => Close();
 
-    // ── ツール選択ハンドラ（サイドバー・ツールメニュー共通） ────────────
-
-    // v1.7.3: サイドバーとメニューはタブランチャーとして機能する
-    private void ToolBorder_MouseDown(object sender, MouseButtonEventArgs e)
-        => EnsureTabForToolId((string)((FrameworkElement)sender).Tag);
+    // ── ツール選択ハンドラ ────────────────────────────────────────────────
 
     private void MenuTool_Click(object sender, RoutedEventArgs e)
         => EnsureTabForToolId((string)((FrameworkElement)sender).Tag);

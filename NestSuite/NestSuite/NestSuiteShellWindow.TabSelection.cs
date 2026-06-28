@@ -46,8 +46,6 @@ public partial class NestSuiteShellWindow
                 if (_sessionManager.TryGet(tab.Id, out var tempSession) && tempSession != null)
                     TempNestWorkspaceView.DataContext = tempSession.WorkspaceViewModel;
 
-                foreach (var kvp in _sidebarBorders)
-                    UpdateSidebarHighlight(kvp.Value, kvp.Key, "");
                 foreach (var kvp in _toolMenuItems)
                     kvp.Value.IsChecked = false;
 
@@ -98,10 +96,6 @@ public partial class NestSuiteShellWindow
                 PlaceholderMessage.Text =
                     $"{tool.DisplayName} はまだ統合されていません。\n将来のバージョンで統合予定です。";
             }
-
-            // サイドバー選択ハイライト更新
-            foreach (var kvp in _sidebarBorders)
-                UpdateSidebarHighlight(kvp.Value, kvp.Key, toolId);
 
             // ツールメニューのチェック状態更新
             foreach (var kvp in _toolMenuItems)
