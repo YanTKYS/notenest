@@ -61,12 +61,13 @@ public class ExpertProposalPlanningTests
         Assert.Contains("当面対象外", text);
     }
 
-    // ── backlog.md の short-term 候補確認 ─────────────────────────────────
+    // ── backlog.md の未完了候補確認 ───────────────────────────────────────
 
+    // TD-33: SH-20 は完了済みのため backlog に存在しない。release-notes.md で確認する。
     [Fact]
-    public void Backlog_Contains_SH20_SaveAll()
+    public void ReleaseNotes_Contains_SH20_SaveAll()
     {
-        var text = ReadBacklog();
+        var text = ReadReleaseNotes();
         Assert.Contains("SH-20", text);
     }
 
@@ -77,10 +78,11 @@ public class ExpertProposalPlanningTests
         Assert.Contains("SH-19", text);
     }
 
+    // TD-33: L15 は完了済みのため backlog に存在しない。release-notes.md で確認する。
     [Fact]
-    public void Backlog_Contains_L15_CharCount()
+    public void ReleaseNotes_Contains_L15_CharCount()
     {
-        var text = ReadBacklog();
+        var text = ReadReleaseNotes();
         Assert.Contains("L15", text);
     }
 
@@ -91,10 +93,11 @@ public class ExpertProposalPlanningTests
         Assert.Contains("M15", text);
     }
 
+    // TD-33: CH-14 は完了済みのため backlog に存在しない。release-notes.md で確認する。
     [Fact]
-    public void Backlog_Contains_CH14_FormattedCopy()
+    public void ReleaseNotes_Contains_CH14_FormattedCopy()
     {
-        var text = ReadBacklog();
+        var text = ReadReleaseNotes();
         Assert.Contains("CH-14", text);
     }
 
@@ -123,6 +126,127 @@ public class ExpertProposalPlanningTests
         Assert.Contains("v2.10.1", text);
     }
 
+    // ── TD-33: backlog.md 構成ルール確認 ─────────────────────────────────
+
+    [Fact]
+    public void Backlog_StatesOnlyUncompletedItems()
+    {
+        var text = ReadBacklog();
+        Assert.Contains("未着手・保留・将来候補", text);
+    }
+
+    [Fact]
+    public void Backlog_StatesCompletedItemsManagedInReleaseNotes()
+    {
+        var text = ReadBacklog();
+        Assert.Contains("完了済み項目は", text);
+        Assert.Contains("release-notes.md", text);
+    }
+
+    [Fact]
+    public void Backlog_StatesCompletedIdsNotReused()
+    {
+        var text = ReadBacklog();
+        Assert.Contains("完了済み項番は再利用しない", text);
+    }
+
+    [Fact]
+    public void Backlog_ContainsLTPrefixDescription()
+    {
+        var text = ReadBacklog();
+        Assert.Contains("LT-", text);
+    }
+
+    [Fact]
+    public void Backlog_ContainsRJPrefixDescription()
+    {
+        var text = ReadBacklog();
+        Assert.Contains("RJ-", text);
+    }
+
+    [Fact]
+    public void Backlog_ContainsLTSection()
+    {
+        var text = ReadBacklog();
+        Assert.Contains("長期構想・保留（LT-）", text);
+    }
+
+    [Fact]
+    public void Backlog_ContainsRJSection()
+    {
+        var text = ReadBacklog();
+        Assert.Contains("見送り・採用しない方針（RJ-）", text);
+    }
+
+    [Fact]
+    public void Backlog_HasNoDetailsCompletedSection()
+    {
+        // Actual collapsible markdown sections use <summary>; rule text mentioning <details> is allowed.
+        var text = ReadBacklog();
+        Assert.DoesNotContain("<summary>", text);
+    }
+
+    [Fact]
+    public void Backlog_HasNoStrikethroughSH()
+    {
+        var text = ReadBacklog();
+        Assert.DoesNotContain("~~SH-", text);
+    }
+
+    [Fact]
+    public void Backlog_HasNoStrikethroughTN()
+    {
+        var text = ReadBacklog();
+        Assert.DoesNotContain("~~TN-", text);
+    }
+
+    [Fact]
+    public void Backlog_HasNoStrikethroughCH()
+    {
+        var text = ReadBacklog();
+        Assert.DoesNotContain("~~CH-", text);
+    }
+
+    [Fact]
+    public void Backlog_HasNoStrikethroughTD()
+    {
+        var text = ReadBacklog();
+        Assert.DoesNotContain("~~TD-", text);
+    }
+
+    // ── TD-33: release-notes.md 役割セクション確認 ────────────────────────
+
+    [Fact]
+    public void ReleaseNotes_ContainsRoleSection()
+    {
+        var text = ReadReleaseNotes();
+        Assert.Contains("release notes の役割", text);
+    }
+
+    [Fact]
+    public void ReleaseNotes_ContainsV21019()
+    {
+        var text = ReadReleaseNotes();
+        Assert.Contains("v2.10.19", text);
+    }
+
+    // ── TD-33: development guidelines 運用ルール確認 ──────────────────────
+
+    [Fact]
+    public void Guidelines_ContainsBacklogReleaseNotesPolicy()
+    {
+        var text = ReadGuidelines();
+        Assert.Contains("backlog / release notes 運用", text);
+    }
+
+    [Fact]
+    public void Guidelines_ContainsLTRJPolicy()
+    {
+        var text = ReadGuidelines();
+        Assert.Contains("LT-", text);
+        Assert.Contains("RJ-", text);
+    }
+
     // ── バージョン / スキーマ ────────────────────────────────────────────
 
     // ── helpers ─────────────────────────────────────────────────────────
@@ -138,6 +262,20 @@ public class ExpertProposalPlanningTests
     {
         var path = Path.Combine(RepoRoot, "docs", "backlog.md");
         Assert.True(File.Exists(path), $"backlog.md not found: {path}");
+        return File.ReadAllText(path);
+    }
+
+    private string ReadReleaseNotes()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "release-notes.md");
+        Assert.True(File.Exists(path), $"release-notes.md not found: {path}");
+        return File.ReadAllText(path);
+    }
+
+    private string ReadGuidelines()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "development", "nestsuite-development-guidelines.md");
+        Assert.True(File.Exists(path), $"guidelines not found: {path}");
         return File.ReadAllText(path);
     }
 }

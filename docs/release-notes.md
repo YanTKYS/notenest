@@ -1,3 +1,23 @@
+## release notes の役割
+
+- 完了済み backlog ID は release notes で管理する
+- 完了済み項目は backlog.md に残さない
+- 各バージョンには、対応した backlog ID、変更概要、保存形式変更有無、session 形式変更有無、schema 変更有無を記録する
+- backlog ID で検索すれば、該当バージョンと実装内容を追跡できるようにする
+
+---
+
+## v2.10.19 — TD-33 backlog 再構成・項番体系ルール化
+
+- **TD-33: backlog 再構成・項番体系ルール化**
+- **`docs/backlog.md` を未着手・保留・将来候補のみの文書として再構成した。**
+- **完了済み項目・取り消し線項目・完了済み `<details>` ブロックを backlog から削除した。**
+- **完了済み backlog ID は `docs/release-notes.md` で管理する方針へ整理した。**
+- **長期構想・保留を `LT-` prefix で管理する方針を追加した（LT-1〜LT-12）。**
+- **見送り・採用しない方針を `RJ-` prefix で管理する方針を追加した（RJ-1〜RJ-9）。**
+- **backlog / release notes 運用ルールを `docs/development/nestsuite-development-guidelines.md` §16 へ追記した。**
+- **アプリ本体の挙動変更なし。UI 変更なし。保存形式変更なし。session 形式変更なし。NoteNest schema `1.4.1` 維持。**
+
 ## v2.10.18 — TD-32 テストクラス集約
 
 - **TD-32: 課題番号・バージョンベースの既存テストクラスを、対象クラス単位 / 責務単位 / *Nest 単位の受け皿へ追加集約した。**
