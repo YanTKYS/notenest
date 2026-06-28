@@ -1422,10 +1422,11 @@ public class NestSuiteShellTests
 
     // ── backlog / release-notes ───────────────────────────────────────────
 
+    // TD-33: 完了済み項目は release-notes.md で管理
     [Fact]
     public void Backlog_TD23_IsMarkedComplete()
     {
-        Assert.Contains("~~TD-23~~", ReadBacklog());
+        Assert.Contains("TD-23", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
     [Fact]

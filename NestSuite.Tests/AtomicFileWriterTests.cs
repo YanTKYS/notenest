@@ -412,12 +412,13 @@ public class AtomicFileWriterTests : IDisposable
 
     // ── backlog / release-notes ───────────────────────────────────────────
 
+    // TD-33: 完了済み項目は release-notes.md で管理
     [Fact]
     public void Backlog_TD26_IsMarkedComplete()
     {
-        var path = Path.Combine(RepoRoot, "docs", "backlog.md");
-        Assert.True(File.Exists(path), $"backlog.md not found: {path}");
-        Assert.Contains("~~TD-26~~", File.ReadAllText(path));
+        var path = Path.Combine(RepoRoot, "docs", "release-notes.md");
+        Assert.True(File.Exists(path), $"release-notes.md not found: {path}");
+        Assert.Contains("TD-26", File.ReadAllText(path));
     }
 
     [Fact]

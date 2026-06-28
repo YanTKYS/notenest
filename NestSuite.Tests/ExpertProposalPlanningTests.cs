@@ -139,7 +139,7 @@ public class ExpertProposalPlanningTests
     public void Backlog_StatesCompletedItemsManagedInReleaseNotes()
     {
         var text = ReadBacklog();
-        Assert.Contains("完了済み項目は", text);
+        Assert.Contains("完了済み項目", text);
         Assert.Contains("release-notes.md", text);
     }
 

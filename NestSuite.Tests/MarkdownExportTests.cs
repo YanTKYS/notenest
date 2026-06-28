@@ -149,11 +149,11 @@ public class MarkdownExportTests
 
     // ── backlog / release-notes ───────────────────────────────────────────
 
+    // TD-33: 完了済み項目は release-notes.md で管理
     [Fact]
     public void Backlog_M10_IsMarkedComplete()
     {
-        var backlog = ReadBacklog();
-        Assert.Contains("~~M10~~", backlog);
+        Assert.Contains("M10", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
     [Fact]

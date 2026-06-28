@@ -161,18 +161,18 @@ public class ChatNestExportFormatterTests
 
     // ── backlog / release-notes ───────────────────────────────────────────
 
-    // CH-14: 会話全体の整形コピー（プレーンテキスト）
+    // CH-14: 会話全体の整形コピー（プレーンテキスト）(TD-33: 完了済み項目は release-notes.md で管理)
     [Fact]
     public void Backlog_CH14_IsMarkedComplete()
     {
-        Assert.Contains("~~CH-14~~", ReadBacklog());
+        Assert.Contains("CH-14", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
-    // CH-9: 会話エクスポート（Markdown）
+    // CH-9: 会話エクスポート（Markdown）(TD-33: 完了済み項目は release-notes.md で管理)
     [Fact]
     public void Backlog_CH9_IsMarkedComplete()
     {
-        Assert.Contains("~~CH-9~~", ReadBacklog());
+        Assert.Contains("CH-9", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
     [Fact]

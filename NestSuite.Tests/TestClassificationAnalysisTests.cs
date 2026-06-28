@@ -54,15 +54,16 @@ public class TestClassificationAnalysisTests
         Assert.Contains("backlog ID、version番号、実装時期だけをテストクラス名にしない", text);
     }
 
+    // TD-33: 完了済み項目は release-notes.md で管理
     [Fact]
     public void Backlog_ContainsTD28Completion()
     {
-        var path = Path.Combine(RepoRoot, "docs", "backlog.md");
+        var path = Path.Combine(RepoRoot, "docs", "release-notes.md");
         var text = File.ReadAllText(path);
 
         Assert.Contains("TD-28", text);
         Assert.Contains("テストクラス分類・整理方針の一次分析", text);
-        Assert.Contains("v2.10.14 完了", text);
+        Assert.Contains("v2.10.14", text);
     }
 
     [Fact]
@@ -109,10 +110,11 @@ public class TestClassificationAnalysisTests
         Assert.Contains("v2.10.16", text);
     }
 
+    // TD-33: 完了済み項目は release-notes.md で管理
     [Fact]
     public void Backlog_ContainsTD30Completion()
     {
-        var path = Path.Combine(RepoRoot, "docs", "backlog.md");
+        var path = Path.Combine(RepoRoot, "docs", "release-notes.md");
         var text = File.ReadAllText(path);
 
         Assert.Contains("TD-30", text);
