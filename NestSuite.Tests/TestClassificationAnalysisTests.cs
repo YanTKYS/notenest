@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace NestSuite.Tests;
@@ -127,4 +128,57 @@ public class TestClassificationAnalysisTests
         Assert.Contains("v2.10.16", text);
         Assert.Contains("TD-30", text);
     }
+    // TD-32: テストクラス分類・整理完了 (v2.10.18)
+
+    [Fact]
+    public void AnalysisDocument_ContainsTD32FinalReanalysis()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "development", "test-classification-analysis.md");
+        var text = File.ReadAllText(path);
+
+        Assert.Contains("v2.10.18 最終再分析", text);
+        Assert.Contains("テストクラス分類・整理完了", text);
+        Assert.Contains("テストクラスファイル数 | 86", text);
+        Assert.Contains("public テストクラス数 | 88", text);
+    }
+
+    [Fact]
+    public void TestClassFiles_DoNotUseBacklogOrVersionOnlyNames()
+    {
+        var testDir = Path.Combine(RepoRoot, "NestSuite.Tests");
+        var forbiddenClassNames = new[]
+        {
+            "SessionNestTD25Tests",
+            "GuardNestTD26Tests",
+            "LightImprovementsV2103Tests",
+            "ShellUxTests",
+            "UiSmokeTD23Tests",
+            "V140RegressionTests",
+            "V141FeatureTests",
+            "V146RegressionTests",
+        };
+
+        var source = string.Join("\n", Directory.GetFiles(testDir, "*.cs").Select(File.ReadAllText));
+
+        foreach (var className in forbiddenClassNames)
+        {
+            Assert.DoesNotContain($"class {className}", source);
+        }
+    }
+
+
+    [Fact]
+    public void AnalysisDocument_ContainsTestAdditionDecisionGuide()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "development", "test-classification-analysis.md");
+        var text = File.ReadAllText(path);
+
+        Assert.Contains("新規テスト追加先判定ガイド", text);
+        Assert.Contains("代表的な追加先", text);
+        Assert.Contains("新規テストクラス作成を許可する条件", text);
+        Assert.Contains("禁止例", text);
+        Assert.Contains("ChatNestWorkspaceViewModelTests", text);
+        Assert.Contains("FormatSchemaRegressionTests", text);
+    }
+
 }
