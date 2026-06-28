@@ -1574,6 +1574,30 @@ public class NestSuiteShellTests
         Assert.Contains("v2.10.21", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
+    // ── ID-14: IdeaNest 新規カードのサンプル表示削減 ──────────────────────
+
+    [Fact]
+    public void PreviewIdeaWindowXaml_DoesNotContain_TagExampleText()
+    {
+        var path = Path.Combine(RepoRoot, "NestSuite", "NestSuite", "IdeaNest", "Views", "PreviewIdeaWindow.xaml");
+        Assert.True(File.Exists(path), $"PreviewIdeaWindow.xaml not found: {path}");
+        var src = File.ReadAllText(path);
+        Assert.DoesNotContain("例: アイデア", src);
+        Assert.DoesNotContain("タグをカンマ区切りで入力", src);
+    }
+
+    [Fact]
+    public void ReleaseNotes_Contains_ID14()
+    {
+        Assert.Contains("ID-14", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
+    }
+
+    [Fact]
+    public void ReleaseNotes_Contains_V21022()
+    {
+        Assert.Contains("v2.10.22", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
+    }
+
     // ── helpers ──────────────────────────────────────────────────────────
 
     private string ReadShellXaml()

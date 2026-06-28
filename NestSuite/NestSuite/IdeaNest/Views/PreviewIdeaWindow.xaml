@@ -56,7 +56,6 @@
                          Text="{Binding TagsText, UpdateSourceTrigger=PropertyChanged}"
                          Foreground="{DynamicResource IdeaCardTextSecondaryBrush}"
                          FontSize="12"
-                         ToolTip="タグをカンマ区切りで入力 (例: アイデア, メモ, 仕事)"
                          TextWrapping="NoWrap"
                          AcceptsReturn="False"
                          Background="Transparent"
