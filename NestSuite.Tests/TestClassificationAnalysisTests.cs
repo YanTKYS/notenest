@@ -166,4 +166,19 @@ public class TestClassificationAnalysisTests
         }
     }
 
+
+    [Fact]
+    public void AnalysisDocument_ContainsTestAdditionDecisionGuide()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "development", "test-classification-analysis.md");
+        var text = File.ReadAllText(path);
+
+        Assert.Contains("新規テスト追加先判定ガイド", text);
+        Assert.Contains("代表的な追加先", text);
+        Assert.Contains("新規テストクラス作成を許可する条件", text);
+        Assert.Contains("禁止例", text);
+        Assert.Contains("ChatNestWorkspaceViewModelTests", text);
+        Assert.Contains("FormatSchemaRegressionTests", text);
+    }
+
 }

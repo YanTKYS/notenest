@@ -7,6 +7,7 @@
 - **`ShellUxTests` / `UiSmokeTD23Tests` を削除し、Shell UX 静的確認と UI smoke 構造確認を `NestSuiteShellTests` へ集約した。**
 - **`V140RegressionTests` / `V141FeatureTests` / `V146RegressionTests` を削除し、NoteNest 保存形式・主要回帰フロー確認を `FormatSchemaRegressionTests` へ集約した。**
 - **テストクラス分類・整理を最終再分析し、4分類（クラス単位 / 機能単位 / シナリオ・回帰 / ドキュメント・ルール固定）へ整理完了した。**
+- **新規参画者向けの追加先判定ガイドを `docs/development/test-classification-analysis.md` に追加した。**
 - **テストクラス数 94 → 86 に削減（前回修正後の 91 から追加で 5 クラス削減。TD-28 起点の累計では 96 → 86）。変更前から増加なし。テストロジックの意味変更なし。**
 - **backlog ID はテストクラス名ではなく、移動先クラス内のコメント・メソッド名・docs 対応表で追跡する。**
 - **アプリ本体の挙動変更なし。UI 変更なし。保存形式変更なし。session 形式変更なし。NoteNest schema `1.4.1` 維持。**

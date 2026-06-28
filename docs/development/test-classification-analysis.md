@@ -1571,3 +1571,67 @@ backlog ID はテストクラス名ではなく、移動先クラス内のコメ
 - テストロジックの意味変更は行っていない。
 - アプリ本体の挙動変更、UI変更、保存形式変更、session形式変更、schema bump は行っていない。
 - NoteNest schema は `1.4.1` を維持する。
+
+---
+
+## 12. 新規テスト追加先判定ガイド（TD-32 完了後）
+
+新規参画者がテストを追加するときは、以下の順序で追加先を決める。
+
+### 12.1 判定フロー
+
+1. **対象クラスが明確な場合**
+   - `対象クラス名 + Tests` に追加する。
+   - 例: `SessionTabMapper` の変換仕様は `SessionTabMapperTests`、`ProjectFileService` の保存読込は `ProjectFileServiceTests`。
+2. **対象クラスが複数でも責務が明確な場合**
+   - 既存の責務名 / 機能名テストへ追加する。
+   - 例: Shell 構造・静的 UX 確認は `NestSuiteShellTests`、保存形式・schema 非変更確認は `FormatSchemaRegressionTests`。
+3. **複数処理をまたぐ事故防止の場合**
+   - 既存の `*RegressionTests` / `*Smoke*` / シナリオ系テストへ追加する。
+   - 新規クラスを作る前に、既存の回帰テストで同じ事故領域を扱っていないか確認する。
+4. **docs / version / schema / ルール固定の場合**
+   - `ApplicationVersionTests`、`SchemaVersioningPolicyTests`、`TestClassificationAnalysisTests`、`PromptStandardContractTests` など既存のルール固定テストへ追加する。
+   - `ApplicationVersion_Is_*` や `NoteNestSchemaVersion_Remains_*` を機能テストクラスへ再追加しない。
+5. **上記に該当しない場合のみ新規テストクラスを検討する**
+   - 新規クラス名は backlog ID / version番号 / 実装時期ではなく、対象クラス名・責務名・回帰対象名にする。
+   - backlog ID はクラス名ではなく、メソッドコメントまたは `Trait("Backlog", "...")` で追跡する。
+
+### 12.2 代表的な追加先
+
+| 追加したいテスト | 優先する追加先 | 分類 | 新規クラス判断 |
+|------------------|----------------|------|----------------|
+| app version / window title / schema 集約ルール | `ApplicationVersionTests` | ドキュメント / ルール固定 | 新規作成しない |
+| test classification / TD-28〜TD-32 方針固定 | `TestClassificationAnalysisTests` | ドキュメント / ルール固定 | 新規作成しない |
+| session.json の shape / restore target / Temp 除外 | `SessionTabMapperTests` | クラス単位テスト | 新規作成しない |
+| Workspace session manager の session 管理 | `NestSuiteWorkspaceSessionManagerTests` | クラス単位テスト | 新規作成しない |
+| 保存 atomicity / tmp cleanup / backup | `AtomicFileWriterTests` | クラス単位テスト | GuardNest 全体の責務が広がる場合は将来 `GuardNestTests` / `FileSafetyTests` を再検討 |
+| Save / Discard / Cancel 判定 | `CloseConfirmationServiceTests` | クラス単位テスト | 新規作成しない |
+| FileErrorMessages の例外別メッセージ | `DialogServiceBoundaryTests` または既存の file error 関連受け皿 | 機能単位テスト | 対象クラス単位の受け皿が必要になった場合のみ検討 |
+| Shell 型境界 / Shell static UX / UI smoke program 構造 | `NestSuiteShellTests` | 機能単位テスト / シナリオ | backlog ID 名のクラスは作らない |
+| AutomationId の存在・一意性 | `AutomationIdTests` | クラス単位 / ルール固定 | 新規作成しない |
+| NoteNest `.notenest` 形式 / schema 非変更 / v1.4.x 回帰 | `FormatSchemaRegressionTests` | シナリオ / 回帰テスト | version番号クラスは作らない |
+| NoteNest project lifecycle | `ProjectLifecycleServiceTests` | クラス単位テスト | 新規作成しない |
+| ExportService のファイル名・形式・出力内容 | `ExportServiceTests` | クラス単位テスト | 新規作成しない |
+| ChatNest view model 操作 | `ChatNestWorkspaceViewModelTests` | クラス単位テスト | CH番号クラスは作らない |
+| ChatNest export formatter | `ChatNestExportFormatterTests` | クラス単位テスト | CH番号クラスは作らない |
+| TempNest slot / store / fixed tab behavior | `TempNestTests` | クラス単位 / 機能単位テスト | TN番号クラスは作らない |
+| IdeaNest workspace VM / card operation | `IdeaNestWorkspaceViewModelTests` | クラス単位テスト | ID番号クラスは作らない |
+| Detached workspace / app close / multi-tab incident prevention | 既存の `*RegressionTests` または対象責務テスト | シナリオ / 回帰テスト | 事故領域が既存にない場合のみ、責務名 + `RegressionTests` を検討 |
+
+### 12.3 新規テストクラス作成を許可する条件
+
+新規テストクラスは、以下をすべて満たす場合のみ作成する。
+
+- 既存テストクラスに追加すると責務が不自然に広がる。
+- 対象クラス名、対象責務名、または回帰対象が明確である。
+- クラス名に backlog ID、version番号、実装時期だけを使っていない。
+- `docs/development/test-classification-analysis.md` のこの判定ガイドに照らして、既存受け皿がないことを説明できる。
+
+### 12.4 禁止例
+
+| 禁止する新規クラス名 | 理由 | 代替 |
+|----------------------|------|------|
+| `TD33Tests` | backlog ID のみ | 対象クラス名 + Tests または責務名 + Tests |
+| `V21019RegressionTests` | version番号中心 | 既存 `*RegressionTests` または対象責務名 + `RegressionTests` |
+| `ChatNestCH15Tests` | CH番号中心 | `ChatNestWorkspaceViewModelTests` / `ChatNestExportFormatterTests` / `ChatNestFileServiceTests` など |
+| `LightImprovementsVxxxxTests` | 実装時期・まとめ作業中心 | 変更対象ごとの既存受け皿 |
