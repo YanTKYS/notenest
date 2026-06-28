@@ -65,12 +65,6 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         ApplyWindowSize(uiSettings);
         UpdateRecentFilesMenu();
 
-        _sidebarBorders = new Dictionary<string, Border>(StringComparer.Ordinal)
-        {
-            { NestSuiteToolRegistry.NoteNestToolId, NoteNestToolBorder },
-            { NestSuiteToolRegistry.IdeaNestToolId, IdeaNestToolBorder },
-            { NestSuiteToolRegistry.ChatNestToolId, ChatNestToolBorder },
-        };
         _toolMenuItems = new Dictionary<string, MenuItem>(StringComparer.Ordinal)
         {
             { NestSuiteToolRegistry.NoteNestToolId, ToolMenuNoteNest },
@@ -332,7 +326,6 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
     /// <summary>現在選択中のタブのツール ID。タブ未選択時は <see cref="DefaultToolId"/>。</summary>
     public string SelectedToolId => _selectedTab?.ToolId ?? DefaultToolId;
 
-    private Dictionary<string, Border> _sidebarBorders = null!;
     private Dictionary<string, MenuItem> _toolMenuItems = null!;
 
     /// <summary>
@@ -442,4 +435,7 @@ public partial class NestSuiteShellWindow : Window, IWorkspaceDialogHost
         => _dialogs.GetFindReplaceState(fallbackSearch, fallbackReplace, fallbackLeft, fallbackTop);
 
     void IWorkspaceDialogHost.CloseFindReplace() => _dialogs.CloseFindReplace();
+
+    string? IWorkspaceDialogHost.SelectMarkdownSavePath(string defaultFileName)
+        => _dialogs.SelectMarkdownExportPath(defaultFileName);
 }

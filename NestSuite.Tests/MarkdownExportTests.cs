@@ -147,6 +147,43 @@ public class MarkdownExportTests
         Assert.Contains("本文テキスト", result);
     }
 
+    // ── SH-25: HasSelectedNote / HasAnyNotes (MainViewModel.Facade) ──────
+
+    [Fact]
+    public void HasSelectedNote_MatchesSelectedNoteProperty()
+    {
+        // new MainViewModel() loads a sample project and auto-selects the first note
+        var vm = new MainViewModel();
+        Assert.Equal(vm.SelectedNote != null, vm.HasSelectedNote);
+    }
+
+    [Fact]
+    public void HasSelectedNote_TrueAfterSelectNote()
+    {
+        var vm = new MainViewModel();
+        var note = MakeNote("タイトル", "内容");
+        vm.SelectNote(note);
+        Assert.True(vm.HasSelectedNote);
+    }
+
+    [Fact]
+    public void HasAnyNotes_MatchesAllNotesAny()
+    {
+        // new MainViewModel() loads a sample project with notes
+        var vm = new MainViewModel();
+        Assert.Equal(vm.AllNotes.Any(), vm.HasAnyNotes);
+    }
+
+    [Fact]
+    public void HasAnyNotes_TrueWhenNotesExist()
+    {
+        var vm = new MainViewModel();
+        vm.AddNotebookWithTitle("テスト");
+        var nb = vm.Notebooks[0];
+        vm.AddNoteToNotebook(nb, "ノート1");
+        Assert.True(vm.HasAnyNotes);
+    }
+
     // ── backlog / release-notes ───────────────────────────────────────────
 
     // TD-33: 完了済み項目は release-notes.md で管理

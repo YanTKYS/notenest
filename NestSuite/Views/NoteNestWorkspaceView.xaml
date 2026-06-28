@@ -209,9 +209,10 @@
                     <!-- ── Note template ── -->
                     <DataTemplate DataType="{x:Type vm:NoteViewModel}">
                         <DockPanel PreviewMouseLeftButtonDown="NoteItem_PreviewMouseLeftButtonDown"
-                                   PreviewMouseMove="NoteItem_PreviewMouseMove">
+                                   PreviewMouseMove="NoteItem_PreviewMouseMove"
+                                   Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                             <DockPanel.ContextMenu>
-                                <ContextMenu>
+                                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                                     <MenuItem Header="上に移動(_U)" Click="MoveNoteUp_Click"/>
                                     <MenuItem Header="下に移動(_L)" Click="MoveNoteDown_Click"/>
                                     <Separator/>
@@ -221,6 +222,16 @@
                                     <MenuItem Header="複製(_C)"        Click="DuplicateNote_Click"/>
                                     <Separator/>
                                     <MenuItem Header="削除(_D)"        Click="DeleteNote_Click"/>
+                                    <Separator/>
+                                    <MenuItem Header="Markdown としてコピー(_M)"
+                                              Click="ExportNoteMarkdownCopy_Click"
+                                              IsEnabled="{Binding PlacementTarget.Tag.HasSelectedNote, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="Markdown として保存(_S)..."
+                                              Click="ExportNoteMarkdownSave_Click"
+                                              IsEnabled="{Binding PlacementTarget.Tag.HasSelectedNote, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="全ノートを Markdown として保存(_A)..."
+                                              Click="ExportAllNotesMarkdownSave_Click"
+                                              IsEnabled="{Binding PlacementTarget.Tag.HasAnyNotes, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                 </ContextMenu>
                             </DockPanel.ContextMenu>
                             <TextBlock DockPanel.Dock="Right"
@@ -324,6 +335,20 @@
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
+                <Border.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Markdown としてコピー(_M)"
+                                  Click="ExportNoteMarkdownCopy_Click"
+                                  IsEnabled="{Binding HasSelectedNote}"/>
+                        <MenuItem Header="Markdown として保存(_S)..."
+                                  Click="ExportNoteMarkdownSave_Click"
+                                  IsEnabled="{Binding HasSelectedNote}"/>
+                        <Separator/>
+                        <MenuItem Header="全ノートを Markdown として保存(_A)..."
+                                  Click="ExportAllNotesMarkdownSave_Click"
+                                  IsEnabled="{Binding HasAnyNotes}"/>
+                    </ContextMenu>
+                </Border.ContextMenu>
                 <DockPanel>
                     <Border DockPanel.Dock="Right" CornerRadius="4" Margin="2,0,0,0">
                         <Border.Style>

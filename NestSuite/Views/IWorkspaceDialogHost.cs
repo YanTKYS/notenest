@@ -55,4 +55,7 @@ public interface IWorkspaceDialogHost
 
     /// <summary>検索・置換ダイアログをアプリ終了前に閉じる。</summary>
     void CloseFindReplace();
+
+    /// <summary>Markdown ファイルの保存先ダイアログを表示し、選択パスを返す。キャンセル時は null。</summary>
+    string? SelectMarkdownSavePath(string defaultFileName);
 }

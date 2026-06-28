@@ -1,3 +1,4 @@
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using NestSuite.NoteNest.Editor;
@@ -176,4 +177,62 @@ public partial class NoteNestWorkspaceView : UserControl
     private void ShowInfo(string message, string title = "情報") => Host.ShowInfo(message, title);
     private bool Confirm(string message, string title = "確認",
         MessageBoxImage icon = MessageBoxImage.Warning) => Host.Confirm(message, title, icon);
+
+    // ── NoteNest Markdown エクスポート（SH-25: Shell File メニューから移管） ──
+
+    private void ExportNoteMarkdownCopy_Click(object sender, RoutedEventArgs e)
+    {
+        var note = ViewModel.SelectedNote;
+        if (note == null) return;
+        var markdown = NoteNestMarkdownExportService.BuildCurrentNoteMarkdown(note);
+        try
+        {
+            Clipboard.SetText(markdown);
+        }
+        catch (Exception ex)
+        {
+            ErrorLogService.Log("MarkdownCopyToClipboard", ex, "NoteNest");
+            ShowError("クリップボードへのコピーに失敗しました。", "コピーエラー");
+        }
+    }
+
+    private void ExportNoteMarkdownSave_Click(object sender, RoutedEventArgs e)
+    {
+        var note = ViewModel.SelectedNote;
+        if (note == null) return;
+        var defaultName = BuildMarkdownDefaultFileName(note.Title);
+        var path = Host.SelectMarkdownSavePath(defaultName);
+        if (path == null) return;
+        var markdown = NoteNestMarkdownExportService.BuildCurrentNoteMarkdown(note);
+        SaveMarkdownFile(path, markdown);
+    }
+
+    private void ExportAllNotesMarkdownSave_Click(object sender, RoutedEventArgs e)
+    {
+        var defaultName = BuildMarkdownDefaultFileName(ViewModel.ProjectName);
+        var path = Host.SelectMarkdownSavePath(defaultName);
+        if (path == null) return;
+        var markdown = NoteNestMarkdownExportService.BuildAllNotesMarkdown(ViewModel.ProjectName, ViewModel.AllNotes);
+        SaveMarkdownFile(path, markdown);
+    }
+
+    private void SaveMarkdownFile(string path, string content)
+    {
+        try
+        {
+            AtomicFileWriter.WriteAllText(path, content, Encoding.UTF8);
+        }
+        catch (Exception ex)
+        {
+            ErrorLogService.Log("MarkdownExport", ex, "NoteNest");
+            ShowError("Markdown ファイルの保存に失敗しました。", "保存エラー");
+        }
+    }
+
+    private static string BuildMarkdownDefaultFileName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "note.md";
+        var safe = ExportService.SanitizeFileName(name);
+        return string.IsNullOrWhiteSpace(safe) ? "note.md" : safe + ".md";
+    }
 }
