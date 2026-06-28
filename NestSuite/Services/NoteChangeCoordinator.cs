@@ -27,6 +27,7 @@ public sealed class NoteChangeCoordinator
             nameof(MainViewModel.EditorTitle),
             nameof(MainViewModel.CurrentNoteTimestampSummary),
             nameof(MainViewModel.IsNoteListEmpty),
+            nameof(MainViewModel.HasAnyNotes),
         ]));
     }
 }
