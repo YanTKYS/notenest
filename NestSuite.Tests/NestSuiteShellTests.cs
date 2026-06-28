@@ -5,6 +5,8 @@ using NestSuite;
 using NestSuite.ChatNest;
 using NestSuite.Views;
 using Xunit;
+using NestSuite.Services;
+using System.IO;
 
 namespace NestSuite.Tests;
 
@@ -1299,4 +1301,237 @@ public class NestSuiteShellTests
         Assert.Equal(typeof(void), method!.ReturnType);
         Assert.Empty(method.GetParameters());
     }
+
+    private static readonly Assembly NestSuiteAssembly =
+        typeof(FileErrorMessages).Assembly;
+
+    private static readonly Type? PositionGuardType =
+        NestSuiteAssembly.GetType("NestSuite.NestSuiteWindowPositionGuard");
+
+    private static readonly BindingFlags InstanceNonPublic =
+        BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
+    private static readonly BindingFlags StaticAny =
+        BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
+    // ── SH-9: NestSuiteWindowPositionGuard ────────────────────────────────
+
+    [Fact]
+    public void NestSuiteWindowPositionGuard_TypeExists()
+    {
+        Assert.NotNull(PositionGuardType);
+    }
+
+    [Fact]
+    public void NestSuiteWindowPositionGuard_IsOnScreen_ReturnsTrue_ForVisiblePosition()
+    {
+        var method = PositionGuardType!.GetMethod("IsOnScreen", StaticAny, null,
+            [typeof(double), typeof(double), typeof(double), typeof(double),
+             typeof(double), typeof(double), typeof(double), typeof(double)], null);
+        Assert.NotNull(method);
+        var result = (bool)method!.Invoke(null,
+            [100.0, 100.0, 1280.0, 720.0, 0.0, 0.0, 1920.0, 1080.0])!;
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void NestSuiteWindowPositionGuard_IsOnScreen_ReturnsFalse_ForNaN()
+    {
+        var method = PositionGuardType!.GetMethod("IsOnScreen", StaticAny, null,
+            [typeof(double), typeof(double), typeof(double), typeof(double),
+             typeof(double), typeof(double), typeof(double), typeof(double)], null);
+        Assert.NotNull(method);
+        var result = (bool)method!.Invoke(null,
+            [double.NaN, double.NaN, 1280.0, 720.0, 0.0, 0.0, 1920.0, 1080.0])!;
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void NestSuiteWindowPositionGuard_IsOnScreen_ReturnsFalse_WhenTooFarRight()
+    {
+        var method = PositionGuardType!.GetMethod("IsOnScreen", StaticAny, null,
+            [typeof(double), typeof(double), typeof(double), typeof(double),
+             typeof(double), typeof(double), typeof(double), typeof(double)], null);
+        Assert.NotNull(method);
+        // ウィンドウ左端が画面右端から 20px 手前 → minVisible(100px) に満たない
+        var result = (bool)method!.Invoke(null,
+            [1900.0, 100.0, 1280.0, 720.0, 0.0, 0.0, 1920.0, 1080.0])!;
+        Assert.False(result);
+    }
+
+    // ── SH-9: UiSettings に NestSuiteWindowLeft/Top が追加されていること ──
+
+    [Fact]
+    public void UiSettings_HasNestSuiteWindowLeft_Property()
+    {
+        var prop = typeof(UiSettings)
+            .GetProperty("NestSuiteWindowLeft", BindingFlags.Public | BindingFlags.Instance);
+        Assert.NotNull(prop);
+        Assert.Equal(typeof(double?), prop!.PropertyType);
+    }
+
+    [Fact]
+    public void UiSettings_HasNestSuiteWindowTop_Property()
+    {
+        var prop = typeof(UiSettings)
+            .GetProperty("NestSuiteWindowTop", BindingFlags.Public | BindingFlags.Instance);
+        Assert.NotNull(prop);
+        Assert.Equal(typeof(double?), prop!.PropertyType);
+    }
+
+    // ── SH-13: ShowStatusNotification が存在すること ──────────────────────
+
+    [Fact]
+    public void NestSuiteShellWindow_HasShowStatusNotificationMethod()
+    {
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("ShowStatusNotification", InstanceNonPublic, null,
+                [typeof(string), typeof(int)], null);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+    }
+
+    // ── SH-18: RestoreFocusToWorkspace が存在すること ────────────────────
+
+    [Fact]
+    public void NestSuiteShellWindow_HasRestoreFocusToWorkspaceMethod()
+    {
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("RestoreFocusToWorkspace", InstanceNonPublic);
+        Assert.NotNull(method);
+        Assert.Equal(typeof(void), method!.ReturnType);
+        Assert.Empty(method.GetParameters());
+    }
+
+    // ── SH-6: TabListButton_Click が存在すること ─────────────────────────
+
+    [Fact]
+    public void NestSuiteShellWindow_HasTabListButtonClickHandler()
+    {
+        var method = typeof(NestSuiteShellWindow)
+            .GetMethod("TabListButton_Click", InstanceNonPublic, null,
+                [typeof(object), typeof(System.Windows.RoutedEventArgs)], null);
+        Assert.NotNull(method);
+    }
+
+
+    private static readonly string RepoRoot =
+        Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+
+    // ── バージョン ────────────────────────────────────────────────────────
+
+    // ── backlog / release-notes ───────────────────────────────────────────
+
+    [Fact]
+    public void Backlog_TD23_IsMarkedComplete()
+    {
+        Assert.Contains("~~TD-23~~", ReadBacklog());
+    }
+
+    [Fact]
+    public void ReleaseNotes_Contains_V2_10_10()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "release-notes.md");
+        Assert.True(File.Exists(path));
+        Assert.Contains("v2.10.10", File.ReadAllText(path));
+    }
+
+    // ── smoke test structure ──────────────────────────────────────────────
+
+    [Fact]
+    public void SmokeProgram_Exists()
+    {
+        var path = Path.Combine(RepoRoot, "NestSuite.UiSmoke", "Program.cs");
+        Assert.True(File.Exists(path));
+    }
+
+    [Fact]
+    public void SmokeProgram_HasWaitForMainWindowHelper()
+    {
+        var src = ReadSmokeProgram();
+        Assert.Contains("WaitForMainWindow", src);
+    }
+
+    [Fact]
+    public void SmokeProgram_HasWaitForElementByAutomationIdHelper()
+    {
+        var src = ReadSmokeProgram();
+        Assert.Contains("WaitForElementByAutomationId", src);
+    }
+
+    [Fact]
+    public void SmokeProgram_HasCheckRequiredElementsHelper()
+    {
+        var src = ReadSmokeProgram();
+        Assert.Contains("CheckRequiredElements", src);
+    }
+
+    [Fact]
+    public void SmokeProgram_HasClickElementByPointHelper()
+    {
+        var src = ReadSmokeProgram();
+        Assert.Contains("ClickElementByPoint", src);
+    }
+
+    [Fact]
+    public void SmokeProgram_CoversNoteNestElements()
+    {
+        var src = ReadSmokeProgram();
+        Assert.Contains("NoteNest.NotebookTree", src);
+        Assert.Contains("NoteNest.AddNoteButton", src);
+        Assert.Contains("NoteNest.EditorHost", src);
+    }
+
+    [Fact]
+    public void SmokeProgram_CoversIdeaNestElements()
+    {
+        var src = ReadSmokeProgram();
+        Assert.Contains("IdeaNest.SearchBox", src);
+        Assert.Contains("IdeaNest.AddIdeaButton", src);
+    }
+
+    [Fact]
+    public void SmokeProgram_CoversChatNestElements()
+    {
+        var src = ReadSmokeProgram();
+        Assert.Contains("ChatNest.InputBox", src);
+        Assert.Contains("ChatNest.PostButton", src);
+        Assert.Contains("ChatNest.ShowTimestampsCheckBox", src);
+    }
+
+    [Fact]
+    public void SmokeProgram_CoversToolMenuIds()
+    {
+        var src = ReadSmokeProgram();
+        Assert.Contains("Shell.MenuToolNoteNest", src);
+        Assert.Contains("Shell.MenuToolIdeaNest", src);
+        Assert.Contains("Shell.MenuToolChatNest", src);
+    }
+
+    [Fact]
+    public void SmokeProgram_CoversTempNestElements()
+    {
+        var src = ReadSmokeProgram();
+        Assert.Contains("TempNest.Slot1.BodyBox", src);
+        Assert.Contains("TempNest.Slot1.TitleBox", src);
+        Assert.Contains("TempNest.Slot1.CopyButton", src);
+        Assert.Contains("TempNest.Slot1.ClearButton", src);
+    }
+
+    // ── helpers ──────────────────────────────────────────────────────────
+
+    private string ReadBacklog()
+    {
+        var path = Path.Combine(RepoRoot, "docs", "backlog.md");
+        Assert.True(File.Exists(path), $"backlog.md not found: {path}");
+        return File.ReadAllText(path);
+    }
+
+    private string ReadSmokeProgram()
+    {
+        var path = Path.Combine(RepoRoot, "NestSuite.UiSmoke", "Program.cs");
+        Assert.True(File.Exists(path), $"Program.cs not found: {path}");
+        return File.ReadAllText(path);
+    }
+
 }
