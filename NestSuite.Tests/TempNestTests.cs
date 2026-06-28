@@ -294,8 +294,8 @@ public class TempNestTests
     [Fact]
     public void Backlog_CH13_InChatNestSection()
     {
-        var backlog = ReadBacklog();
-        Assert.Contains("CH-13", backlog);
+        // TD-33: 完了済み項目は release-notes.md で管理
+        Assert.Contains("CH-13", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
     // ── release-notes.md ─────────────────────────────────────────────────
