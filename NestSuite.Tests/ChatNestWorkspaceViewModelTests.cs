@@ -615,18 +615,18 @@ public class ChatNestWorkspaceViewModelTests
 
     // ── backlog / release-notes ───────────────────────────────────────────
 
-    // CH-8: タイムスタンプ表示切替
+    // CH-8: タイムスタンプ表示切替 (TD-33: 完了済み項目は release-notes.md で管理)
     [Fact]
     public void Backlog_CH8_IsMarkedComplete()
     {
-        Assert.Contains("~~CH-8~~", ReadBacklog());
+        Assert.Contains("CH-8", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
-    // CH-13: 発言ドラッグ並び替え
+    // CH-13: 発言ドラッグ並び替え (TD-33: 完了済み項目は release-notes.md で管理)
     [Fact]
     public void Backlog_CH13_IsMarkedComplete()
     {
-        Assert.Contains("~~CH-13~~", ReadBacklog());
+        Assert.Contains("CH-13", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
     [Fact]

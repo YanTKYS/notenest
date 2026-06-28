@@ -17,11 +17,11 @@ public class SaveAllCommandTests
 
     // ── backlog SH-20 完了マーク ─────────────────────────────────────────
 
+    // TD-33: 完了済み項目は release-notes.md で管理
     [Fact]
     public void Backlog_SH20_IsMarkedComplete()
     {
-        var backlog = ReadBacklog();
-        Assert.Contains("~~SH-20~~", backlog);
+        Assert.Contains("SH-20", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
     // ── release-notes.md v2.10.4 エントリ ────────────────────────────────

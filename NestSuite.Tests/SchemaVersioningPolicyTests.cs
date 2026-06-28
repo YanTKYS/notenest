@@ -84,12 +84,11 @@ public class SchemaVersioningPolicyTests
 
     // ── backlog.md の FM-1 更新確認 ──────────────────────────────────────
 
+    // TD-33: 完了済み項目は release-notes.md で管理
     [Fact]
     public void Backlog_FM1_IsMarkedComplete()
     {
-        var backlog = ReadBacklog();
-        // FM-1が完了済み（~~FM-1~~）としてマークされていること
-        Assert.Contains("~~FM-1~~", backlog);
+        Assert.Contains("FM-1", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
     [Fact]

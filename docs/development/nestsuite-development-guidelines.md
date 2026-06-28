@@ -141,7 +141,7 @@
 | ルール | 詳細 |
 |--------|------|
 | `docs/release-notes.md` を更新する | 対象バージョンのエントリを先頭に追加する |
-| `docs/backlog.md` を更新する | 完了項目は「完了済みのため除外」リストへ移す。見送り・却下項目は「見送り・保留」セクションへ移す |
+| `docs/backlog.md` を更新する | 完了項目は backlog から削除し `docs/release-notes.md` に記録する。見送り・却下項目は `RJ-` セクションへ移す |
 | `docs/testing/nestsuite-release-checklist.md` を更新する | タイトルと沿革テキストのバージョンを更新する |
 | `docs/design/` に設計文書を追加する | アーキテクチャ・API 設計・実装方針の文書を配置する |
 | `docs/development/` に開発ルール・ガイドを追加する | 実装ルール・プロセス文書を配置する |
@@ -326,6 +326,21 @@ NestSuite vX.Y.Z として、○○に対応してください。
 ```
 
 軽微な変更（doc only など）は、関係しない項目を省略して報告して構いません。
+
+---
+
+### 13-7. backlog / release notes 運用ルール（v2.10.19 TD-33 追加）
+
+- `docs/backlog.md` は未着手・保留・将来候補のみを管理する
+- 完了済み項目は `docs/release-notes.md` に記録し、backlog には残さない
+- 完了済み項番は欠番として扱い、再利用しない
+- backlog には取り消し線の完了項目や `<details>完了済み</details>` を追加しない
+- 新規項目は該当 prefix の体系セクション末尾へ追加する
+- 長期構想・保留は `LT-` prefix で管理する
+- 見送り・採用しない方針は `RJ-` prefix で管理する
+- `LT-` / `RJ-` も採番済み番号は再利用しない
+- 完了時は release notes に backlog ID と実装内容を記録する
+- release notes には保存形式、session 形式、schema 変更有無を明記する
 
 ---
 

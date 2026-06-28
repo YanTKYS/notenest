@@ -272,32 +272,30 @@ public class TempNestTests
 
     // ── L14 / L15: ステータスバー — docs / backlog 確認 ─────────────────
 
+    // TD-33: 完了済み項目は release-notes.md で管理
     [Fact]
     public void Backlog_TN2_IsMarkedComplete()
     {
-        var backlog = ReadBacklog();
-        Assert.Contains("~~TN-2~~", backlog);
+        Assert.Contains("TN-2", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
     [Fact]
     public void Backlog_L14_IsMarkedComplete()
     {
-        var backlog = ReadBacklog();
-        Assert.Contains("~~L14~~", backlog);
+        Assert.Contains("L14", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
     [Fact]
     public void Backlog_L15_IsMarkedComplete()
     {
-        var backlog = ReadBacklog();
-        Assert.Contains("~~L15~~", backlog);
+        Assert.Contains("L15", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
     [Fact]
     public void Backlog_CH13_InChatNestSection()
     {
-        var backlog = ReadBacklog();
-        Assert.Contains("CH-13", backlog);
+        // TD-33: 完了済み項目は release-notes.md で管理
+        Assert.Contains("CH-13", File.ReadAllText(Path.Combine(RepoRoot, "docs", "release-notes.md")));
     }
 
     // ── release-notes.md ─────────────────────────────────────────────────
