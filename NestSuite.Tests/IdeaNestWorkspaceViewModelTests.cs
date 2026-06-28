@@ -56,6 +56,64 @@ public class IdeaNestWorkspaceViewModelTests
     }
 }
 
+// ── ID-14: 新規カード初期値・既存カード保持確認 ──────────────────────────────────────────
+
+public class IdeaNewCardInitialValueTests
+{
+    [Fact]
+    public void NewIdea_Title_IsEmpty()
+    {
+        var idea = new Idea();
+        Assert.Equal(string.Empty, idea.Title);
+    }
+
+    [Fact]
+    public void NewIdea_Body_IsEmpty()
+    {
+        var idea = new Idea();
+        Assert.Equal(string.Empty, idea.Body);
+    }
+
+    [Fact]
+    public void NewIdea_Tags_IsEmpty()
+    {
+        var idea = new Idea();
+        Assert.Empty(idea.Tags);
+    }
+
+    [Fact]
+    public void EditIdeaViewModel_NewCard_TitleIsEmpty()
+    {
+        var vm = new EditIdeaViewModel(new Idea(), isExistingCard: false);
+        Assert.Equal(string.Empty, vm.Title);
+    }
+
+    [Fact]
+    public void EditIdeaViewModel_NewCard_BodyIsEmpty()
+    {
+        var vm = new EditIdeaViewModel(new Idea(), isExistingCard: false);
+        Assert.Equal(string.Empty, vm.Body);
+    }
+
+    [Fact]
+    public void EditIdeaViewModel_NewCard_TagsTextIsEmpty()
+    {
+        var vm = new EditIdeaViewModel(new Idea(), isExistingCard: false);
+        Assert.Equal(string.Empty, vm.TagsText);
+    }
+
+    [Fact]
+    public void EditIdeaViewModel_ExistingCard_PreservesTitle_Body_Tags()
+    {
+        var idea = new Idea { Title = "既存タイトル", Body = "既存本文", Tags = ["タグA", "タグB"] };
+        var vm = new EditIdeaViewModel(idea, isExistingCard: true);
+        Assert.Equal("既存タイトル", vm.Title);
+        Assert.Equal("既存本文", vm.Body);
+        Assert.Contains("タグA", vm.TagsText);
+        Assert.Contains("タグB", vm.TagsText);
+    }
+}
+
 // ── v1.16.6: CardOperationsService — テキスト貼り付け・ファイル取り込みのカード作成確認 ───
 
 public class CardOperationsServicePasteTests
