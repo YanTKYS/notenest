@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using NestSuite.ChatNest;
 using NestSuite.IdeaNest.Services;
