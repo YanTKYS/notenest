@@ -1515,3 +1515,59 @@ backlog ID はテストクラス名ではなく、移動先クラス内のコメ
 - 保存形式変更なし。
 - session 形式変更なし。
 - NoteNest schema は `1.4.1` を維持する。
+
+---
+
+## 11. v2.10.18 最終再分析（TD-32 テストクラス分類・整理完了）
+
+### 再分析の前提
+
+- 分析対象: `NestSuite.Tests/**/*.cs` のテストクラス。
+- 分類方針: クラス単位テスト、機能単位テスト、シナリオ / 回帰テスト、ドキュメント / ルール固定テスト。
+- TD-28 の一次分析で使用した「不要テスト候補」は、TD-29 以降の集約・再散在抑制で整理対象として扱い、最終分類では上記 4 分類に寄せる。
+- backlog ID / version番号 / 実装時期のみをテストクラス名にした既存クラスは、既存の対象クラス単位・責務単位・回帰単位の受け皿へ集約した。
+
+### 最終サマリー
+
+| 指標 | 件数 |
+|------|------|
+| テストクラスファイル数 | 86 |
+| public テストクラス数 | 88 |
+| テストメソッド数（概算） | 1258 |
+| 課題番号 / version ベースで新規に残したテストクラス | 0 |
+
+`IdeaNestWorkspaceViewModelTests.cs` は同一ファイル内に関連する小さな public テストクラスを含むため、ファイル数と public テストクラス数は一致しない。TD-32 の増減報告は、v2.10.17 で用いたファイル単位のテストクラス数に合わせる。
+
+### 最終分類別サマリー
+
+| 分類 | public テストクラス数 | 判断基準 |
+|------|----------------------|----------|
+| クラス単位テスト | 67 | 対象クラス名 + Tests を基本とする単体・責務境界テスト |
+| 機能単位テスト | 11 | Shell UX、AutomationId、Boundary、Policy、Design など単一クラスに閉じない機能確認 |
+| シナリオ / 回帰テスト | 5 | `Regression` / `Smoke` を明示し、複数処理をまたぐ事故防止を担うテスト |
+| ドキュメント / ルール固定テスト | 5 | version / schema / architecture / prompt / classification などルール固定テスト |
+
+### 追加で集約したテストクラス
+
+| 旧テストクラス | 集約先 | 分類 | 備考 |
+|---------------|--------|------|------|
+| `ShellUxTests` | `NestSuiteShellTests` | 機能単位テスト | Shell UX の静的構造確認を Shell 境界確認へ統合。 |
+| `UiSmokeTD23Tests` | `NestSuiteShellTests` | シナリオ / 回帰テスト | UI smoke program の構造確認を Shell / smoke 境界の既存受け皿へ統合。 |
+| `V140RegressionTests` | `FormatSchemaRegressionTests` | シナリオ / 回帰テスト | NoteNest 保存・読込・設定・リンク・バックアップ回帰を形式 / schema 回帰へ統合。 |
+| `V141FeatureTests` | `FormatSchemaRegressionTests` | クラス単位 / 機能単位テスト | timestamp / export / autosave / project info 確認を形式 / schema 回帰へ統合。 |
+| `V146RegressionTests` | `FormatSchemaRegressionTests` | シナリオ / 回帰テスト | v1.4.x 保存・読込・autosave・recent files・timestamp・export 回帰を形式 / schema 回帰へ統合。 |
+
+### 最終整理後に残すクラス名の考え方
+
+- `*RegressionTests` は複数処理をまたぐ事故防止テストとして明示的に残す。
+- `*UxTests` は対象責務が UX であり、課題番号や version のみを理由にした命名ではないため残す。
+- `*BoundaryTests` / `*PolicyTests` / `*DesignTests` は機能単位またはルール固定の責務名として残す。
+- `ApplicationVersionTests` と schema version 確認は引き続き集約ルールに従い、各機能テストクラスへ再散在させない。
+
+### 完了条件への対応
+
+- テストクラス分類・整理を TD-28 / TD-30 / TD-32 の方針に沿って完了した。
+- 課題番号 / version番号 / 実装時期のみを理由にしたテストクラスは残していない。
+- テストロジックの意味変更は行っていない。
+- アプリ本体の挙動変更、UI変更、保存形式変更、session形式変更、schema bump は行っていない。
+- NoteNest schema は `1.4.1` を維持する。
