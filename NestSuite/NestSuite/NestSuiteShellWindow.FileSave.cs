@@ -8,6 +8,10 @@ namespace NestSuite;
 
 public partial class NestSuiteShellWindow
 {
+    // v2.11.1: 名前を付けて保存ダイアログの既定ファイル名。拡張子は各 FileService.FileExtension を単一の出所とする。
+    private const string DefaultIdeaNestFileName = "ideas" + IdeaNestFileService.FileExtension;
+    private const string DefaultChatNestFileName = "chat"  + ChatNestFileService.FileExtension;
+
     /// <summary>v1.9.7: 指定 Session の IdeaNest を指定パスへ保存する。失敗時はエラーダイアログを表示し false を返す。</summary>
     private bool TrySaveIdeaNestToPath(NestSuiteWorkspaceSession session, string path)
     {
@@ -118,7 +122,7 @@ public partial class NestSuiteShellWindow
         else
         {
             var selector = selectSavePath ?? _dialogs.SelectIdeaNestSavePath;
-            var defaultName = "ideas.ideanest";
+            var defaultName = DefaultIdeaNestFileName;
             var rawPath = selector(defaultName);
             if (rawPath == null) return;
             var normalizedPath = NormalizeFilePath(rawPath);
@@ -144,7 +148,7 @@ public partial class NestSuiteShellWindow
         else
         {
             var selector = selectSavePath ?? _dialogs.SelectChatNestSavePath;
-            var defaultName = "chat.chatnest";
+            var defaultName = DefaultChatNestFileName;
             var rawPath = selector(defaultName);
             if (rawPath == null) return;
             var normalizedPath = NormalizeFilePath(rawPath);

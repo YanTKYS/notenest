@@ -7,6 +7,15 @@
 
 ---
 
+## v2.11.1 — 既定保存ファイル名の定数集約
+
+- **「名前を付けて保存」ダイアログの既定ファイル名（IdeaNest: `ideas.ideanest` / ChatNest: `chat.chatnest`）が FileSave / FileSaveAs / SaveAll の 3 partial に計 6 箇所ハードコードされていたのを、`NestSuiteShellWindow` の private 定数 2 つへ集約した。**
+- **定数の拡張子部分は `IdeaNestFileService.FileExtension` / `ChatNestFileService.FileExtension` を単一の出所として derive する compile-time const とし、拡張子定義の重複を解消した。**
+- **既定ファイル名の値・保存挙動は変更なし（純粋な内部リファクタリング）。**
+- **保存形式変更なし。session 形式変更なし。NoteNest schema `1.4.1` 維持。`.ideanest` / `.chatnest` 保存形式変更なし。外部依存追加なし。**
+
+---
+
 ## v2.11.0 — コード品質リファクタリング
 
 - **NestSuiteShellWindow の `SaveWindowSize()` で Maximized/Minimized 分岐の重複コードを統合した。**
