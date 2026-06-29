@@ -12,9 +12,6 @@ namespace NestSuite.Tests;
 /// </summary>
 public class NestSuiteShellWorkspaceLaunchTests
 {
-    private static readonly BindingFlags AllInstance =
-        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-
     // ── v1.6.3: LoadInitialFile メソッドの存在確認 ────────────────────────
 
     [Fact]

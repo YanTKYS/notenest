@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using NestSuite;
 using NestSuite.ChatNest;
+using NestSuite.Services;
 using NestSuite.Views;
 using Xunit;
 
