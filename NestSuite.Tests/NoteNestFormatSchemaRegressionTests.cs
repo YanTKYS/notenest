@@ -1,26 +1,23 @@
 using System.Text.Json;
-using NestSuite.ChatNest;
-using NestSuite.IdeaNest.Models;
-using NestSuite.IdeaNest.Services;
 using NestSuite.Models;
 using NestSuite.Services;
-using NestSuite.TempNest;
 using NestSuite.ViewModels;
 using Xunit;
 
 namespace NestSuite.Tests;
 
 /// <summary>
-/// v2.9.9: 保存形式・スキーマの非変更を自動テストで固定する。
-/// v2.9.7〜v2.9.9 の保存処理変更がファイル形式を壊していないことを確認する。
+/// NoteNest (.notenest) 保存形式・スキーマの非変更を自動テストで固定する。
+/// 保存形式の JSON 構造、round-trip、バックアップ、タイムスタンプ、
+/// エクスポート、自動保存、最近使ったファイルに関する回帰確認を担う。
 /// </summary>
-public class FormatSchemaRegressionTests : IDisposable
+public class NoteNestFormatSchemaRegressionTests : IDisposable
 {
     private readonly string _tempDir;
 
-    public FormatSchemaRegressionTests()
+    public NoteNestFormatSchemaRegressionTests()
     {
-        _tempDir = Path.Combine(Path.GetTempPath(), "FormatSchemaRegressionTests_" + Guid.NewGuid().ToString("N"));
+        _tempDir = Path.Combine(Path.GetTempPath(), "NoteNestFormatSchemaRegressionTests_" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(_tempDir);
     }
 
@@ -38,38 +35,7 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.Equal("1.4.1", Project.CurrentSchemaVersion);
     }
 
-    [Fact]
-    public void IdeaNest_SchemaVersionConstant_Is_1_1_4()
-    {
-        Assert.Equal("1.1.4", IdeaNestFileService.SchemaVersion);
-    }
-
-    [Fact]
-    public void ChatNest_FileVersionConstant_Is_0_4_1()
-    {
-        Assert.Equal("0.4.1", ChatNestFileService.FileVersionString);
-    }
-
-    [Fact]
-    public void ChatNest_FileExtensionConstant_Is_chatnest()
-    {
-        Assert.Equal(".chatnest", ChatNestFileService.FileExtension);
-    }
-
-    [Fact]
-    public void IdeaNest_FileExtensionConstant_Is_ideanest()
-    {
-        Assert.Equal(".ideanest", IdeaNestFileService.FileExtension);
-    }
-
-    [Fact]
-    public void TempNest_DefaultJsonVersion_Is_1()
-    {
-        var data = new TempNestStoreData();
-        Assert.Equal(1, data.Version);
-    }
-
-    // ── NoteNest JSON 構造 ────────────────────────────────────────────────
+    // ── JSON 構造 ─────────────────────────────────────────────────────────
 
     [Fact]
     public void NoteNest_SerializedJson_ContainsProjectNameKey()
@@ -152,174 +118,7 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.Equal("本文テスト", loaded.Notebooks[0].Notes[0].Content);
     }
 
-    // ── IdeaNest JSON 構造 ────────────────────────────────────────────────
-
-    [Fact]
-    public void IdeaNest_SerializedJson_ContainsVersionField()
-    {
-        var path = Path.Combine(_tempDir, "test.ideanest");
-        IdeaNestFileService.Save(path, new Workspace());
-        var json = File.ReadAllText(path);
-        Assert.Contains("\"version\"", json);
-        Assert.Contains("1.1.4", json);
-    }
-
-    [Fact]
-    public void IdeaNest_SerializedJson_ContainsIdeasField()
-    {
-        var path = Path.Combine(_tempDir, "test.ideanest");
-        IdeaNestFileService.Save(path, new Workspace());
-        var json = File.ReadAllText(path);
-        Assert.Contains("\"ideas\"", json);
-    }
-
-    [Fact]
-    public void IdeaNest_SerializedJson_ContainsSettingsField()
-    {
-        var path = Path.Combine(_tempDir, "test.ideanest");
-        IdeaNestFileService.Save(path, new Workspace());
-        var json = File.ReadAllText(path);
-        Assert.Contains("\"settings\"", json);
-    }
-
-    [Fact]
-    public void IdeaNest_SavedJson_IsValidJson()
-    {
-        var path = Path.Combine(_tempDir, "test.ideanest");
-        IdeaNestFileService.Save(path, new Workspace());
-        var json = File.ReadAllText(path);
-        Assert.True(IsValidJson(json), "保存された .ideanest ファイルは有効な JSON である必要がある");
-    }
-
-    [Fact]
-    public void IdeaNest_SaveLoad_PreservesVersion()
-    {
-        var path = Path.Combine(_tempDir, "ver.ideanest");
-        IdeaNestFileService.Save(path, new Workspace());
-        var loaded = IdeaNestFileService.Load(path);
-        Assert.Equal("1.1.4", loaded.Version);
-    }
-
-    // ── ChatNest JSON 構造 ────────────────────────────────────────────────
-
-    [Fact]
-    public void ChatNest_SerializedJson_ContainsVersionField()
-    {
-        var path = Path.Combine(_tempDir, "test.chatnest");
-        ChatNestFileService.Save(path, []);
-        var json = File.ReadAllText(path);
-        Assert.Contains("\"version\"", json);
-        Assert.Contains("0.4.1", json);
-    }
-
-    [Fact]
-    public void ChatNest_SerializedJson_ContainsMessagesField()
-    {
-        var path = Path.Combine(_tempDir, "test.chatnest");
-        ChatNestFileService.Save(path, []);
-        var json = File.ReadAllText(path);
-        Assert.Contains("\"messages\"", json);
-    }
-
-    [Fact]
-    public void ChatNest_SavedJson_IsValidJson()
-    {
-        var path = Path.Combine(_tempDir, "test.chatnest");
-        ChatNestFileService.Save(path, []);
-        var json = File.ReadAllText(path);
-        Assert.True(IsValidJson(json), "保存された .chatnest ファイルは有効な JSON である必要がある");
-    }
-
-    [Fact]
-    public void ChatNest_SaveLoad_PreservesMessages()
-    {
-        var path = Path.Combine(_tempDir, "msgs.chatnest");
-        var messages = new[]
-        {
-            new Message { Speaker = Speaker.自分, Text = "テストメッセージ" },
-            new Message { Speaker = Speaker.反論, Text = "反論テスト" },
-        };
-        ChatNestFileService.Save(path, messages);
-        var loaded = ChatNestFileService.Load(path);
-        Assert.Equal(2, loaded.Count);
-        Assert.Equal("テストメッセージ", loaded[0].Text);
-        Assert.Equal("反論テスト",       loaded[1].Text);
-    }
-
-    // ── TempNest JSON 構造 ────────────────────────────────────────────────
-
-    [Fact]
-    public void TempNest_StoreData_DefaultVersionIs1()
-    {
-        var data = new TempNestStoreData { Slots = [] };
-        var json = JsonSerializer.Serialize(data);
-        using var doc = JsonDocument.Parse(json);
-        Assert.Equal(1, doc.RootElement.GetProperty("Version").GetInt32());
-    }
-
-    [Fact]
-    public void TempNest_StoreData_HasSlotsArray()
-    {
-        var data = new TempNestStoreData { Slots = [new TempNestSlot { Title = "A", Body = "B" }] };
-        var json = JsonSerializer.Serialize(data);
-        using var doc = JsonDocument.Parse(json);
-        Assert.Equal(JsonValueKind.Array, doc.RootElement.GetProperty("Slots").ValueKind);
-        Assert.Equal(1, doc.RootElement.GetProperty("Slots").GetArrayLength());
-    }
-
-    // ── セッション形式 ────────────────────────────────────────────────────
-
-    [Fact]
-    public void Session_DefaultState_HasEmptyFilePathsAndNullActivePath()
-    {
-        var state = new NestSuiteSessionState();
-        Assert.Empty(state.FilePaths);
-        Assert.Null(state.ActiveFilePath);
-    }
-
-    [Fact]
-    public void Session_SerializedJson_ContainsFilePathsField()
-    {
-        var state = new NestSuiteSessionState { FilePaths = ["/some/path.notenest"] };
-        var json = JsonSerializer.Serialize(state);
-        Assert.Contains("FilePaths", json);
-        Assert.Contains("path.notenest", json);
-    }
-
-    [Fact]
-    public void Session_SerializedJson_ContainsActiveFilePathField()
-    {
-        var state = new NestSuiteSessionState { ActiveFilePath = "/active.notenest" };
-        var json = JsonSerializer.Serialize(state);
-        Assert.Contains("ActiveFilePath", json);
-    }
-
-    [Fact]
-    public void Session_RoundTrip_PreservesFilePathsAndActivePath()
-    {
-        var path = Path.Combine(_tempDir, "session.json");
-        var state = new NestSuiteSessionState
-        {
-            FilePaths = ["/a.notenest", "/b.chatnest"],
-            ActiveFilePath = "/a.notenest"
-        };
-        var svc = new NestSuiteSessionStateService(path);
-        svc.Save(state);
-        var loaded = svc.Load();
-        Assert.Equal(state.FilePaths, loaded.FilePaths);
-        Assert.Equal(state.ActiveFilePath, loaded.ActiveFilePath);
-    }
-
-    // ── バージョン ───────────────────────────────────────────────────────
-
-    // ── helpers ─────────────────────────────────────────────────────────
-
-    private static bool IsValidJson(string json)
-    {
-        try { JsonDocument.Parse(json); return true; }
-        catch { return false; }
-    }
-
+    // ── 保存・読込・回帰 (V140) ──────────────────────────────────────────
 
     [Fact]
     public void SaveAndReloadPreservesNotesTasksLinksSettingsSelectionAndSchema()
@@ -414,31 +213,7 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.True(main.IsModified);
     }
 
-    private V140Context CreateV140Context()
-    {
-        Directory.CreateDirectory(_tempDir);
-        var session = new ProjectSessionViewModel();
-        var notes = new NoteWorkspaceViewModel();
-        var tasks = new TaskBoardViewModel();
-        var markers = new MarkerPanelViewModel(new MarkerExtractorService());
-        var editor = new EditorStateViewModel();
-        var coordinator = new WorkspaceChangeCoordinator(notes, tasks, markers, editor);
-        var lifecycle = new ProjectLifecycleService(
-            session, notes, tasks, markers, editor,
-            recentFiles: new RecentFilesService(Path.Combine(_tempDir, "recent.json")));
-        return new V140Context(session, notes, tasks, markers, editor, coordinator, lifecycle);
-    }
-
-    private sealed record V140Context(
-        ProjectSessionViewModel Session,
-        NoteWorkspaceViewModel Notes,
-        TaskBoardViewModel Tasks,
-        MarkerPanelViewModel Markers,
-        EditorStateViewModel Editor,
-        WorkspaceChangeCoordinator Coordinator,
-        ProjectLifecycleService Lifecycle);
-
-
+    // ── タイムスタンプ (V141) ─────────────────────────────────────────────
 
     [Fact]
     public void NoteTimestampsUpdateAndRoundTrip()
@@ -550,25 +325,7 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.Contains("最終保存:", main.ProjectInfo);
     }
 
-
-
-    private (ProjectLifecycleService Lifecycle, ProjectSessionViewModel Session,
-             NoteWorkspaceViewModel Notes, TaskBoardViewModel Tasks,
-             MarkerPanelViewModel Markers, EditorStateViewModel Editor) CreateV146Context()
-    {
-        var session = new ProjectSessionViewModel();
-        var notes   = new NoteWorkspaceViewModel();
-        var tasks   = new TaskBoardViewModel();
-        var markers = new MarkerPanelViewModel(new MarkerExtractorService());
-        var editor  = new EditorStateViewModel();
-        var lifecycle = new ProjectLifecycleService(
-            session, notes, tasks, markers, editor,
-            recentFiles: new RecentFilesService(Path.Combine(_tempDir, "recent.json")));
-        Directory.CreateDirectory(_tempDir);
-        return (lifecycle, session, notes, tasks, markers, editor);
-    }
-
-    // ── 起動導線 ─────────────────────────────────────────────────────────────
+    // ── 保存・読込・回帰 (V146) ──────────────────────────────────────────
 
     [Fact]
     public void NewProject_StartsUnmodified()
@@ -578,8 +335,6 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.False(session.IsModified);
         Assert.Null(session.CurrentFilePath);
     }
-
-    // ── 保存・読込 ───────────────────────────────────────────────────────────
 
     [Fact]
     public void SaveLoad_RoundTrip_PreservesNotesTasksAndSchema()
@@ -626,7 +381,7 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.ThrowsAny<Exception>(() => new ProjectFileService().Load(path));
     }
 
-    // ── 自動保存 ─────────────────────────────────────────────────────────────
+    // ── 自動保存 ─────────────────────────────────────────────────────────
 
     [Fact]
     public void AutoSave_DoesNotSave_WhenFilePathIsNull()
@@ -663,7 +418,7 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.Contains("AutoNB", File.ReadAllText(path));
     }
 
-    // ── 最近使ったファイル ────────────────────────────────────────────────────
+    // ── 最近使ったファイル ────────────────────────────────────────────────
 
     [Fact]
     public void RecentFiles_AddedOnSave()
@@ -703,7 +458,7 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.Empty(Directory.GetFiles(_tempDir, "*.tmp"));
     }
 
-    // ── ノート日時 ───────────────────────────────────────────────────────────
+    // ── ノート日時 ───────────────────────────────────────────────────────
 
     [Fact]
     public void NoteTimestamps_SetOnCreate()
@@ -745,7 +500,7 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.NotEqual(default(DateTime), note.UpdatedAt);
     }
 
-    // ── 保存スキーマバージョン ────────────────────────────────────────────────
+    // ── 保存スキーマバージョン ────────────────────────────────────────────
 
     [Fact]
     public void SchemaVersion_Is_1_4_1()
@@ -763,7 +518,7 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.Contains("\"1.4.1\"", File.ReadAllText(path));
     }
 
-    // ── 未保存状態 ───────────────────────────────────────────────────────────
+    // ── 未保存状態 ───────────────────────────────────────────────────────
 
     [Fact]
     public void IsModified_FalseAfterSave()
@@ -776,7 +531,7 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.False(session.IsModified);
     }
 
-    // ── エクスポート ─────────────────────────────────────────────────────────
+    // ── エクスポート ─────────────────────────────────────────────────────
 
     [Fact]
     public void Export_Txt_WritesUtf8()
@@ -787,7 +542,6 @@ public class FormatSchemaRegressionTests : IDisposable
             ProjectName = "テスト",
             Notebooks = [new Notebook { Title = "NB", Notes = [new Note { Title = "日本語ノート", Content = "日本語本文" }] }]
         };
-        var svc  = new ExportService();
         var path = Path.Combine(_tempDir, "export.txt");
         new ExportService().Export(project, new ExportOptions(ExportTarget.Project, ExportFormat.Text, false, false), path);
 
@@ -830,4 +584,51 @@ public class FormatSchemaRegressionTests : IDisposable
         Assert.Contains("HtmlNote", text);
     }
 
+    // ── helpers ──────────────────────────────────────────────────────────
+
+    private V140Context CreateV140Context()
+    {
+        Directory.CreateDirectory(_tempDir);
+        var session = new ProjectSessionViewModel();
+        var notes = new NoteWorkspaceViewModel();
+        var tasks = new TaskBoardViewModel();
+        var markers = new MarkerPanelViewModel(new MarkerExtractorService());
+        var editor = new EditorStateViewModel();
+        var coordinator = new WorkspaceChangeCoordinator(notes, tasks, markers, editor);
+        var lifecycle = new ProjectLifecycleService(
+            session, notes, tasks, markers, editor,
+            recentFiles: new RecentFilesService(Path.Combine(_tempDir, "recent.json")));
+        return new V140Context(session, notes, tasks, markers, editor, coordinator, lifecycle);
+    }
+
+    private sealed record V140Context(
+        ProjectSessionViewModel Session,
+        NoteWorkspaceViewModel Notes,
+        TaskBoardViewModel Tasks,
+        MarkerPanelViewModel Markers,
+        EditorStateViewModel Editor,
+        WorkspaceChangeCoordinator Coordinator,
+        ProjectLifecycleService Lifecycle);
+
+    private (ProjectLifecycleService Lifecycle, ProjectSessionViewModel Session,
+             NoteWorkspaceViewModel Notes, TaskBoardViewModel Tasks,
+             MarkerPanelViewModel Markers, EditorStateViewModel Editor) CreateV146Context()
+    {
+        var session = new ProjectSessionViewModel();
+        var notes   = new NoteWorkspaceViewModel();
+        var tasks   = new TaskBoardViewModel();
+        var markers = new MarkerPanelViewModel(new MarkerExtractorService());
+        var editor  = new EditorStateViewModel();
+        var lifecycle = new ProjectLifecycleService(
+            session, notes, tasks, markers, editor,
+            recentFiles: new RecentFilesService(Path.Combine(_tempDir, "recent.json")));
+        Directory.CreateDirectory(_tempDir);
+        return (lifecycle, session, notes, tasks, markers, editor);
+    }
+
+    private static bool IsValidJson(string json)
+    {
+        try { JsonDocument.Parse(json); return true; }
+        catch { return false; }
+    }
 }
