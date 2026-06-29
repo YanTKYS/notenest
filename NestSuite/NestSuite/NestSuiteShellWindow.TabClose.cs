@@ -8,6 +8,8 @@ namespace NestSuite;
 
 public partial class NestSuiteShellWindow
 {
+    // タブクローズ確認・Workspace 破棄・タブ 0 件時の空タブ自動生成を扱う partial。
+
     /// <summary>
     /// v1.9.7: IdeaNest タブを閉じる前の確認と PropertyChanged 購読解除。
     /// ViewModel はタブごとの独立インスタンスのため LoadFromWorkspace リセットは不要。

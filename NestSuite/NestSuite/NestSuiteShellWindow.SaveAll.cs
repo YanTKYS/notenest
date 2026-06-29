@@ -8,6 +8,9 @@ namespace NestSuite;
 
 public partial class NestSuiteShellWindow
 {
+    // Ctrl+Shift+S による全タブ一括保存（SH-20）を扱う partial。
+    // 個別の保存処理は FileSave.cs・FileSaveStateSync.cs に委譲する。
+
     public static readonly RoutedCommand SaveAllCommand = new RoutedCommand(
         "SaveAll", typeof(NestSuiteShellWindow),
         new InputGestureCollection { new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Shift) });

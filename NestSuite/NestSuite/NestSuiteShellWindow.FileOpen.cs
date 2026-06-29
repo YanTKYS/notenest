@@ -9,6 +9,9 @@ namespace NestSuite;
 
 public partial class NestSuiteShellWindow
 {
+    // ファイルを開く処理（ダイアログ選択・重複チェック・起動時読込）を扱う partial。
+    // 読込成功後の後処理は WorkspaceFileHelper.cs の RegisterLoadedTab に委譲する。
+
     /// <summary>
     /// v1.9.7: .ideanest ファイルを開き、新しい IdeaNest タブ／Session を作成してロードする。
     /// 同じファイルが既に開かれている場合は既存タブをアクティブ化する。

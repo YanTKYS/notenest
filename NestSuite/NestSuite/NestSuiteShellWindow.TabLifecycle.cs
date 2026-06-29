@@ -9,6 +9,9 @@ namespace NestSuite;
 
 public partial class NestSuiteShellWindow
 {
+    // EnsureTabForToolId（タブランチャー起動口）・タブ生成・ViewModel 置換・PropertyChanged 購読を扱う partial。
+    // 新しい Workspace 起動は EnsureTabForToolId を通すこと。
+
     /// <summary>
     /// 指定ツール ID に対応するタブを開く。既存タブがあればそれをアクティブ化し、
     /// なければ無題タブを新規作成してアクティブ化する。

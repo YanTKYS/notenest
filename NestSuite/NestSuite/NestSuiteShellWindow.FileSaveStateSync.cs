@@ -4,6 +4,8 @@ namespace NestSuite;
 
 public partial class NestSuiteShellWindow
 {
+    // 保存成功後のタブ・Session パス更新（UpdateXxxTabPath → ApplySavedWorkspaceState）を扱う partial。
+
     /// <summary>v2.7.15: 保存成功後の IdeaNest タブ・Session 更新を共通経路へ委譲する。</summary>
     private void UpdateIdeaNestTabPath(NestSuiteWorkspaceSession session, string path) =>
         ApplySavedWorkspaceState(session, path, isModifiedAfterSave: false);
