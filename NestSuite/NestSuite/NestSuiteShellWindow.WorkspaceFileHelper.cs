@@ -5,6 +5,9 @@ namespace NestSuite;
 
 public partial class NestSuiteShellWindow
 {
+    // ファイル読込後の共通後処理（RegisterLoadedTab）・保存後の共通更新（ApplySavedWorkspaceState）・
+    // エラー表示・重複チェック・WorkspaceKind 別ファイル開くルーティングを扱う partial。
+
     /// <summary>
     /// ファイル読込成功後にタブ・セッション登録・アクティブ化・最近ファイル更新を一括処理する。
     /// ChatNest など PropertyChanged 購読が必要な場合は afterRegister に登録処理を渡す。

@@ -7,6 +7,17 @@
 
 ---
 
+## v2.12.2 — TD-38: NestSuiteShellWindow partial class の見通し整理
+
+- **TD-38: `NestSuiteShellWindow` partial class 群（19 ファイル・計 2,741 行）の責務コメントを整備し、開発者の認知負荷を低減した。**
+- **各 partial ファイル冒頭に、担当責務と注意点を示す短いコメントを追加した（FileOpen.cs / FileSaveAs.cs / FileSaveStateSync.cs / FileCommands.cs / SaveAll.cs / WorkspaceFileHelper.cs / WorkspaceTabHelper.cs / TabLifecycle.cs / TabClose.cs）。**
+- **`NestSuiteShellWindow.FileOperations.cs` の索引コメントに `SaveAll.cs` を追記した。**
+- **`docs/development/nestsuite-shell-partials.md` を新規作成。タブ管理・ファイル操作・その他の 3 グループに分けた partial 構成索引と関連テストクラス一覧を記載した。**
+- **アプリ本体の挙動変更なし。UI 変更なし。保存処理・読込処理・session 処理の変更なし。**
+- **保存形式変更なし。session 形式変更なし。schema bumpなし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+
+---
+
 ## v2.12.1 — TD-48: 保存形式回帰テストの対象別分割
 
 - **TD-48: `NestSuite.Tests/FormatSchemaRegressionTests.cs`（833 行）を保存形式の対象別に 5 ファイルへ分割し、開発者の認知負荷を低減した。**
