@@ -178,6 +178,10 @@ TD-1〜TD-37 はすべて完了済み。詳細は `docs/release-notes.md` 参照
 | TD-43 | Workspace ディレクトリ構成の非対称性の整理 | NoteNest は `NestSuite/NoteNest/` に、他 3 Workspace は `NestSuite/NestSuite/{Name}/` に配置されている。統合経緯による非対称だが、開発者が構造を把握しにくい。ディレクトリ移動または配置理由の文書化で対応する | C |
 | TD-44 | docs/integration・docs/migration の棚卸し | 統合完了済みの計画文書（5 ファイル）が現行構成と乖離したまま残っている。「完了済み計画」の注記追加またはアーカイブディレクトリへの移動で、現行ドキュメントとの混同を防ぐ | A |
 | TD-45 | IdeaNest / ChatNest 保存フローの共通化 | Shell 側の `TrySaveXxxToPath` / `SaveXxxForTabId` が Workspace ごとに同構造で重複している（TD-34 設計文書で整理済み）。ジェネリックまたはヘルパーメソッドへの段階的統合を検討する。TD-34 の設計文書を前提とする | C |
+| TD-46 | 大型 XAML の領域別分割・索引化 | `NoteNestWorkspaceView.xaml`（896 行）、`ChatNestWorkspaceView.xaml`（693 行）、`IdeaNestWorkspaceView.xaml`（564 行）が、テンプレート・レイアウト・スタイルを 1 ファイルに抱えている。主要領域の責務コメント、ResourceDictionary 分割、または XAML 構成索引を整備し、UI 変更時の探索コストと誤編集リスクを下げる | B |
+| TD-47 | NestSuiteShellTests の責務別再編 | `NestSuiteShellTests.cs` が 1,618 行に達し、Shell 型境界・タブ管理・UI smoke 補助・backlog/release-notes 確認など複数責務が混在している。テスト分類ルール（backlog ID 名のクラスを作らない）を守りつつ、Shell 機能単位の既存/新規クラスへ段階的に移す | A |
+| TD-48 | 保存形式回帰テストの対象別分割 | `FormatSchemaRegressionTests.cs` が 833 行で NoteNest / IdeaNest / ChatNest / TempNest の保存形式確認を横断的に抱えている。スキーマ固定テストとサンプル JSON 回帰テストの所在を整理し、保存形式変更時に確認すべき範囲を短時間で把握できるようにする | B |
+| TD-49 | 現行 docs と完了済み計画 docs の判別性向上 | `docs/` 配下に guide / operations / development / integration / migration / design が混在し、統合経緯の文書と現行手順の文書を初見で判別しにくい。`docs/README.md` に「現行参照」「履歴・計画」「保留」の区分を追加し、必要に応じて各文書冒頭へ状態ラベルを付与する。TD-44 と関連 | A |
 
 ---
 
