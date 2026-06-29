@@ -13,7 +13,7 @@ public partial class NestSuiteShellWindow
         if (!_sessionManager.TryGet(_selectedTab.Id, out var session) || session == null) return;
         var defaultName = _selectedTab.FilePath != null
             ? Path.GetFileName(_selectedTab.FilePath)
-            : "ideas.ideanest";
+            : DefaultIdeaNestFileName;
         var rawPath = _dialogs.SelectIdeaNestSavePath(defaultName);
         if (rawPath == null) return;
         // v1.9.7 fix: 選択中タブ以外の IdeaNest タブが同じパスを開いていないか確認する
@@ -33,7 +33,7 @@ public partial class NestSuiteShellWindow
         if (!_sessionManager.TryGet(_selectedTab.Id, out var session) || session == null) return;
         var defaultName = _selectedTab.FilePath != null
             ? Path.GetFileName(_selectedTab.FilePath)
-            : "chat.chatnest";
+            : DefaultChatNestFileName;
         var rawPath = _dialogs.SelectChatNestSavePath(defaultName);
         if (rawPath == null) return;
         var normalizedPath = NormalizeFilePath(rawPath);

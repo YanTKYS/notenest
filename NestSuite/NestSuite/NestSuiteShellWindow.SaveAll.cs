@@ -89,7 +89,7 @@ public partial class NestSuiteShellWindow
         var targetPath = tab.FilePath != null ? NormalizeFilePath(tab.FilePath) : null;
         if (targetPath == null)
         {
-            var rawPath = _dialogs.SelectIdeaNestSavePath("ideas.ideanest");
+            var rawPath = _dialogs.SelectIdeaNestSavePath(DefaultIdeaNestFileName);
             if (rawPath == null) return SaveAllTabResult.Cancelled;
             targetPath = NormalizeFilePath(rawPath);
             if (CheckAndActivateDuplicateTabForSave(NestSuiteWorkspaceKind.IdeaNest, targetPath, tab.Id))
@@ -115,7 +115,7 @@ public partial class NestSuiteShellWindow
         var targetPath = tab.FilePath != null ? NormalizeFilePath(tab.FilePath) : null;
         if (targetPath == null)
         {
-            var rawPath = _dialogs.SelectChatNestSavePath("chat.chatnest");
+            var rawPath = _dialogs.SelectChatNestSavePath(DefaultChatNestFileName);
             if (rawPath == null) return SaveAllTabResult.Cancelled;
             targetPath = NormalizeFilePath(rawPath);
             if (CheckAndActivateDuplicateTabForSave(NestSuiteWorkspaceKind.ChatNest, targetPath, tab.Id))
