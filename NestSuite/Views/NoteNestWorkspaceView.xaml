@@ -236,7 +236,7 @@
                             </DockPanel.ContextMenu>
                             <TextBlock DockPanel.Dock="Right"
                                        Text="●"
-                                       Foreground="{DynamicResource TodoBrush}"
+                                       Foreground="{DynamicResource TaskCommentIndicator}"
                                        FontSize="9"
                                        VerticalAlignment="Center"
                                        Margin="0,0,4,0"
