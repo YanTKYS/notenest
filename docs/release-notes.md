@@ -7,6 +7,19 @@
 
 ---
 
+## v2.11.7 — TD-43: Workspace ディレクトリ構成の非対称性の整理
+
+- **TD-43: NoteNest 関連ファイルを `NestSuite/NestSuite/NoteNest/` 配下へ移動し、IdeaNest / ChatNest / TempNest と同じ階層に揃えた。**
+- **移動した区分: Editor（6 ファイル）・Views（10 ファイル）・ViewModels（10 ファイル）・Models（7 ファイル）・Services（15 ファイル）。計 48 ファイル。**
+- **旧配置の `NestSuite/NoteNest/Editor/` と `NestSuite/Views/` を廃止した。**
+- **`ChatNestExportFormatter.cs` を `Services/` から `ChatNest/` 配下へ移動した（ChatNest 専用サービス）。**
+- **namespace / x:Class / ResourceDictionary Source はすべて変更なし。コード変更なし。**
+- **Shell 共通の ViewModels（MainViewModel / ProjectSessionViewModel / RecentFileViewModel / BaseViewModel / RelayCommand）・Models（AppSettings / AppTheme）・Services は `NestSuite/ViewModels/`・`Models/`・`Services/` に維持した。**
+- **アプリ本体の挙動変更なし。UI 変更なし。保存処理・session 処理変更なし。**
+- **保存形式変更なし。session 形式変更なし。schema bumpなし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+
+---
+
 ## v2.11.6 — TD-37: 開発者向けdocsの旧記述・重複記述棚卸し
 
 - **TD-37: `docs/development/nestsuite-development-guidelines.md` の重複記述・旧記述を整理した。**
