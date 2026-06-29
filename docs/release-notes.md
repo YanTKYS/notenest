@@ -7,6 +7,17 @@
 
 ---
 
+## v2.11.4 — TD-35: リリースチェックリストの常用項目整理
+
+- **TD-35: `docs/testing/nestsuite-release-checklist.md` の冒頭長文バージョン履歴を除去し、毎回確認する項目を前面に整理した。**
+- **セクション 0「リリース毎確認」を新設し、バージョン・テスト・release-notes・schema・backlog の各確認を先頭に集約した。**
+- **背景・変更履歴・既知警告を `docs/testing/nestsuite-release-checklist-history.md` へ分離した。**
+- **チェック項目追加基準を末尾に追記し、常用チェックリスト肥大化を防ぐ基準を明示した。**
+- **実装変更なし。開発者向け認知負荷軽減のための docs 整理のみ。**
+- **保存形式変更なし。session 形式変更なし。schema bumpなし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+
+---
+
 ## v2.11.3 — L16: NoteNest ノート一覧のマーカーあり表示色を水色へ変更
 
 - **L16: NoteNest ノート一覧の「マーカーあり」目印色を `TodoBrush`（オレンジ系）から `TaskCommentIndicator`（水色 #5B9BD5）へ変更した。**
