@@ -166,7 +166,7 @@ SQLite 補助インデックス方式の検討は **LT-2** で管理する（旧
 
 ## 10. 技術的負債・保守性
 
-TD-1〜TD-37、TD-43、TD-44 は完了済み（欠番）。詳細は `docs/release-notes.md` 参照。
+TD-1〜TD-37、TD-43、TD-44、TD-47、TD-49 は完了済み（欠番）。詳細は `docs/release-notes.md` 参照。
 
 | No | 項目 | 概要 | 優先度 |
 |----|------|------|--------|
@@ -177,9 +177,7 @@ TD-1〜TD-37、TD-43、TD-44 は完了済み（欠番）。詳細は `docs/relea
 | TD-42 | RelayCommand 実装の統一検討 | RelayCommand（29 行）・IdeaNestRelayCommand（33 行）・ChatNestRelayCommand（50 行）の 3 実装が存在する。モジュール独立性とのトレードオフを整理し、共通基盤への統合可否を判断する | C |
 | TD-45 | IdeaNest / ChatNest 保存フローの共通化 | Shell 側の `TrySaveXxxToPath` / `SaveXxxForTabId` が Workspace ごとに同構造で重複している（TD-34 設計文書で整理済み）。ジェネリックまたはヘルパーメソッドへの段階的統合を検討する。TD-34 の設計文書を前提とする | C |
 | TD-46 | 大型 XAML の領域別分割・索引化 | `NoteNestWorkspaceView.xaml`（896 行）、`ChatNestWorkspaceView.xaml`（693 行）、`IdeaNestWorkspaceView.xaml`（564 行）が、テンプレート・レイアウト・スタイルを 1 ファイルに抱えている。主要領域の責務コメント、ResourceDictionary 分割、または XAML 構成索引を整備し、UI 変更時の探索コストと誤編集リスクを下げる | B |
-| TD-47 | NestSuiteShellTests の責務別再編 | `NestSuiteShellTests.cs` が 1,618 行に達し、Shell 型境界・タブ管理・UI smoke 補助・backlog/release-notes 確認など複数責務が混在している。テスト分類ルール（backlog ID 名のクラスを作らない）を守りつつ、Shell 機能単位の既存/新規クラスへ段階的に移す | A |
 | TD-48 | 保存形式回帰テストの対象別分割 | `FormatSchemaRegressionTests.cs` が 833 行で NoteNest / IdeaNest / ChatNest / TempNest の保存形式確認を横断的に抱えている。スキーマ固定テストとサンプル JSON 回帰テストの所在を整理し、保存形式変更時に確認すべき範囲を短時間で把握できるようにする | B |
-| TD-49 | 現行 docs と完了済み計画 docs の判別性向上 | `docs/` 配下に guide / operations / development / integration / migration / design が混在し、統合経緯の文書と現行手順の文書を初見で判別しにくい。`docs/README.md` に「現行参照」「履歴・計画」「保留」の区分を追加し、必要に応じて各文書冒頭へ状態ラベルを付与する。TD-44 と関連 | A |
 
 ---
 
