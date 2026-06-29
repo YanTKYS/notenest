@@ -7,6 +7,21 @@
 
 ---
 
+## v2.12.1 — TD-48: 保存形式回帰テストの対象別分割
+
+- **TD-48: `NestSuite.Tests/FormatSchemaRegressionTests.cs`（833 行）を保存形式の対象別に 5 ファイルへ分割し、開発者の認知負荷を低減した。**
+- **`NoteNestFormatSchemaRegressionTests.cs` を新規作成。NoteNest (.notenest) 保存形式・round-trip・バックアップ・タイムスタンプ・エクスポート・自動保存・最近使ったファイルに関する 37 テストを移動した。**
+- **`IdeaNestFormatSchemaRegressionTests.cs` を新規作成。IdeaNest (.ideanest) 保存形式に関する 7 テストを移動した。**
+- **`ChatNestFormatSchemaRegressionTests.cs` を新規作成。ChatNest (.chatnest) 保存形式に関する 6 テストを移動した。**
+- **`TempNestFormatSchemaRegressionTests.cs` を新規作成。TempNest 保存形式に関する 3 テストを移動した。**
+- **`SessionFormatSchemaRegressionTests.cs` を新規作成。セッション形式 (session.json) に関する 4 テストを移動した。**
+- **`FormatSchemaRegressionTests.cs` を削除した。**
+- **テストの意味・仕様・アサーション内容は一切変更していない。アプリ本体コードの変更なし。テストの削除・スキップ化なし。**
+- **保存形式変更なし。session 形式変更なし。schema bumpなし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+- **`docs/backlog.md` の TD-47・TD-49 残存行（main ブランチ由来）を削除した。**
+
+---
+
 ## v2.12.0 — TD-47: NestSuiteShellTests の責務別再編
 
 - **TD-47: `NestSuite.Tests/NestSuiteShellTests.cs`（1618 行）を責務別ファイルに分割し、開発者の認知負荷を低減した。**
