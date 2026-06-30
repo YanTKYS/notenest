@@ -7,6 +7,19 @@
 
 ---
 
+## v2.12.3 — TD-39・TD-40: IdeaNest / ChatNest ViewModel 責務整理
+
+- **TD-39: `FilterViewModel` に `Apply(IEnumerable<IdeaCardViewModel>)` を追加し、`IdeaNestWorkspaceViewModel.RefreshVisible()` のフィルタリングロジックを移動した。**
+- **`RefreshVisible()` は `Filter.Apply(AllCards)` を呼び出した後、ピン留め優先ソートと SortMode による並べ替えのみを担う形に簡略化した。**
+- **`IdeaNestWorkspaceViewModel` にカード操作・状態管理・ステータス表示・タグ管理・クリップボード/ファイルインポートの区分コメントを追加した。**
+- **TD-40: `ChatNestExportFormatter` に `BuildNestSuiteGrouped` / `BuildMarkdownGrouped` を追加し、`ChatNestWorkspaceViewModel.BuildNestSuiteText()` / `BuildMarkdownText()` の実装を委譲に簡略化した。**
+- **公開 API（プロパティ名・コマンド名・メソッドシグネチャ・XAML バインディング名）は変更していない。テストコードへの影響なし。**
+- **`docs/development/workspace-viewmodel-responsibilities.md` を新規作成。両 ViewModel の責務分担・抽出の経緯・共通化しない理由を記録した。**
+- **アプリ本体の挙動変更なし。UI 変更なし。保存処理・読込処理・session 処理の変更なし。**
+- **保存形式変更なし。session 形式変更なし。schema bumpなし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+
+---
+
 ## v2.12.2 — TD-38: NestSuiteShellWindow partial class の見通し整理
 
 - **TD-38: `NestSuiteShellWindow` partial class 群（19 ファイル・計 2,741 行）の責務コメントを整備し、開発者の認知負荷を低減した。**
