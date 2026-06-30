@@ -7,6 +7,20 @@
 
 ---
 
+## v2.12.5 — TD-46: 大型 XAML の領域別分割・索引化
+
+- **TD-46: `NoteNestWorkspaceView.xaml`（896 行）・`IdeaNestWorkspaceView.xaml`（564 行）・`ChatNestWorkspaceView.xaml`（693 行）に領域コメント（`═══` 形式）を追加し、各ファイルの主要ブロックを即座に特定できるようにした。**
+- **NoteNestWorkspaceView.xaml**: `UserControl.Resources` 先頭に `<!-- ═══ Resources: DataTemplates ═══ -->` を追加した。
+- **IdeaNestWorkspaceView.xaml**: Menu / Search+Filter Toolbar / Color Filter+Sort+Size Toolbar / Status Bar / Body の 5 領域に `═══` 形式のセクションヘッダーを付与した。
+- **ChatNestWorkspaceView.xaml**: Resources ブロック先頭に `<!-- ═══ Resources: Converters / Styles / DataTemplates ═══ -->` を追加し、Main layout 開始点に `<!-- ═══ MAIN LAYOUT ═══ -->` を付与した。
+- **`docs/development/workspace-xaml-structure.md` を新規作成。** 3 Workspace XAML ファイルの領域一覧・コメント目印・概要を索引化した。
+- **ResourceDictionary 分割は実施しなかった。** StyleやDataTemplateが互いに参照し合う構造のため、誤操作リスクを避けるため領域コメントと索引ドキュメントのみで対応した。
+- **UI 変更なし。XAML binding 名変更なし。public property / command 名変更なし。ViewModel の変更なし。**
+- **アプリ本体の挙動変更なし。保存処理・読込処理・session 処理の変更なし。**
+- **保存形式変更なし。session 形式変更なし。schema bumpなし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+
+---
+
 ## v2.12.4 — TD-41: ChatNestWorkspaceView コードビハインドのロジック抽出
 
 - **TD-41: `ChatNestWorkspaceView.xaml.cs` の責務を棚卸しし、開発者向け認知負荷を低減した。**
