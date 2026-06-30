@@ -166,11 +166,10 @@ SQLite 補助インデックス方式の検討は **LT-2** で管理する（旧
 
 ## 10. 技術的負債・保守性
 
-TD-1〜TD-40、TD-43、TD-44、TD-47、TD-48、TD-49 は完了済み（欠番）。詳細は `docs/release-notes.md` 参照。
+TD-1〜TD-41、TD-43、TD-44、TD-47、TD-48、TD-49 は完了済み（欠番）。詳細は `docs/release-notes.md` 参照。
 
 | No | 項目 | 概要 | 優先度 |
 |----|------|------|--------|
-| TD-41 | ChatNestWorkspaceView コードビハインドのロジック抽出 | 373 行のコードビハインドにドラッグ＆ドロップ（約 60 行）・エクスポートダイアログ・検索 UI のビジネスロジックが含まれる。Behavior / Service への抽出を検討する | B |
 | TD-42 | RelayCommand 実装の統一検討 | RelayCommand（29 行）・IdeaNestRelayCommand（33 行）・ChatNestRelayCommand（50 行）の 3 実装が存在する。モジュール独立性とのトレードオフを整理し、共通基盤への統合可否を判断する | C |
 | TD-45 | IdeaNest / ChatNest 保存フローの共通化 | Shell 側の `TrySaveXxxToPath` / `SaveXxxForTabId` が Workspace ごとに同構造で重複している（TD-34 設計文書で整理済み）。ジェネリックまたはヘルパーメソッドへの段階的統合を検討する。TD-34 の設計文書を前提とする | C |
 | TD-46 | 大型 XAML の領域別分割・索引化 | `NoteNestWorkspaceView.xaml`（896 行）、`ChatNestWorkspaceView.xaml`（693 行）、`IdeaNestWorkspaceView.xaml`（564 行）が、テンプレート・レイアウト・スタイルを 1 ファイルに抱えている。主要領域の責務コメント、ResourceDictionary 分割、または XAML 構成索引を整備し、UI 変更時の探索コストと誤編集リスクを下げる | B |

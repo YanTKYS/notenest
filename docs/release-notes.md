@@ -7,6 +7,19 @@
 
 ---
 
+## v2.12.4 — TD-41: ChatNestWorkspaceView コードビハインドのロジック抽出
+
+- **TD-41: `ChatNestWorkspaceView.xaml.cs` の責務を棚卸しし、開発者向け認知負荷を低減した。**
+- **エクスポートダイアログの選択結果から出力形式を判断する処理を private static helper `BuildExportContent(int filterIndex, IEnumerable<Message>)` として抽出し、`FilterIndex == 2` (Markdown) の暗黙マッピングを明示した。**
+- **初期化・DataContext 管理セクションのコメントを追加し、既存の CH-5 / CH-9 / CH-13 / 入力欄セクションと並んだ一貫した構造にした。**
+- **`docs/development/workspace-view-responsibilities.md` を新規作成。View に残す処理・外へ出せる処理・今回あえて抽出しなかった処理・大きな Behavior / Service を作らない理由を記録した。**
+- **大きな Behavior / Service / Coordinator は追加していない。ドラッグ＆ドロップ・エクスポート・ダイアログの汎用基盤は作成していない。**
+- **UI 変更なし。XAML binding 名変更なし。public property / command 名変更なし。ChatNestWorkspaceViewModel の大きな変更なし。**
+- **アプリ本体の挙動変更なし。保存処理・読込処理・session 処理の変更なし。**
+- **保存形式変更なし。session 形式変更なし。schema bumpなし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+
+---
+
 ## v2.12.3 — TD-39・TD-40: IdeaNest / ChatNest ViewModel 責務整理
 
 - **TD-39: `FilterViewModel` に `Apply(IEnumerable<IdeaCardViewModel>)` を追加し、`IdeaNestWorkspaceViewModel.RefreshVisible()` のフィルタリングロジックを移動した。**
