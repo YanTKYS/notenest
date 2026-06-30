@@ -6,6 +6,7 @@
              TextElement.Foreground="{DynamicResource AppFg}">
 
     <UserControl.Resources>
+        <!-- ═══ Resources: DataTemplates ═══ -->
         <DataTemplate x:Key="TaskItemTemplate">
             <Border Padding="10,6"
                     BorderBrush="{DynamicResource ItemBorderBrush}"

@@ -11,7 +11,7 @@
     </UserControl.InputBindings>
     <DockPanel AutomationProperties.AutomationId="IdeaNest.WorkspaceRoot"
                AutomationProperties.Name="IdeaNest.WorkspaceRoot">
-        <!-- Menu (kept minimal: no border below) -->
+        <!-- ═══ MENU ═══ -->
         <Menu x:Name="WorkspaceMenu" DockPanel.Dock="Top" Background="Transparent" Padding="4,2"
               Visibility="{Binding ShowMenu, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IdeaBoolToVis}}">
             <MenuItem Header="ファイル(_F)">
@@ -63,7 +63,7 @@
             </MenuItem>
         </Menu>
 
-        <!-- Search & filter bar (compact) -->
+        <!-- ═══ SEARCH / FILTER TOOLBAR ═══ -->
         <Border DockPanel.Dock="Top" Background="Transparent" Padding="16,8,16,6">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -141,7 +141,7 @@
             </Grid>
         </Border>
 
-        <!-- Color filter strip (compact) + card size toggle -->
+        <!-- ═══ COLOR FILTER / SORT / SIZE TOOLBAR ═══ -->
         <Border DockPanel.Dock="Top" Background="Transparent" Padding="16,0,16,6">
             <DockPanel>
                 <!-- Sort + card size toggle (right side) -->
@@ -264,7 +264,7 @@
             </DockPanel>
         </Border>
 
-        <!-- Status bar -->
+        <!-- ═══ STATUS BAR ═══ -->
         <Border DockPanel.Dock="Bottom" Background="Transparent" Padding="16,4">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -281,7 +281,7 @@
             </Grid>
         </Border>
 
-        <!-- Body: collapsible tag list + cards -->
+        <!-- ═══ BODY: TAG PANEL + CARD AREA ═══ -->
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
