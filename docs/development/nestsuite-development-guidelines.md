@@ -412,7 +412,29 @@ NestSuite vX.Y.Z として、以下を実装してください。
 
 ---
 
-## 15. プロンプト標準契約（凝縮版）
+## 15. RelayCommand 実装方針（v2.12.6 TD-42 追加）
+
+NestSuite 内に 3 種類の RelayCommand 実装が存在する。意図的に分けており、統一しない。
+
+| 実装クラス | ネームスペース | 用途 | CanExecuteChanged の仕組み |
+|-----------|--------------|------|--------------------------|
+| `RelayCommand` | `NestSuite.ViewModels` | Shell / NoteNest / TempNest | `CommandManager.RequerySuggested` に連動 |
+| `IdeaNestRelayCommand` | `NestSuite.IdeaNest.Commands` | IdeaNest Workspace | `CommandManager.RequerySuggested` に連動。`RaiseCanExecuteChanged()` は `CommandManager.InvalidateRequerySuggested()` を呼ぶラッパー |
+| `ChatNestRelayCommand` | `NestSuite.ChatNest` | ChatNest Workspace | 手動 event（CommandManager 非使用）。ViewModel が明示的に `RaiseCanExecuteChanged()` を呼び出す |
+
+**統一しない理由:**
+- `ChatNestRelayCommand` は手動 event 方式。CommandManager の自動再クエリを使わず、ChatNest ViewModel が状態変化のタイミングで明示的に `RaiseCanExecuteChanged()` を呼ぶ。これは意図的な設計選択であり変えない。
+- `IdeaNestRelayCommand` を共通 `RelayCommand` に統合すると、IdeaNest が `NestSuite.ViewModels` 名前空間に依存し、Workspace 独立性（§12 参照）が損なわれる。
+
+**新規コマンド追加時の判断基準:**
+- IdeaNest Workspace に Command を追加する場合は `IdeaNestRelayCommand` を使う
+- ChatNest Workspace に Command を追加する場合は `ChatNestRelayCommand` を使う
+- Shell / NoteNest / TempNest に Command を追加する場合は `RelayCommand` を使う
+- 新しい汎用 Command 基底クラス・Command Registry・Command Factory は作成しない
+
+---
+
+## 16. プロンプト標準契約（凝縮版）
 
 > 追加: v2.10.8
 > 目的: 今後の実装プロンプトをさらに短くするため、毎回繰り返す共通ルールを箇条書き形式でまとめる。
@@ -439,7 +461,7 @@ NestSuite vX.Y.Z として、以下を実装してください。
 
 ---
 
-## 16. 今後の通常プロンプト形式
+## 17. 今後の通常プロンプト形式
 
 > 追加: v2.10.8
 > 目的: 各プロンプトで「今回やること」に集中できるよう、最小構成の短縮テンプレートを提供する。

@@ -166,12 +166,11 @@ SQLite 補助インデックス方式の検討は **LT-2** で管理する（旧
 
 ## 10. 技術的負債・保守性
 
-TD-1〜TD-41、TD-43、TD-44、TD-46〜TD-49 は完了済み（欠番）。詳細は `docs/release-notes.md` 参照。
+TD-1〜TD-44、TD-46〜TD-49 は完了済み（欠番）。詳細は `docs/release-notes.md` 参照。
 
 | No | 項目 | 概要 | 優先度 |
 |----|------|------|--------|
-| TD-42 | RelayCommand 実装の統一検討 | RelayCommand（29 行）・IdeaNestRelayCommand（33 行）・ChatNestRelayCommand（50 行）の 3 実装が存在する。モジュール独立性とのトレードオフを整理し、共通基盤への統合可否を判断する | C |
-| TD-45 | IdeaNest / ChatNest 保存フローの共通化 | Shell 側の `TrySaveXxxToPath` / `SaveXxxForTabId` が Workspace ごとに同構造で重複している（TD-34 設計文書で整理済み）。ジェネリックまたはヘルパーメソッドへの段階的統合を検討する。TD-34 の設計文書を前提とする | C |
+| TD-45 | IdeaNest / ChatNest 保存フローの共通化 | Shell 側の `TrySaveXxxToPath` / `SaveXxxForTabId` が Workspace ごとに同構造で重複している（TD-34 設計文書で整理済み）。ジェネリックまたはヘルパーメソッドへの段階的統合を検討する。TD-34 の設計文書を前提とする。**保留（v2.12.6）**: 保存クリティカルパスのため現時点では実施しない。実装するなら per-kind descriptor / TrySave delegate などの抽象設計が必要で、保存形式・未保存状態・session・最近ファイルへの波及リスクを先に整理すること。 | C |
 
 ---
 

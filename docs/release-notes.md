@@ -7,6 +7,20 @@
 
 ---
 
+## v2.12.6 — TD-42: RelayCommand 実装の統一検討
+
+- **TD-42: `RelayCommand`・`IdeaNestRelayCommand`・`ChatNestRelayCommand` の 3 実装を棚卸しし、統一可否を判断した。**
+- **統一しない方針を採用した。** 各実装は意図的に分かれており、統合すると Workspace 独立性または設計意図を損なうため。
+- **`ChatNestRelayCommand` は手動 event 方式（CommandManager 非使用）。** ChatNest ViewModel が状態変化のタイミングで明示的に `RaiseCanExecuteChanged()` を呼ぶ設計であり、CommandManager 連動型と統合しない。
+- **`IdeaNestRelayCommand` を共通 `RelayCommand` に統合しない。** IdeaNest が `NestSuite.ViewModels` 名前空間に依存することになり、Workspace 独立性（§12 方針）が損なわれる。
+- **`docs/development/nestsuite-development-guidelines.md` に §15「RelayCommand 実装方針」を追加した。** 3 実装の用途区分・統一しない理由・新規コマンド追加時の判断基準を明記した。
+- **TD-45（IdeaNest / ChatNest 保存フロー共通化）は保留扱いとした。** 保存クリティカルパスに触れるため現時点では実施しない。`docs/backlog.md` の TD-45 概要に保留理由を追記した。
+- **public command 名変更なし。XAML binding 名変更なし。ViewModel の変更なし。UI 変更なし。**
+- **アプリ本体の挙動変更なし。保存処理・読込処理・session 処理の変更なし。**
+- **保存形式変更なし。session 形式変更なし。schema bumpなし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+
+---
+
 ## v2.12.5 — TD-46: 大型 XAML の領域別分割・索引化
 
 - **TD-46: `NoteNestWorkspaceView.xaml`（896 行）・`IdeaNestWorkspaceView.xaml`（564 行）・`ChatNestWorkspaceView.xaml`（693 行）に領域コメント（`═══` 形式）を追加し、各ファイルの主要ブロックを即座に特定できるようにした。**
