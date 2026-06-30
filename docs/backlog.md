@@ -166,12 +166,10 @@ SQLite 補助インデックス方式の検討は **LT-2** で管理する（旧
 
 ## 10. 技術的負債・保守性
 
-TD-1〜TD-38、TD-43、TD-44、TD-47、TD-48、TD-49 は完了済み（欠番）。詳細は `docs/release-notes.md` 参照。
+TD-1〜TD-40、TD-43、TD-44、TD-47、TD-48、TD-49 は完了済み（欠番）。詳細は `docs/release-notes.md` 参照。
 
 | No | 項目 | 概要 | 優先度 |
 |----|------|------|--------|
-| TD-39 | IdeaNestWorkspaceViewModel の責務分割 | 548 行の単一クラスにコマンド登録・フィルタ・ダイアログ・状態管理が混在している。FilterService / DialogOrchestrator 等への段階的な抽出を検討する | B |
-| TD-40 | ChatNestWorkspaceViewModel の責務分割 | 534 行の単一クラスに検索状態・エクスポート・メッセージ管理・UI 状態が混在している。TD-39 と同方針での段階的分割を検討する | B |
 | TD-41 | ChatNestWorkspaceView コードビハインドのロジック抽出 | 373 行のコードビハインドにドラッグ＆ドロップ（約 60 行）・エクスポートダイアログ・検索 UI のビジネスロジックが含まれる。Behavior / Service への抽出を検討する | B |
 | TD-42 | RelayCommand 実装の統一検討 | RelayCommand（29 行）・IdeaNestRelayCommand（33 行）・ChatNestRelayCommand（50 行）の 3 実装が存在する。モジュール独立性とのトレードオフを整理し、共通基盤への統合可否を判断する | C |
 | TD-45 | IdeaNest / ChatNest 保存フローの共通化 | Shell 側の `TrySaveXxxToPath` / `SaveXxxForTabId` が Workspace ごとに同構造で重複している（TD-34 設計文書で整理済み）。ジェネリックまたはヘルパーメソッドへの段階的統合を検討する。TD-34 の設計文書を前提とする | C |

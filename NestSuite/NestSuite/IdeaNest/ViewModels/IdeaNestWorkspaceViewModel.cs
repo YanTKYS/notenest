@@ -266,6 +266,8 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase, IDisposable
         OnPropertyChanged(nameof(EmptyStateMessage));
     }
 
+    // ── カード操作 ────────────────────────────────────────────────────────────
+
     private void AddIdea()
     {
         var dlg = new PreviewIdeaWindow(
@@ -331,6 +333,8 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase, IDisposable
         if (card == null) return;
         _cardOps.ToggleArchive(card);
     }
+
+    // ── 状態管理・設定同期 ────────────────────────────────────────────────────
 
     public void MarkDirty()
     {
@@ -423,6 +427,8 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase, IDisposable
         dlg.ShowDialog();
     }
 
+    // ── ステータス表示 ────────────────────────────────────────────────────────
+
     private void ShowStatus(string message)
     {
         StatusMessage = message;
@@ -445,9 +451,13 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase, IDisposable
         _statusClearTimer?.Stop();
     }
 
+    // ── タグ管理（TagManagementWindow 用） ────────────────────────────────────
+
     public void RenameTag(string oldName, string newName) => _tagMgmt.RenameTag(oldName, newName);
 
     public void DeleteTag(string tagName) => _tagMgmt.DeleteTag(tagName);
+
+    // ── クリップボード・ファイルインポート ────────────────────────────────────
 
     public bool PasteAsNewCard()
     {
@@ -494,36 +504,7 @@ public class IdeaNestWorkspaceViewModel : IdeaNestViewModelBase, IDisposable
 
     private void RefreshVisible()
     {
-        var query = (SearchText ?? string.Empty).Trim();
-        var tag = (SelectedTag ?? string.Empty).Trim();
-        var color = (SelectedColor ?? string.Empty).Trim();
-
-        IEnumerable<IdeaCardViewModel> items = AllCards;
-
-        if (!ShowArchived)
-        {
-            items = items.Where(c => !c.IsArchived);
-        }
-
-        if (!string.IsNullOrEmpty(tag))
-        {
-            items = items.Where(c => c.Tags.Any(t => string.Equals(t, tag, StringComparison.Ordinal)));
-        }
-
-        if (!string.IsNullOrEmpty(color))
-        {
-            items = items.Where(c => string.Equals(
-                string.IsNullOrWhiteSpace(c.Color) ? "yellow" : c.Color,
-                color, StringComparison.Ordinal));
-        }
-
-        if (!string.IsNullOrEmpty(query))
-        {
-            items = items.Where(c =>
-                (c.Title ?? string.Empty).IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0
-                || (c.Body ?? string.Empty).IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0
-                || c.Tags.Any(t => t.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0));
-        }
+        var items = Filter.Apply(AllCards);
 
         var pinned = items.Where(c => c.IsPinned)
                           .OrderByDescending(c => c.UpdatedAt);

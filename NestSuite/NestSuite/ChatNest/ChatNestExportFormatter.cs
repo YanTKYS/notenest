@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NestSuite.ChatNest;
 
@@ -71,5 +73,62 @@ public static class ChatNestExportFormatter
             first = false;
         }
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// 会話全体を NestSuite 転記形式に変換する。
+    /// 連続する同一発言者のメッセージを 1 ブロックに集約し、「## 発言者」見出しで区切る。
+    /// </summary>
+    public static string BuildNestSuiteGrouped(IEnumerable<Message> messages)
+    {
+        var list = messages.ToList();
+        if (list.Count == 0) return string.Empty;
+        var sb = new StringBuilder();
+        sb.AppendLine($"[NOTE] ChatNestからの転記: {DateTime.Now:yyyy-MM-dd HH:mm}");
+        int i = 0;
+        while (i < list.Count)
+        {
+            var speaker = list[i].Speaker;
+            var groupTexts = new List<string>();
+            while (i < list.Count && list[i].Speaker == speaker)
+            {
+                groupTexts.Add(list[i].Text);
+                i++;
+            }
+            sb.AppendLine();
+            sb.AppendLine($"## {speaker}");
+            sb.AppendLine();
+            sb.Append(string.Join(Environment.NewLine, groupTexts));
+            sb.AppendLine();
+        }
+        return sb.ToString().TrimEnd();
+    }
+
+    /// <summary>
+    /// 会話全体を Markdown 形式（同一発言者グループ集約）に変換する。
+    /// 連続する同一発言者のメッセージを 1 ブロックに集約し、「## 発言者」見出しで区切る。
+    /// </summary>
+    public static string BuildMarkdownGrouped(IEnumerable<Message> messages)
+    {
+        var list = messages.ToList();
+        if (list.Count == 0) return string.Empty;
+        var sb = new StringBuilder();
+        sb.AppendLine("# ChatNest Export");
+        int i = 0;
+        while (i < list.Count)
+        {
+            var speaker = list[i].Speaker;
+            var groupTexts = new List<string>();
+            while (i < list.Count && list[i].Speaker == speaker)
+            {
+                groupTexts.Add(list[i].Text);
+                i++;
+            }
+            sb.AppendLine();
+            sb.AppendLine($"## {speaker}");
+            sb.Append(string.Join(Environment.NewLine, groupTexts));
+            sb.AppendLine();
+        }
+        return sb.ToString().TrimEnd();
     }
 }

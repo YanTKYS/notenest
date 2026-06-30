@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using NestSuite.IdeaNest.Models;
 
 namespace NestSuite.IdeaNest.ViewModels;
@@ -84,6 +86,40 @@ public class FilterViewModel : IdeaNestViewModelBase
         !string.IsNullOrEmpty(_searchText.Trim()) ||
         !string.IsNullOrEmpty(_selectedTag.Trim()) ||
         !string.IsNullOrEmpty(_selectedColor.Trim());
+
+    // ── Filter application ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// フィルタ条件（アーカイブ・タグ・色・検索語）をカード一覧に適用し、絞り込み結果を返す。
+    /// 並べ替えは含まない。
+    /// </summary>
+    public IEnumerable<IdeaCardViewModel> Apply(IEnumerable<IdeaCardViewModel> cards)
+    {
+        var query = (_searchText ?? string.Empty).Trim();
+        var tag   = (_selectedTag ?? string.Empty).Trim();
+        var color = (_selectedColor ?? string.Empty).Trim();
+
+        IEnumerable<IdeaCardViewModel> items = cards;
+
+        if (!_showArchived)
+            items = items.Where(c => !c.IsArchived);
+
+        if (!string.IsNullOrEmpty(tag))
+            items = items.Where(c => c.Tags.Any(t => string.Equals(t, tag, StringComparison.Ordinal)));
+
+        if (!string.IsNullOrEmpty(color))
+            items = items.Where(c => string.Equals(
+                string.IsNullOrWhiteSpace(c.Color) ? "yellow" : c.Color,
+                color, StringComparison.Ordinal));
+
+        if (!string.IsNullOrEmpty(query))
+            items = items.Where(c =>
+                (c.Title ?? string.Empty).IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0
+                || (c.Body ?? string.Empty).IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0
+                || c.Tags.Any(t => t.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0));
+
+        return items;
+    }
 
     // ── Bulk operations ───────────────────────────────────────────────────────
 
