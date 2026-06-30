@@ -497,7 +497,7 @@ ToolTip="すべて保存 (Ctrl+Shift+S)"
 - 外部依存を追加しない → §5
 - release workflowを変更しない
 - net48_testを再開しない
-- ErrorLogはErrorのみ（Info/Warning 不可）
+- ErrorLog方針はErrorのみ（Info/Warning 不可）
 - local dotnet build/test は optional
 - GitHub Actions CI green / UI Smoke green を完了条件とする
 
