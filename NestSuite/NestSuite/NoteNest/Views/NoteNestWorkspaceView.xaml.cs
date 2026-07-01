@@ -84,6 +84,7 @@ public partial class NoteNestWorkspaceView : UserControl
         RightPaneColumn.Width = new GridLength(0);
         _isRightPaneCollapsed = true;
         RightPaneExpandButton.Content = "»";
+        RightPaneExpandButton.ToolTip = "右ペインを表示";
     }
 
     public void ExpandRightPane()
@@ -93,6 +94,7 @@ public partial class NoteNestWorkspaceView : UserControl
         RightPaneColumn.Width = new GridLength(_savedRightPaneWidth);
         _isRightPaneCollapsed = false;
         RightPaneExpandButton.Content = "«";
+        RightPaneExpandButton.ToolTip = "右ペインを閉じる";
     }
 
     public void NavigateToLine(int lineNumber)

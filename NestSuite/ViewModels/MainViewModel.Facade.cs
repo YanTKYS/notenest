@@ -65,6 +65,8 @@ public partial class MainViewModel
     public bool HasSelectedNote => _editor.SelectedNote != null;
     public bool HasAnyNotes => _notes.AllNotes.Any();
     public string? CurrentNoteTitle => _editor.SelectedNote?.Title;
+    public string? CurrentNotebookName =>
+        _editor.SelectedNote == null ? null : FindNotebookOf(_editor.SelectedNote)?.Title;
     public ObservableCollection<RecentFileViewModel> RecentFiles => _session.RecentFiles;
     public bool HasRecentFiles => _session.HasRecentFiles;
     public string? CurrentFilePath => _session.CurrentFilePath;
