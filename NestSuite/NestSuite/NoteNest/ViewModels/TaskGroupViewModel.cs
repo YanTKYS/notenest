@@ -45,6 +45,9 @@ public class TaskGroupViewModel : BaseViewModel
     public string CompletedCountText => $"完了済み（{Tasks.Count(t => t.IsCompleted)}）";
     public string CountText => $"{Tasks.Count(t => !t.IsCompleted)}/{Tasks.Count}";
 
+    /// <summary>v2.13.4 M16: 既存タスクがないグループを右ペインに表示しないための判定。</summary>
+    public bool HasTasks => Tasks.Count > 0;
+
     public void AddTask(TaskViewModel task)
     {
         task.PropertyChanged += Task_PropertyChanged;
@@ -63,7 +66,11 @@ public class TaskGroupViewModel : BaseViewModel
         return Tasks.Remove(task);
     }
 
-    public void RefreshCount() => OnPropertyChanged(nameof(CountText));
+    public void RefreshCount()
+    {
+        OnPropertyChanged(nameof(CountText));
+        OnPropertyChanged(nameof(HasTasks));
+    }
 
     private void RefreshTaskViews()
     {

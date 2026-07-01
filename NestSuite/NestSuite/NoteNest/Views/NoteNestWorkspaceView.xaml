@@ -499,36 +499,42 @@
                 <RowDefinition Height="2*" MinHeight="100"/>
             </Grid.RowDefinitions>
 
-            <!-- ── Tasks（補助：縮退方針 TD-52 第2段階）── -->
+            <!-- ── Tasks（互換表示：縮退方針 TD-52/M16 第3段階。既存タスクがある場合のみ表示し、
+                 新規作成導線は通常UIから外す。作業ポイントは本文マーカーへ寄せる）── -->
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Tasks header -->
+                <!-- タスクが1件もない場合: 空欄を大きく見せず、マーカー利用への一言のみ表示 -->
+                <TextBlock Grid.Row="0" Grid.RowSpan="2"
+                           Text="作業ポイントは本文の TODO / FIXME で管理できます。"
+                           Foreground="{DynamicResource FaintFg}" FontSize="11"
+                           TextWrapping="Wrap"
+                           Margin="12,10"
+                           Visibility="{Binding HasNoTasks, Converter={StaticResource BoolToVis}}"/>
+
+                <!-- Tasks header（互換表示。新規作成ボタンは表示しない） -->
                 <Border Grid.Row="0"
                         BorderBrush="{DynamicResource PaneBorder}" BorderThickness="0,0,0,1"
-                        Padding="12,9">
-                    <DockPanel>
-                        <Button DockPanel.Dock="Right" Content="+" Width="22" Height="22"
-                                Style="{StaticResource IconButton}"
-                                Click="AddTaskMenu_Click" ToolTip="タスクを追加"/>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="タスク" FontWeight="Bold" FontSize="13"/>
-                            <TextBlock Text="{Binding TotalIncompleteTaskCountText}"
-                                       Foreground="{DynamicResource FaintFg}" FontSize="11"
-                                       VerticalAlignment="Center" Margin="4,0,0,0"/>
-                        </StackPanel>
-                    </DockPanel>
+                        Padding="12,9"
+                        Visibility="{Binding HasAnyTasks, Converter={StaticResource BoolToVis}}">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="タスク（互換）" FontWeight="Bold" FontSize="13"/>
+                        <TextBlock Text="{Binding TotalIncompleteTaskCountText}"
+                                   Foreground="{DynamicResource FaintFg}" FontSize="11"
+                                   VerticalAlignment="Center" Margin="4,0,0,0"/>
+                    </StackPanel>
                 </Border>
 
-                <!-- Task groups -->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <!-- Task groups（既存タスクがあるグループのみ表示。新規作成ボタンは表示しない） -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                              Visibility="{Binding HasAnyTasks, Converter={StaticResource BoolToVis}}">
                     <ItemsControl ItemsSource="{Binding TaskGroups}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel>
+                                <StackPanel Visibility="{Binding HasTasks, Converter={StaticResource BoolToVis}}">
 
                                     <!-- Group header -->
                                     <Border Padding="10,6,10,6"
@@ -550,14 +556,6 @@
                                                        Text="{Binding CountText}"
                                                        Foreground="{DynamicResource FaintFg}" FontSize="11"
                                                        VerticalAlignment="Center" Margin="4,0,0,0"/>
-                                            <Button DockPanel.Dock="Right"
-                                                    Content="+" Width="18" Height="18"
-                                                    FontSize="12" Padding="0"
-                                                    Style="{StaticResource IconButton}"
-                                                    Command="{Binding DataContext.AddTaskCommand,
-                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding Key}"
-                                                    ToolTip="このグループにタスクを追加"/>
                                             <TextBlock Text="{Binding Title}"
                                                        FontWeight="SemiBold" FontSize="12"
                                                        VerticalAlignment="Center"/>

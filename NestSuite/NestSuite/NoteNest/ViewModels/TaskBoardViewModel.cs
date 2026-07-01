@@ -21,6 +21,9 @@ public sealed class TaskBoardViewModel
     public event EventHandler? Loaded;
     public ObservableCollection<TaskGroupViewModel> TaskGroups { get; }
 
+    /// <summary>v2.13.4 M16: タスク欄を互換表示するかどうかの判定。既存タスクが1件もない場合は false。</summary>
+    public bool HasAnyTasks => TaskGroups.Any(g => g.Tasks.Count > 0);
+
     public string TotalIncompleteTaskCountText
     {
         get
