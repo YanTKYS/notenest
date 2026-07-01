@@ -86,10 +86,14 @@ public class MainViewModelFacadeTests
     }
 
     // v2.13.4 M16: タスク欄の互換表示切替（HasAnyTasks/HasNoTasks）が MainViewModel まで届くことを確認する。
+    // 新規 MainViewModel はサンプルプロジェクト（既存タスクあり）を読み込むため、
+    // まず既存タスクをすべて削除して HasAnyTasks == false の状態を作ってから検証する。
     [Fact]
     public void AddingTaskUpdatesHasAnyTasksAndHasNoTasksOnMainViewModel()
     {
         var main = new MainViewModel();
+        foreach (var task in main.TaskGroups.SelectMany(g => g.Tasks).ToList())
+            main.Tasks.DeleteTask(task);
         Assert.False(main.HasAnyTasks);
         Assert.True(main.HasNoTasks);
         var changed = new List<string?>();
