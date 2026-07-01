@@ -85,6 +85,24 @@ public class MainViewModelFacadeTests
         Assert.Equal("新名", main.CurrentNotebookName);
     }
 
+    // v2.13.4 M16: タスク欄の互換表示切替（HasAnyTasks/HasNoTasks）が MainViewModel まで届くことを確認する。
+    [Fact]
+    public void AddingTaskUpdatesHasAnyTasksAndHasNoTasksOnMainViewModel()
+    {
+        var main = new MainViewModel();
+        Assert.False(main.HasAnyTasks);
+        Assert.True(main.HasNoTasks);
+        var changed = new List<string?>();
+        main.PropertyChanged += (_, args) => changed.Add(args.PropertyName);
+
+        main.Tasks.AddTask("today", "Task");
+
+        Assert.Contains(nameof(MainViewModel.HasAnyTasks), changed);
+        Assert.Contains(nameof(MainViewModel.HasNoTasks), changed);
+        Assert.True(main.HasAnyTasks);
+        Assert.False(main.HasNoTasks);
+    }
+
     [Fact]
     public void NoteChangesOnlyPublishActiveFacadePropertyNames()
     {

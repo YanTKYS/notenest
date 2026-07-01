@@ -58,6 +58,8 @@ public partial class MainViewModel
     public ObservableCollection<NotebookViewModel> Notebooks => _notes.Notebooks;
     public ObservableCollection<TaskGroupViewModel> TaskGroups => _tasks.TaskGroups;
     public string TotalIncompleteTaskCountText => _tasks.TotalIncompleteTaskCountText;
+    public bool HasAnyTasks => _tasks.HasAnyTasks;
+    public bool HasNoTasks => !_tasks.HasAnyTasks;
     public ObservableCollection<MarkerViewModel> Markers => _markers.Markers;
     public int MarkerCount => _markers.MarkerCount;
     public IEnumerable<NoteViewModel> AllNotes => _notes.AllNotes;

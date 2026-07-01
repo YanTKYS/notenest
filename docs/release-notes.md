@@ -7,6 +7,22 @@
 
 ---
 
+## v2.13.4 — M16: NoteNest タスク管理UIの互換表示化
+
+- **M16: v2.13.0 / TD-52・v2.13.1 / L18 に続くタスク縮退の第3段階として、NoteNest 右ペインのタスク管理UIを既存データ互換の表示へ縮退した。**
+- **タスク新規作成導線を通常UIから外した。** 右ペイン上部の「タスクを追加」ボタン（`AddTaskMenu_Click`）と各グループの「+」ボタン（`AddTaskCommand`）を XAML から削除した。ViewModel 側の `AddTaskCommand` / コマンド実装自体は削除していない。
+- **既存タスクがない場合、タスク欄を大きく表示しないようにした。** `TaskBoardViewModel.HasAnyTasks` / `MainViewModel.HasAnyTasks` / `HasNoTasks` を新設し、タスクが1件もない場合は「作業ポイントは本文の TODO / FIXME で管理できます。」の一言のみを表示する。
+- **既存タスクが1件でもある場合は「タスク（互換）」として引き続き確認できるようにした。** `TaskGroupViewModel.HasTasks` を新設し、タスクが存在しないグループ（今日／今週／バックログ）は右ペインに表示しないようにした。
+- **既存タスクの完了切替・コメント編集・関連ノート付け替え・削除・移動・並び替えは変更していない。** タスクデータの読込・保存、右ペインでの参照・操作は従来どおり動作する。
+- **`WorkspaceChangeCoordinator` の Publish 対象に `HasAnyTasks` / `HasNoTasks` を追加した。** タスク追加・削除時にこれらの facade プロパティの変更が MainViewModel まで正しく通知されるようにした（TD-53 で整理した Coordinator パターンに沿って実装）。
+- **`docs/development/notenest-task-reduction-policy.md` の第3段階を「完了 v2.13.4」に更新し、実装内容を追記した。**
+- **回帰テストを追加した。** `TaskGroupViewModelTests`（`HasTasks`）、`TaskBoardViewModelTests`（`HasAnyTasks`）、`WorkspaceChangeCoordinatorTests`（Publish 内容）、`MainViewModelFacadeTests`（MainViewModel までの通知）。
+- **右ペインの主役はマーカー / リンクのまま変更していない（L18 を維持）。**
+- **タスクデータ構造・マーカー抽出ロジック・ノート間リンクロジック・ノート本文エディタ・保存処理・読込処理・session処理は変更していない。**
+- **保存形式変更なし。session 形式変更なし。schema bumpなし。NoteNest schema `1.4.1` 維持。外部依存追加なし。**
+
+---
+
 ## v2.13.3 — SH-30: Shell ステータスバーの未保存表示・ファイル表示同期修正
 
 - **SH-30: NestSuite Shell のステータスバーが、アクティブでないタブの状態を表示し続ける不具合を修正した。**
