@@ -382,12 +382,28 @@
                               ItemsSource="{x:Static vm:MainViewModel.EditorFontSizeChoices}"
                               SelectedItem="{Binding EditorFontSize, Mode=TwoWay}"
                               ToolTip="フォントサイズ"/>
-                    <TextBlock Text="{Binding EditorTitle}"
-                               Foreground="{DynamicResource AppFg}"
-                               ToolTip="{Binding CurrentNoteTimestampSummary}"
-                               FontSize="14" FontWeight="SemiBold"
-                               VerticalAlignment="Center"
-                               TextTrimming="CharacterEllipsis"/>
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MaxWidth="140"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding CurrentNotebookName}"
+                                   Foreground="{DynamicResource FaintFg}"
+                                   ToolTip="{Binding CurrentNotebookName}"
+                                   FontSize="11.5"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"
+                                   TextTrimming="CharacterEllipsis"
+                                   Visibility="{Binding HasSelectedNote, Converter={StaticResource BoolToVis}}"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EditorTitle}"
+                                   Foreground="{DynamicResource AppFg}"
+                                   ToolTip="{Binding CurrentNoteTimestampSummary}"
+                                   FontSize="14" FontWeight="SemiBold"
+                                   VerticalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"/>
+                    </Grid>
                 </DockPanel>
             </Border>
 

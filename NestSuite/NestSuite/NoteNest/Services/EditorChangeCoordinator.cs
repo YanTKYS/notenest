@@ -55,7 +55,7 @@ public sealed class EditorChangeCoordinator
             or nameof(EditorStateViewModel.IsTaskCommentMode)
             or nameof(EditorStateViewModel.IsNoteEditMode)
             or nameof(EditorStateViewModel.EditorTitle))
-            Publish(false, facadeProperty, nameof(MainViewModel.CurrentNoteTitle), nameof(MainViewModel.CurrentNoteTimestampSummary), nameof(MainViewModel.HasSelectedNote));
+            Publish(false, facadeProperty, nameof(MainViewModel.CurrentNoteTitle), nameof(MainViewModel.CurrentNoteTimestampSummary), nameof(MainViewModel.HasSelectedNote), nameof(MainViewModel.CurrentNotebookName));
         else
             Publish(false, facadeProperty);
     }
