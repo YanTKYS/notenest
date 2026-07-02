@@ -123,6 +123,23 @@ public class IdeaNestFileServiceTests
         Assert.Equal(expectedJsonName, attr!.Name);
     }
 
+    // ── v2.13.6 TD-45: 保存失敗の契約確認 ────────────────────────────────
+
+    [Fact]
+    public void Save_ThrowsWhenDirectoryDoesNotExist()
+    {
+        // v2.13.6 TD-45: 保存失敗が例外として通知されることを固定する（Shell 共通保存コアの catch がこの契約に依存する）。
+        var workspace = new Workspace
+        {
+            Ideas = new()
+            {
+                new Idea { Id = "first", Title = "A", Body = "本文", Tags = new() { "tag-a" } },
+            }
+        };
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"), "no-such-dir", "x.ideanest");
+        Assert.ThrowsAny<Exception>(() => IdeaNestFileService.Save(path, workspace));
+    }
+
     // ── WorkspaceSettings モデルの [JsonPropertyName] 属性確認 ───────────
 
     [Theory]
