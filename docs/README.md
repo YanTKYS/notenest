@@ -25,7 +25,8 @@
 |----------|------|------|
 | `nestsuite-development-guidelines.md` | 開発ルール・実装ガイドライン | **現行** |
 | `notenest-task-reduction-policy.md` | NoteNest タスク管理縮退方針（TD-52） | **現行** |
-| `save-flow-duplication.md` | IdeaNest / ChatNest 保存フロー重複 設計メモ（TD-34） | 現行 |
+| `save-flow-duplication.md` | IdeaNest / ChatNest 保存フロー重複 設計メモ（TD-34 / TD-45） | 現行 |
+| `sqlite-index-feasibility.md` | LT-2 SQLite 補助インデックス feasibility spike（TD-54） | 現行 |
 | `test-classification-analysis.md` | テストクラス分類・整理方針の一次分析 | 現行 |
 
 ### testing/（テスト・リリース確認）
