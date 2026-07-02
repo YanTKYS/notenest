@@ -7,6 +7,21 @@
 
 ---
 
+## v2.13.7 — TD-54: LT-2 SQLite 補助インデックス方式の feasibility spike
+
+- **TD-54: LT-2「SQLite 補助インデックス方式」の採用可否判断を行い、`docs/development/sqlite-index-feasibility.md` を新規作成した。** 本番機能としての SQLite 導入は行っていない。
+- **判断結果: 保留継続（採用候補として残す）。** LT-2 の backlog 記載を今回の検証結果に基づいて更新した。
+- **単一EXE配布方針（RJ-5）への影響を検証した。** 現行 release.yml は self-contained 単一EXE（`IncludeNativeLibrariesForSelfExtract=true` 設定済み）、本体 csproj の NuGet 依存はゼロであることを確認したうえで、依存ルート 2 案を比較した。
+  - **ルート B（第一候補）**: `SQLitePCLRaw.bundle_winsqlite3` — Windows 10 以降の OS 同梱 `winsqlite3.dll` を使用。**追加ネイティブDLLなし・実行時自己展開なし・EXEサイズ増 約1.5MB** で単一EXE方針を完全に維持できる見込み。リスクは SQLite バージョンが OS ビルド依存であること（FTS5 可否の実機確認が必要）
+  - **ルート A（フォールバック）**: `bundle_e_sqlite3` — 単一EXEは維持できるが初回起動時に `%TEMP%\.net\` へ `e_sqlite3.dll` の自己展開が発生。閉域端末・DLL 実行制御下では運用懸念あり
+- **JSON 正本 + 再生成可能インデックス方式として設計案を整理した。** 正本は常に既存 JSON、インデックスは使い捨て（破損・不一致時は削除して全再生成、マイグレーション不作成）、保存場所は `%APPDATA%\NoteNest\index\`、本番の保存・読込・起動経路には接続しない方針を明記した。インデックスに本文全文が入るため機微度は正本と同等である旨も記録した。
+- **効果の境界を整理した。** 効くのは「開いていないファイルを横断する」全文検索・バックリンク解析・マーカー集計（LT-6 / LT-7 の基盤）。開いている単一プロジェクト内の処理は現行インメモリで十分であり、**LT-2 単体では着手せず LT-6 の実要件が動く時点で着手する**とした。
+- **保留とした理由を誠実に記録した。** 本検証環境には dotnet ツールチェーンがなく、Windows 実機での publish 成果物検証（単一EXE 1個の確認）と winsqlite3 の FTS5 可否確認が未実施。再現可能な実機検証手順（package 参照・publish コマンド・FTS5 確認コード）を feasibility 文書 §7 に記載した。isolated spike code はビルド未確認コードになるため追加しなかった。
+- **ライセンス（MIT / Apache-2.0 / Public Domain）・閉域方針（実行時ネットワーク通信ゼロ）に支障がないことを確認した。**
+- **本番アプリへの変更なし。UI 変更なし。外部依存の恒久追加なし。保存形式変更なし。session 形式変更なし。schema bumpなし。NoteNest schema `1.4.1` 維持。**
+
+---
+
 ## v2.13.6 — TD-45: IdeaNest / ChatNest 保存フロー共通化の安全設計・最小実装
 
 - **TD-45: TD-34（v2.11.2）で保留としていた IdeaNest / ChatNest 保存フローの重複を、TD-34 設計文書 §4-1「private helper による最小共通化（低リスク）」の方針で解消した。** descriptor / registry / 新しい保存フレームワークは作っていない。
