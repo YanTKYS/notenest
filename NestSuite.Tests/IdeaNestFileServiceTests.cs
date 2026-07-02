@@ -126,9 +126,12 @@ public class IdeaNestFileServiceTests
     // ── v2.13.6 TD-45: 保存失敗の契約確認 ────────────────────────────────
 
     [Fact]
-    public void Save_ThrowsWhenDirectoryDoesNotExist()
+    public void Save_ThrowsWhenParentPathIsAFile()
     {
         // v2.13.6 TD-45: 保存失敗が例外として通知されることを固定する（Shell 共通保存コアの catch がこの契約に依存する）。
+        // AtomicFileWriter.WriteAllText は保存先ディレクトリを自動作成するため、
+        // 単に「存在しないディレクトリ」を指定しただけでは失敗しない。
+        // 既存の「ファイル」を親ディレクトリとして使うことで Directory.CreateDirectory を確実に失敗させる。
         var workspace = new Workspace
         {
             Ideas = new()
@@ -136,8 +139,16 @@ public class IdeaNestFileServiceTests
                 new Idea { Id = "first", Title = "A", Body = "本文", Tags = new() { "tag-a" } },
             }
         };
-        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"), "no-such-dir", "x.ideanest");
-        Assert.ThrowsAny<Exception>(() => IdeaNestFileService.Save(path, workspace));
+        var blockingFile = Path.GetTempFileName();
+        try
+        {
+            var path = Path.Combine(blockingFile, "sub", "x.ideanest");
+            Assert.ThrowsAny<Exception>(() => IdeaNestFileService.Save(path, workspace));
+        }
+        finally
+        {
+            File.Delete(blockingFile);
+        }
     }
 
     // ── WorkspaceSettings モデルの [JsonPropertyName] 属性確認 ───────────

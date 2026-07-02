@@ -16,7 +16,7 @@
 - **保存先パス解決を `ResolveSaveTargetPath` に共通化した（`WorkspaceFileHelper.cs`）。** SaveForTabId / SaveAll に 4 回インライン複製されていた「FilePath あり→正規化 / なし→ダイアログ→重複タブチェック」を 1 本化した。キャンセル・重複検出時は null（保存中止）。
 - **`isModifiedAfterSave` の差異は `FileSaveStateSync.cs` の `UpdateXxxTabPath` に集約した。** IdeaNest は常に false、ChatNest は MarkSaved 後の `vm.HasUnsavedChanges`（`InputText` 残留時は true のまま）。この差異の定義点を 1 箇所にし、他の場所に書かないことを docs に明記した。
 - **共通化しなかった範囲**: NoteNest 全保存経路（`vm.SaveToPath` という別インターフェース）、SaveAs（ダイアログ常時表示の別セマンティクス、ただし末端は共通の `TrySaveXxxToPath` を使用）、各 FileService のシリアライズ詳細、タブ閉鎖確認フロー。理由は `save-flow-duplication.md` §0-3 に記録した。
-- **保存回帰テストを補強した。** `NestSuiteShellWorkspaceLaunchTests` に共通ヘルパーの構造固定テスト（リフレクション）を追加。`IdeaNestFileServiceTests` / `ChatNestFileServiceTests` に「保存失敗が例外として通知される」契約テスト（`Save_ThrowsWhenDirectoryDoesNotExist`）を追加。ChatNest の `InputText` 残留セマンティクスは既存の `ChatNestWorkspaceViewModelTests.MarkSaved_WhenInputTextRemains_HasUnsavedChangesIsTrue` が引き続き固定している。
+- **保存回帰テストを補強した。** `NestSuiteShellWorkspaceLaunchTests` に共通ヘルパーの構造固定テスト（リフレクション）を追加。`IdeaNestFileServiceTests` / `ChatNestFileServiceTests` に「保存失敗が例外として通知される」契約テスト（`Save_ThrowsWhenParentPathIsAFile`）を追加。ChatNest の `InputText` 残留セマンティクスは既存の `ChatNestWorkspaceViewModelTests.MarkSaved_WhenInputTextRemains_HasUnsavedChangesIsTrue` が引き続き固定している。
 - **既存の 2 引数シグネチャ（`TrySaveChatNestToPath` / `UpdateChatNestTabPath`）はリフレクションテストで固定されているため維持し、3 引数オーバーロードを追加する形にした。** 既存テストの削除・期待値変更はない。
 - **保存挙動の外部仕様変更なし。** 保存成功時の未保存解除・キャンセル/失敗時の未保存維持・タブ表示名/ファイルパス/最近ファイル/session 状態の更新順序はすべて従来どおり。UI 変更なし。
 - **保存形式変更なし。session 形式変更なし。schema bumpなし。NoteNest schema `1.4.1` 維持。`.ideanest` / `.chatnest` 形式変更なし。外部依存追加なし。**

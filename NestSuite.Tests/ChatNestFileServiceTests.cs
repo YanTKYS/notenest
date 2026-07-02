@@ -87,11 +87,22 @@ public class ChatNestFileServiceTests : IDisposable
     // ── v2.13.6 TD-45: 保存失敗の契約確認 ────────────────────────────────
 
     [Fact]
-    public void Save_ThrowsWhenDirectoryDoesNotExist()
+    public void Save_ThrowsWhenParentPathIsAFile()
     {
         // v2.13.6 TD-45: 保存失敗が例外として通知されることを固定する（Shell 共通保存コアの catch がこの契約に依存する）。
-        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"), "no-such-dir", "x.chatnest");
-        Assert.ThrowsAny<Exception>(() => ChatNestFileService.Save(path, [new Message { Speaker = Speaker.自分, Text = "test" }]));
+        // AtomicFileWriter.WriteAllText は保存先ディレクトリを自動作成するため、
+        // 単に「存在しないディレクトリ」を指定しただけでは失敗しない。
+        // 既存の「ファイル」を親ディレクトリとして使うことで Directory.CreateDirectory を確実に失敗させる。
+        var blockingFile = Path.GetTempFileName();
+        try
+        {
+            var path = Path.Combine(blockingFile, "sub", "x.chatnest");
+            Assert.ThrowsAny<Exception>(() => ChatNestFileService.Save(path, [new Message { Speaker = Speaker.自分, Text = "test" }]));
+        }
+        finally
+        {
+            File.Delete(blockingFile);
+        }
     }
 
     // ── 読込 ─────────────────────────────────────────────────────────────
